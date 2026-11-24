@@ -1,11 +1,41 @@
 {
-  "version": 1,
+  "version": 2,
   "title": "Μουσείο Μουσικών Οργάνων",
   "items": [
-    {"cat":"Έγχορδα","title":"Λαούτο","text":"Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο.","img":"img/laouto.jpg","audio":"audio/laouto.mp3"},
-    {"cat":"Έγχορδα","title":"Βιολί","text":"Το πιο διαδεδομένο έγχορδο με δοξάρι.","img":"img/violi.jpg","audio":"audio/violi.mp3"},
-    {"cat":"Έγχορδα","title":"Βιολί","text":"Το πιο διαδεδομένο έγχορδο με δοξάρι.","img":"img/violi.png","audio":"audio/violi.mp3"},
-    {"cat":"Πνευστά","title":"Κλαρίνο","text":"Ξύλινο πνευστό της ελληνικής παράδοσης.","img":"img/klarino.jpg","audio":"audio/klarino.mp3"},
-    {"cat":"Κρουστά","title":"Νταούλι","text":"Μεγάλο τύμπανο που κρατά τον ρυθμό.","img":"img/ntaouli.jpg","audio":"audio/ntaouli.mp3"}
+    {
+      "cat": "Έγχορδα",
+      "title": "Λαούτο (jpg + mp3)",
+      "text": "Δοκιμή: εικόνα jpg και ήχος mp3.",
+      "img": "img/laouto.jpg",
+      "audio": "audio/laouto.mp3"
+    },
+    {
+      "cat": "Έγχορδα",
+      "title": "Βιολί (jpeg + m4a)",
+      "text": "Δοκιμή: εικόνα jpeg και ήχος m4a.",
+      "img": "img/violi.jpeg",
+      "audio": "audio/violi.m4a"
+    },
+    {
+      "cat": "Πνευστά",
+      "title": "Κλαρίνο (png + aac)",
+      "text": "Δοκιμή: εικόνα png και ήχος aac.",
+      "img": "img/klarino.png",
+      "audio": "audio/klarino.aac"
+    },
+    {
+      "cat": "Κρουστά",
+      "title": "Νταούλι (webp + ogg)",
+      "text": "Δοκιμή: εικόνα webp και ήχος ogg.",
+      "img": "img/ntaouli.webp",
+      "audio": "audio/ntaouli.ogg"
+    },
+    {
+      "cat": "Κρουστά",
+      "title": "Ντέφι (jpg + wav)",
+      "text": "Δοκιμή: εικόνα jpg και ήχος wav.",
+      "img": "img/ntefi.jpg",
+      "audio": "audio/ntefi.wav"
+    }
   ]
 }
