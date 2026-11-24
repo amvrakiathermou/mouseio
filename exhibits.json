@@ -1,11 +1,19 @@
 {
   "version": 4,
   "idleSeconds": 180,
-  "title": "Μουσείο Μουσικών Οργάνων",
+  "title": {
+    "el": "Μουσείο Μουσικών Οργάνων"
+  },
   "categories": {
-    "strings": "Έγχορδα",
-    "wind": "Πνευστά",
-    "percussion": "Κρουστά"
+    "strings": {
+      "el": "Έγχορδα"
+    },
+    "wind": {
+      "el": "Πνευστά"
+    },
+    "percussion": {
+      "el": "Κρουστά"
+    }
   },
   "items": [
     {
