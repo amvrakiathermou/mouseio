@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17302d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>Μουσείο Μουσικών Οργάνων</title>
+<style>
+:root{--bg:#17302d;--panel:#1f3f3b;--ink:#f3efe4;--brass:#d2a84c;--mute:#a9bdb8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:2px solid var(--brass)}
+h1{margin:0;font-size:1.6rem}
+#status{font:15px system-ui,sans-serif;color:var(--mute)}
+#retry{font:600 16px system-ui,sans-serif;background:var(--brass);color:#2a2110;border:0;border-radius:8px;padding:12px 18px;min-height:48px;display:none}
+nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--panel)}
+nav button{font:600 18px system-ui,sans-serif;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
+nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:20px}
+article{background:var(--panel);border-radius:10px;overflow:hidden}
+article img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#12261f;display:block}
+.body{padding:14px 16px 16px}
+h2{margin:0 0 6px;font-size:1.3rem}
+p{margin:0 0 12px;font:16px/1.5 system-ui,sans-serif;color:var(--mute)}
+.play{font:600 17px system-ui,sans-serif;width:100%;min-height:52px;background:transparent;color:var(--brass);border:1.5px solid var(--brass);border-radius:8px}
+.play[aria-pressed="true"]{background:var(--brass);color:#2a2110}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">Μουσείο Μουσικών Οργάνων</h1>
+  <div><span id="status"></span> <button id="retry">Δοκίμασε ξανά τη λήψη</button></div>
+</header>
+<nav id="menu" aria-label="Μενού"></nav>
+<main id="grid"></main>
+
+<script>
+const $ = id => document.getElementById(id);
+let DATA = null, current = "Όλα", playingBtn = null;
+const audio = new Audio();
+/* Αποδεκτές καταλήξεις: στο exhibits.json γράφεις μόνο το όνομα, π.χ. "img/violi" */
+const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
+const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
+let RES = {};
+try { RES = JSON.parse(localStorage.getItem("mm-res") || "{}"); } catch (_) {}
+const hasExt = p => /\.[A-Za-z0-9]{2,5}$/.test(p);
+const cands = (base, exts) => hasExt(base) ? [base] : exts.map(e => base + "." + e);
+const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
+
+/* 1. Φόρτωση λίστας εκθεμάτων (από δίκτυο ή από τη μνήμη του tablet) */
+async function load() {
+  try { DATA = await (await fetch("exhibits.json", {cache: "no-store"})).json(); }
+  catch (_) { $("status").textContent = "Δεν βρέθηκαν δεδομένα. Συνδέσου στο ίντερνετ μία φορά."; return; }
+  $("title").textContent = DATA.title || $("title").textContent;
+  render();
+  syncMedia();
+}
+
+/* 2. Σχεδίαση μενού και καρτών */
+function render() {
+  const cats = ["Όλα", ...new Set(DATA.items.map(i => i.cat))];
+  $("menu").innerHTML = "";
+  cats.forEach(c => {
+    const b = document.createElement("button");
+    b.textContent = c; b.setAttribute("aria-pressed", c === current);
+    b.onclick = () => { current = c; render(); };
+    $("menu").appendChild(b);
+  });
+  $("grid").innerHTML = "";
+  DATA.items.filter(i => current === "Όλα" || i.cat === current).forEach(it => {
+    const a = document.createElement("article");
+    a.innerHTML = '<img alt=""><div class="body"><h2></h2><p></p><button class="play" aria-pressed="false">▶ Ακρόαση</button></div>';
+    a.querySelector("h2").textContent = it.title;
+    a.querySelector("p").textContent = it.text;
+    const img = a.querySelector("img"); img.alt = it.title; img.src = imgSrc(it.img);
+    const btn = a.querySelector(".play");
+    btn.onclick = () => toggle(btn, it);
+    $("grid").appendChild(a);
+  });
+}
+
+/* 3. Αναπαραγωγή */
+function reset() { if (playingBtn) { playingBtn.setAttribute("aria-pressed","false"); playingBtn.textContent = "▶ Ακρόαση"; playingBtn = null; } }
+async function toggle(btn, it) {
+  if (playingBtn === btn) { audio.pause(); reset(); return; }
+  audio.pause(); reset();
+  try {
+    audio.src = await audioSrc(it.audio); await audio.play();
+    playingBtn = btn; btn.setAttribute("aria-pressed","true"); btn.textContent = "❚❚ Παύση";
+  } catch (_) { $("status").textContent = "Το κομμάτι δεν είναι διαθέσιμο. Συνδέσου στο ίντερνετ."; }
+}
+audio.onended = reset;
+async function audioSrc(base) {
+  if (hasExt(base)) return base;
+  if (RES[base]) return RES[base];
+  for (const u of cands(base, AUD_EXT)) {
+    try { const r = await fetch(u, {method: "HEAD"}); if (r.ok) { RES[base] = u; return u; } } catch (_) {}
+  }
+  throw 0;
+}
+
+/* 4. Λήψη όλων των αρχείων στο tablet (μία φορά, και μετά μόνο ό,τι αλλάζει) */
+async function syncMedia() {
+  if (!("caches" in window)) return;
+  const name = "media-v" + DATA.version;
+  const cache = await caches.open(name);
+  const jobs = [];
+  DATA.items.forEach(i => { jobs.push([i.img, IMG_EXT]); jobs.push([i.audio, AUD_EXT]); });
+  const before = JSON.stringify(RES);
+  let done = 0, failed = 0;
+  $("retry").style.display = "none";
+  for (const [base, exts] of jobs) {
+    const list = cands(base, exts);
+    let found = null;
+    for (const u of list) if (await cache.match(u)) { found = u; break; }
+    if (!found && navigator.onLine) {
+      for (const u of list) {
+        try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); found = u; break; } } catch (_) {}
+      }
+    }
+    if (found) { if (found !== base) RES[base] = found; } else failed++;
+    done++; $("status").textContent = `Έλεγχος αρχείων ${done}/${jobs.length}…`;
+  }
+  try { localStorage.setItem("mm-res", JSON.stringify(RES)); } catch (_) {}
+  if (JSON.stringify(RES) !== before) render();
+  if (failed) {
+    $("status").textContent = navigator.onLine ? `Λείπουν ${failed} αρχεία` : "Χωρίς σύνδεση: λείπουν αρχεία";
+    $("retry").style.display = "inline-block";
+    return;
+  }
+  (await caches.keys()).filter(k => k.startsWith("media-") && k !== name).forEach(k => caches.delete(k));
+  $("status").textContent = "✔ Έτοιμο για χρήση χωρίς σύνδεση";
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+}
+$("retry").onclick = syncMedia;
+window.addEventListener("online", () => DATA && syncMedia());
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+load();
+</script>
+</body>
+</html>
