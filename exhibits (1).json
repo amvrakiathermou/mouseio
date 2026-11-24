@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "title": "Μουσείο Μουσικών Οργάνων",
+  "items": [
+    {"cat":"Έγχορδα","title":"Λαούτο","text":"Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο.","img":"img/laouto","audio":"audio/laouto"},
+    {"cat":"Έγχορδα","title":"Βιολί","text":"Το πιο διαδεδομένο έγχορδο με δοξάρι.","img":"img/violi","audio":"audio/violi"},
+    {"cat":"Πνευστά","title":"Κλαρίνο","text":"Ξύλινο πνευστό της ελληνικής παράδοσης.","img":"img/klarino","audio":"audio/klarino"},
+    {"cat":"Κρουστά","title":"Νταούλι","text":"Μεγάλο τύμπανο που κρατά τον ρυθμό.","img":"img/ntaouli","audio":"audio/ntaouli"}
+  ]
+}
