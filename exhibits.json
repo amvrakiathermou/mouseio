@@ -1,48 +1,28 @@
-{
-  "version": 4,
-  "idleSeconds": 180,
-  "title": {
-    "el": "Μουσείο Μουσικών Οργάνων"
-  },
-  "categories": {
-    "Έγχορδα": {
-      "el": "Έγχορδα"
-    },
-    "Πνευστά": {
-      "el": "Πνευστά"
-    },
-    "Κρουστά": {
-      "el": "Κρουστά"
-    }
-  },
-  "items": [
-    {
-      "cat": "strings",
-      "img": "img/laouto",
-      "audio": "audio/laouto",
-      "title": "Λαούτο",
-      "text": "Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο."
-    },
-    {
-      "cat": "strings",
-      "img": "img/violi",
-      "audio": "audio/violi",
-      "title": "Βιολί",
-      "text": "Το πιο διαδεδομένο έγχορδο με δοξάρι."
-    },
-    {
-      "cat": "wind",
-      "img": "img/klarino",
-      "audio": "audio/klarino",
-      "title": "Κλαρίνο",
-      "text": "Ξύλινο πνευστό της ελληνικής παράδοσης."
-    },
-    {
-      "cat": "percussion",
-      "img": "img/ntaouli",
-      "audio": "audio/ntaouli",
-      "title": "Νταούλι",
-      "text": "Μεγάλο τύμπανο που κρατά τον ρυθμό."
-    }
-  ]
-}
+	
+version	1
+title	"Μουσείο Μουσικών Οργάνων"
+items	
+0	
+cat	"Έγχορδα"
+title	"Λαούτο"
+text	"Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο."
+img	"img/laouto.jpg"
+audio	"audio/laouto.mp3"
+1	
+cat	"Έγχορδα"
+title	"Βιολί"
+text	"Το πιο διαδεδομένο έγχορδο με δοξάρι."
+img	"img/violi.jpg"
+audio	"audio/violi.mp3"
+2	
+cat	"Πνευστά"
+title	"Κλαρίνο"
+text	"Ξύλινο πνευστό της ελληνικής παράδοσης."
+img	"img/klarino.jpg"
+audio	"audio/klarino.mp3"
+3	
+cat	"Κρουστά"
+title	"Νταούλι"
+text	"Μεγάλο τύμπανο που κρατά τον ρυθμό."
+img	"img/ntaouli.jpg"
+audio	"audio/ntaouli.mp3"
