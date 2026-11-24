@@ -6,140 +6,216 @@
 <meta name="theme-color" content="#17302d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>Μουσείο Μουσικών Οργάνων</title>
+<title>Museum</title>
 <style>
 :root{--bg:#17302d;--panel:#1f3f3b;--ink:#f3efe4;--brass:#d2a84c;--mute:#a9bdb8}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:2px solid var(--brass)}
-h1{margin:0;font-size:1.6rem}
-#status{font:15px system-ui,sans-serif;color:var(--mute)}
-#retry{font:600 16px system-ui,sans-serif;background:var(--brass);color:#2a2110;border:0;border-radius:8px;padding:12px 18px;min-height:48px;display:none}
-nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--panel)}
-nav button{font:600 18px system-ui,sans-serif;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
-nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-main{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:20px}
-article{background:var(--panel);border-radius:10px;overflow:hidden}
-article img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#12261f;display:block}
-.body{padding:14px 16px 16px}
-h2{margin:0 0 6px;font-size:1.3rem}
-p{margin:0 0 12px;font:16px/1.5 system-ui,sans-serif;color:var(--mute)}
-.play{font:600 17px system-ui,sans-serif;width:100%;min-height:52px;background:transparent;color:var(--brass);border:1.5px solid var(--brass);border-radius:8px}
-.play[aria-pressed="true"]{background:var(--brass);color:#2a2110}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;-webkit-tap-highlight-color:transparent}
+button{font-family:system-ui,sans-serif;cursor:pointer}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+[hidden]{display:none!important}
+#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:32px;text-align:center}
+#welcome h1{font-size:clamp(2rem,6vw,3.4rem);margin:0;max-width:18ch;line-height:1.15}
+#welcome p{margin:0;font:18px system-ui,sans-serif;color:var(--mute)}
+.langs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.langs button{font-size:20px;font-weight:600;min-width:150px;min-height:60px;padding:12px 24px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--ink)}
+.langs button[aria-pressed="true"],#welcome .langs button:active{background:var(--brass);color:#2a2110}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:2px solid var(--brass)}
+header h1{margin:0;font-size:1.4rem}
+header .langs button{font-size:15px;min-width:0;min-height:44px;padding:8px 14px;border-width:1.5px}
+nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--panel)}
+nav button{font-size:18px;font-weight:600;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
+nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:20px}
+.card{background:var(--panel);border:0;border-radius:10px;overflow:hidden;padding:0;color:var(--ink);text-align:left;display:block;width:100%}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#12261f;display:block}
+.card h2{margin:0;padding:14px 16px;font-size:1.3rem}
+footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
+#retry{margin-left:10px;font-size:15px;font-weight:600;background:var(--brass);color:#2a2110;border:0;border-radius:8px;padding:8px 14px;min-height:44px}
+#detail{position:fixed;inset:0;background:var(--bg);overflow:auto;z-index:5;padding:20px}
+#detail .wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+#detail img{width:100%;max-height:55vh;object-fit:contain;background:#12261f;border-radius:10px}
+#detail h2{margin:0;font-size:2rem}
+#detail p{margin:0;font:20px/1.6 system-ui,sans-serif;color:var(--ink)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font-size:19px;font-weight:600;min-height:60px;padding:12px 26px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--brass)}
+.btn[aria-pressed="true"]{background:var(--brass);color:#2a2110}
+.btn.close{color:var(--ink);border-color:var(--mute)}
 </style>
 </head>
 <body>
-<header>
-  <h1 id="title">Μουσείο Μουσικών Οργάνων</h1>
-  <div><span id="status"></span> <button id="retry">Δοκίμασε ξανά τη λήψη</button></div>
-</header>
-<nav id="menu" aria-label="Μενού"></nav>
-<main id="grid"></main>
+
+<section id="welcome">
+  <h1 id="wtitle"></h1>
+  <p id="wpick"></p>
+  <div class="langs" id="wlangs"></div>
+</section>
+
+<div id="app" hidden>
+  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div></header>
+  <nav id="menu"></nav>
+  <main id="grid"></main>
+  <footer><span id="status"></span><button id="retry" hidden></button></footer>
+</div>
+
+<section id="detail" hidden aria-modal="true" role="dialog">
+  <div class="wrap">
+    <img id="dimg" alt="">
+    <h2 id="dtitle"></h2>
+    <p id="dtext"></p>
+    <div class="row"><button class="btn" id="dplay" aria-pressed="false"></button><button class="btn close" id="dclose"></button></div>
+  </div>
+</section>
 
 <script>
 const $ = id => document.getElementById(id);
-let DATA = null, current = "Όλα", playingBtn = null;
-const audio = new Audio();
-/* Αποδεκτές καταλήξεις: στο exhibits.json γράφεις μόνο το όνομα, π.χ. "img/violi" */
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"]];
+const UI = {
+  el:{pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
+  en:{pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
+  fr:{pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
+  de:{pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
+  es:{pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
+};
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
-let RES = {};
-try { RES = JSON.parse(localStorage.getItem("mm-res") || "{}"); } catch (_) {}
+let DATA = null, lang = "el", cat = "all", openItem = null, playing = false, idleTimer = null, wake = null;
+let RES = {}; try { RES = JSON.parse(localStorage.getItem("mm-res") || "{}"); } catch (_) {}
+const audio = new Audio();
+const t = k => (UI[lang] || UI.el)[k];
+const tr = o => (o && typeof o === "object") ? (o[lang] || o.el || o.en || "") : (o || "");
 const hasExt = p => /\.[A-Za-z0-9]{2,5}$/.test(p);
-const cands = (base, exts) => hasExt(base) ? [base] : exts.map(e => base + "." + e);
+const cands = (b, e) => hasExt(b) ? [b] : e.map(x => b + "." + x);
 const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 
-/* 1. Φόρτωση λίστας εκθεμάτων (από δίκτυο ή από τη μνήμη του tablet) */
 async function load() {
-  try { DATA = await (await fetch("exhibits.json", {cache: "no-store"})).json(); }
-  catch (_) { $("status").textContent = "Δεν βρέθηκαν δεδομένα. Συνδέσου στο ίντερνετ μία φορά."; return; }
-  $("title").textContent = DATA.title || $("title").textContent;
-  render();
-  syncMedia();
+  try { DATA = await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
+  catch (_) { $("wpick").textContent = t("nodata"); return; }
+  buildLangButtons(); showWelcome(); syncMedia();
 }
 
-/* 2. Σχεδίαση μενού και καρτών */
-function render() {
-  const cats = ["Όλα", ...new Set(DATA.items.map(i => i.cat))];
+function buildLangButtons() {
+  ["wlangs","hlangs"].forEach(id => {
+    $(id).innerHTML = "";
+    LANGS.forEach(([c, n]) => {
+      const b = document.createElement("button");
+      b.textContent = n; b.setAttribute("aria-pressed", c === lang);
+      b.onclick = () => { lang = c; id === "wlangs" ? enterApp() : (buildLangButtons(), renderApp(), refreshDetail()); };
+      $(id).appendChild(b);
+    });
+  });
+}
+
+function showWelcome() {
+  audio.pause(); closeDetail(true); lang = "el"; cat = "all";
+  $("app").hidden = true; $("welcome").hidden = false;
+  $("wtitle").textContent = tr(DATA.title);
+  $("wpick").textContent = LANGS.map(l => UI[l[0]].pick).join(" / ");
+  buildLangButtons(); window.scrollTo(0, 0);
+}
+function enterApp() { $("welcome").hidden = true; $("app").hidden = false; buildLangButtons(); renderApp(); keepAwake(); }
+
+function renderApp() {
+  document.documentElement.lang = lang;
+  $("title").textContent = tr(DATA.title); document.title = tr(DATA.title);
+  const cats = ["all", ...new Set(DATA.items.map(i => i.cat))];
   $("menu").innerHTML = "";
   cats.forEach(c => {
     const b = document.createElement("button");
-    b.textContent = c; b.setAttribute("aria-pressed", c === current);
-    b.onclick = () => { current = c; render(); };
+    b.textContent = c === "all" ? t("all") : (tr(DATA.categories && DATA.categories[c]) || c);
+    b.setAttribute("aria-pressed", c === cat);
+    b.onclick = () => { cat = c; renderApp(); };
     $("menu").appendChild(b);
   });
   $("grid").innerHTML = "";
-  DATA.items.filter(i => current === "Όλα" || i.cat === current).forEach(it => {
-    const a = document.createElement("article");
-    a.innerHTML = '<img alt=""><div class="body"><h2></h2><p></p><button class="play" aria-pressed="false">▶ Ακρόαση</button></div>';
-    a.querySelector("h2").textContent = it.title;
-    a.querySelector("p").textContent = it.text;
-    const img = a.querySelector("img"); img.alt = it.title; img.src = imgSrc(it.img);
-    const btn = a.querySelector(".play");
-    btn.onclick = () => toggle(btn, it);
-    $("grid").appendChild(a);
+  DATA.items.filter(i => cat === "all" || i.cat === cat).forEach(it => {
+    const b = document.createElement("button"); b.className = "card";
+    b.innerHTML = '<img alt=""><h2></h2>';
+    b.querySelector("h2").textContent = tr(it.title);
+    const im = b.querySelector("img"); im.src = imgSrc(it.img); im.alt = tr(it.title);
+    b.onclick = () => openDetail(it);
+    $("grid").appendChild(b);
   });
+  $("retry").textContent = t("retry");
 }
 
-/* 3. Αναπαραγωγή */
-function reset() { if (playingBtn) { playingBtn.setAttribute("aria-pressed","false"); playingBtn.textContent = "▶ Ακρόαση"; playingBtn = null; } }
-async function toggle(btn, it) {
-  if (playingBtn === btn) { audio.pause(); reset(); return; }
-  audio.pause(); reset();
-  try {
-    audio.src = await audioSrc(it.audio); await audio.play();
-    playingBtn = btn; btn.setAttribute("aria-pressed","true"); btn.textContent = "❚❚ Παύση";
-  } catch (_) { $("status").textContent = "Το κομμάτι δεν είναι διαθέσιμο. Συνδέσου στο ίντερνετ."; }
+/* Μεγάλη σελίδα εκθέματος */
+function openDetail(it) { openItem = it; $("detail").hidden = false; refreshDetail(); history.pushState({d:1}, ""); }
+function refreshDetail() {
+  if (!openItem) return;
+  $("dimg").src = imgSrc(openItem.img); $("dimg").alt = tr(openItem.title);
+  $("dtitle").textContent = tr(openItem.title); $("dtext").textContent = tr(openItem.text);
+  $("dclose").textContent = "✕ " + t("close"); setPlay(playing);
 }
-audio.onended = reset;
+function closeDetail(silent) {
+  if (!openItem) return;
+  audio.pause(); playing = false; openItem = null; $("detail").hidden = true;
+  if (!silent && history.state && history.state.d) history.back();
+}
+window.addEventListener("popstate", () => { if (openItem) closeDetail(true); });
+$("dclose").onclick = () => closeDetail();
+
+/* Ήχος */
+function setPlay(on) {
+  playing = on; const b = $("dplay");
+  b.setAttribute("aria-pressed", on); b.textContent = (on ? "❚❚ " + t("pause") : "▶ " + t("listen"));
+}
 async function audioSrc(base) {
   if (hasExt(base)) return base;
   if (RES[base]) return RES[base];
   for (const u of cands(base, AUD_EXT)) {
-    try { const r = await fetch(u, {method: "HEAD"}); if (r.ok) { RES[base] = u; return u; } } catch (_) {}
+    try { const r = await fetch(u, {method:"HEAD"}); if (r.ok) { RES[base] = u; return u; } } catch (_) {}
   }
   throw 0;
 }
+$("dplay").onclick = async () => {
+  if (playing) { audio.pause(); setPlay(false); return; }
+  try { audio.src = await audioSrc(openItem.audio); await audio.play(); setPlay(true); }
+  catch (_) { $("status").textContent = t("nosound"); }
+};
+audio.onended = () => setPlay(false);
 
-/* 4. Λήψη όλων των αρχείων στο tablet (μία φορά, και μετά μόνο ό,τι αλλάζει) */
+/* Λήψη αρχείων στο tablet */
 async function syncMedia() {
   if (!("caches" in window)) return;
-  const name = "media-v" + DATA.version;
-  const cache = await caches.open(name);
-  const jobs = [];
-  DATA.items.forEach(i => { jobs.push([i.img, IMG_EXT]); jobs.push([i.audio, AUD_EXT]); });
-  const before = JSON.stringify(RES);
-  let done = 0, failed = 0;
-  $("retry").style.display = "none";
+  const name = "media-v" + DATA.version, cache = await caches.open(name);
+  const jobs = []; DATA.items.forEach(i => { jobs.push([i.img, IMG_EXT]); jobs.push([i.audio, AUD_EXT]); });
+  const before = JSON.stringify(RES); let done = 0, failed = 0;
+  $("retry").hidden = true;
   for (const [base, exts] of jobs) {
-    const list = cands(base, exts);
-    let found = null;
+    const list = cands(base, exts); let found = null;
     for (const u of list) if (await cache.match(u)) { found = u; break; }
-    if (!found && navigator.onLine) {
-      for (const u of list) {
-        try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); found = u; break; } } catch (_) {}
-      }
+    if (!found && navigator.onLine) for (const u of list) {
+      try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); found = u; break; } } catch (_) {}
     }
     if (found) { if (found !== base) RES[base] = found; } else failed++;
-    done++; $("status").textContent = `Έλεγχος αρχείων ${done}/${jobs.length}…`;
+    done++; $("status").textContent = `${t("check")} ${done}/${jobs.length}…`;
   }
   try { localStorage.setItem("mm-res", JSON.stringify(RES)); } catch (_) {}
-  if (JSON.stringify(RES) !== before) render();
-  if (failed) {
-    $("status").textContent = navigator.onLine ? `Λείπουν ${failed} αρχεία` : "Χωρίς σύνδεση: λείπουν αρχεία";
-    $("retry").style.display = "inline-block";
-    return;
-  }
+  if (JSON.stringify(RES) !== before && !$("app").hidden) { renderApp(); refreshDetail(); }
+  if (failed) { $("status").textContent = `${t("missing")}: ${failed}`; $("retry").hidden = false; return; }
   (await caches.keys()).filter(k => k.startsWith("media-") && k !== name).forEach(k => caches.delete(k));
-  $("status").textContent = "✔ Έτοιμο για χρήση χωρίς σύνδεση";
+  $("status").textContent = t("ready");
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
 }
 $("retry").onclick = syncMedia;
 window.addEventListener("online", () => DATA && syncMedia());
 
+/* Επιστροφή στην αρχική οθόνη μετά από αδράνεια */
+function bump() {
+  clearTimeout(idleTimer);
+  if (!DATA) return;
+  idleTimer = setTimeout(() => { if (!$("welcome").hidden) return; showWelcome(); }, (DATA.idleSeconds || 180) * 1000);
+}
+["pointerdown","keydown","touchstart"].forEach(e => document.addEventListener(e, bump, {passive:true}));
+
+/* Η οθόνη να μένει ανοιχτή */
+async function keepAwake() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (_) {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
+
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-load();
+load(); bump();
 </script>
 </body>
 </html>
