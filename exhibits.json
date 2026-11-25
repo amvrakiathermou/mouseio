@@ -1,24 +1,148 @@
 {
-  "version": 4,
-  "idleSeconds": 180,
-  "title": {"el":"Μουσείο Μουσικών Οργάνων","en":"Museum of Musical Instruments","fr":"Musée des instruments de musique","de":"Museum der Musikinstrumente","es":"Museo de Instrumentos Musicales"},
-  "categories": {
-    "strings": {"el":"Έγχορδα","en":"Strings","fr":"Cordes","de":"Saiteninstrumente","es":"Cuerdas"},
-    "wind": {"el":"Πνευστά","en":"Wind","fr":"Vents","de":"Blasinstrumente","es":"Viento"},
-    "percussion": {"el":"Κρουστά","en":"Percussion","fr":"Percussions","de":"Schlaginstrumente","es":"Percusión"}
+ "version": 4,
+ "idleSeconds": 180,
+ "title": {
+  "el": "Μουσείο Μουσικών Οργάνων",
+  "en": "Museum of Musical Instruments",
+  "fr": "Musée des instruments de musique",
+  "de": "Museum der Musikinstrumente",
+  "es": "Museo de Instrumentos Musicales",
+  "ru": "Музей музыкальных инструментов",
+  "zh": "乐器博物馆",
+  "ar": "متحف الآلات الموسيقية"
+ },
+ "categories": {
+  "strings": {
+   "el": "Έγχορδα",
+   "en": "Strings",
+   "fr": "Cordes",
+   "de": "Saiteninstrumente",
+   "es": "Cuerdas",
+   "ru": "Струнные",
+   "zh": "弦乐器",
+   "ar": "الآلات الوترية"
   },
-  "items": [
-    {"cat":"strings","img":"img/laouto","audio":"audio/laouto",
-     "title":{"el":"Λαούτο","en":"Laouto","fr":"Laouto","de":"Laouto","es":"Laouto"},
-     "text":{"el":"Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο.","en":"A traditional instrument with a rich, warm sound.","fr":"Un instrument traditionnel au son riche et chaleureux.","de":"Ein traditionelles Instrument mit reichem, warmem Klang.","es":"Un instrumento tradicional de sonido rico y cálido."}},
-    {"cat":"strings","img":"img/violi","audio":"audio/violi",
-     "title":{"el":"Βιολί","en":"Violin","fr":"Violon","de":"Violine","es":"Violín"},
-     "text":{"el":"Το πιο διαδεδομένο έγχορδο με δοξάρι.","en":"The most widespread bowed string instrument.","fr":"L'instrument à cordes frottées le plus répandu.","de":"Das am weitesten verbreitete Streichinstrument.","es":"El instrumento de cuerda frotada más extendido."}},
-    {"cat":"wind","img":"img/klarino","audio":"audio/klarino",
-     "title":{"el":"Κλαρίνο","en":"Clarinet","fr":"Clarinette","de":"Klarinette","es":"Clarinete"},
-     "text":{"el":"Ξύλινο πνευστό της ελληνικής παράδοσης.","en":"A wooden wind instrument central to Greek folk music.","fr":"Un instrument à vent en bois, central dans la musique populaire grecque.","de":"Ein hölzernes Blasinstrument der griechischen Volksmusik.","es":"Un instrumento de viento de madera esencial en la música popular griega."}},
-    {"cat":"percussion","img":"img/ntaouli","audio":"audio/ntaouli",
-     "title":{"el":"Νταούλι","en":"Ntaouli","fr":"Ntaouli","de":"Ntaouli","es":"Ntaouli"},
-     "text":{"el":"Μεγάλο τύμπανο που κρατά τον ρυθμό.","en":"A large drum that keeps the rhythm.","fr":"Un grand tambour qui marque le rythme.","de":"Eine große Trommel, die den Rhythmus vorgibt.","es":"Un gran tambor que marca el ritmo."}}
-  ]
+  "wind": {
+   "el": "Πνευστά",
+   "en": "Wind",
+   "fr": "Vents",
+   "de": "Blasinstrumente",
+   "es": "Viento",
+   "ru": "Духовые",
+   "zh": "管乐器",
+   "ar": "آلات النفخ"
+  },
+  "percussion": {
+   "el": "Κρουστά",
+   "en": "Percussion",
+   "fr": "Percussions",
+   "de": "Schlaginstrumente",
+   "es": "Percusión",
+   "ru": "Ударные",
+   "zh": "打击乐器",
+   "ar": "آلات الإيقاع"
+  }
+ },
+ "items": [
+  {
+   "cat": "strings",
+   "img": "img/laouto",
+   "audio": "audio/laouto",
+   "title": {
+    "el": "Λαούτο",
+    "en": "Laouto",
+    "fr": "Laouto",
+    "de": "Laouto",
+    "es": "Laouto",
+    "ru": "Лауто",
+    "zh": "劳托琴",
+    "ar": "اللاوتو"
+   },
+   "text": {
+    "el": "Παραδοσιακό όργανο με πλούσιο, ζεστό ήχο.",
+    "en": "A traditional instrument with a rich, warm sound.",
+    "fr": "Un instrument traditionnel au son riche et chaleureux.",
+    "de": "Ein traditionelles Instrument mit reichem, warmem Klang.",
+    "es": "Un instrumento tradicional de sonido rico y cálido.",
+    "ru": "Традиционный инструмент с насыщенным, тёплым звучанием.",
+    "zh": "一种音色浑厚温暖的传统乐器。",
+    "ar": "آلة تقليدية ذات صوت غني ودافئ."
+   }
+  },
+  {
+   "cat": "strings",
+   "img": "img/violi",
+   "audio": "audio/violi",
+   "title": {
+    "el": "Βιολί",
+    "en": "Violin",
+    "fr": "Violon",
+    "de": "Violine",
+    "es": "Violín",
+    "ru": "Скрипка",
+    "zh": "小提琴",
+    "ar": "الكمان"
+   },
+   "text": {
+    "el": "Το πιο διαδεδομένο έγχορδο με δοξάρι.",
+    "en": "The most widespread bowed string instrument.",
+    "fr": "L'instrument à cordes frottées le plus répandu.",
+    "de": "Das am weitesten verbreitete Streichinstrument.",
+    "es": "El instrumento de cuerda frotada más extendido.",
+    "ru": "Самый распространённый смычковый струнный инструмент.",
+    "zh": "最常见的弓弦乐器。",
+    "ar": "أكثر الآلات الوترية القوسية انتشارًا."
+   }
+  },
+  {
+   "cat": "wind",
+   "img": "img/klarino",
+   "audio": "audio/klarino",
+   "title": {
+    "el": "Κλαρίνο",
+    "en": "Clarinet",
+    "fr": "Clarinette",
+    "de": "Klarinette",
+    "es": "Clarinete",
+    "ru": "Кларнет",
+    "zh": "单簧管",
+    "ar": "الكلارينت"
+   },
+   "text": {
+    "el": "Ξύλινο πνευστό της ελληνικής παράδοσης.",
+    "en": "A wooden wind instrument central to Greek folk music.",
+    "fr": "Un instrument à vent en bois, central dans la musique populaire grecque.",
+    "de": "Ein hölzernes Blasinstrument der griechischen Volksmusik.",
+    "es": "Un instrumento de viento de madera esencial en la música popular griega.",
+    "ru": "Деревянный духовой инструмент, важный в греческой народной музыке.",
+    "zh": "希腊民间音乐中的重要木管乐器。",
+    "ar": "آلة نفخ خشبية أساسية في الموسيقى الشعبية اليونانية."
+   }
+  },
+  {
+   "cat": "percussion",
+   "img": "img/ntaouli",
+   "audio": "audio/ntaouli",
+   "title": {
+    "el": "Νταούλι",
+    "en": "Ntaouli",
+    "fr": "Ntaouli",
+    "de": "Ntaouli",
+    "es": "Ntaouli",
+    "ru": "Нтаули",
+    "zh": "达乌利鼓",
+    "ar": "النتاولي"
+   },
+   "text": {
+    "el": "Μεγάλο τύμπανο που κρατά τον ρυθμό.",
+    "en": "A large drum that keeps the rhythm.",
+    "fr": "Un grand tambour qui marque le rythme.",
+    "de": "Eine große Trommel, die den Rhythmus vorgibt.",
+    "es": "Un gran tambor que marca el ritmo.",
+    "ru": "Большой барабан, задающий ритм.",
+    "zh": "掌控节奏的大鼓。",
+    "ar": "طبل كبير يضبط الإيقاع."
+   }
+  }
+ ]
 }
