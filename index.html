@@ -158,8 +158,8 @@ const UI = {
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
 const QR_UI = {
-  el:{help:"Σκάναρε τον κωδικό \nμε την κάμερα του κινητού σου.\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) \nαπό το κινητό σου.",close:"Κλείσιμο"},
-  en:{help:"Scan the code with your phone's camera.\nWith this option you will use your phone's mobile data.",close:"Close"},
+  el:{help:"Σκάναρε τον κωδικό \nμε την κάμερα του κινητού σου.\n\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) \nαπό το κινητό σου.",close:"Κλείσιμο"},
+  en:{help:"Scan the code \nwith your phone's camera.\nWith this option you will use your phone's mobile data.",close:"Close"},
   fr:{help:"Scannez le code avec l'appareil photo de votre téléphone.\nAvec cette option, vous utiliserez les données mobiles de votre téléphone.",close:"Fermer"},
   de:{help:"Scannen Sie den Code mit der Handykamera.\nBei dieser Option werden die mobilen Daten Ihres Handys verbraucht.",close:"Schließen"},
   it:{help:"Inquadra il codice con la fotocamera del telefono.\nCon questa opzione userai i dati mobili del tuo telefono.",close:"Chiudi"},
@@ -170,7 +170,7 @@ const QR_UI = {
   ja:{help:"スマートフォンのカメラでコードを読み取ってください。\nこの方法では、お使いのスマートフォンのモバイルデータ通信を使用します。",close:"閉じる"}
 };
 const TOUR = {
-  el:{tablet:"Έναρξη ξενάγησης από το tablet",phone:"Έναρξη ξενάγησης από το κινητό σου"},
+  el:{tablet:"Έναρξη ξενάγησης \nαπό το tablet",phone:"Έναρξη ξενάγησης \nαπό το κινητό σου"},
   en:{tablet:"Start the tour on this tablet",phone:"Start the tour on your phone"},
   fr:{tablet:"Commencer la visite sur cette tablette",phone:"Commencer la visite sur votre téléphone"},
   de:{tablet:"Rundgang auf diesem Tablet starten",phone:"Rundgang auf Ihrem Handy starten"},
