@@ -55,7 +55,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,520px)}
 #staff h2{margin:0}
 #sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:rgba(0,0,0,.25);padding:14px 16px;border-radius:10px}
-#sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
+#sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass);white-space:pre-line}
 .srow{display:flex;flex-direction:column;gap:12px}
 #pin,#sidle{font:18px system-ui,sans-serif;padding:14px 16px;border-radius:10px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
 #pinmsg{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
@@ -77,84 +77,25 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
-/* ===== Staff Menu ===== */
 .staff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .staff-header h2{font-size:1.45rem;font-weight:700}
 .staff-badge{font:600 12px system-ui,sans-serif;background:var(--brass);color:#2a2110;padding:4px 10px;border-radius:999px}
-
-.acc{
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid rgba(210,168,76,.3);
-  background:#152926;
-}
-.acc-btn{
-  width:100%;
-  min-height:56px;
-  padding:14px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  font:600 16px system-ui,sans-serif;
-  color:var(--brass);
-  background:transparent;
-  border:0;
-  text-align:left;
-}
+.acc{border-radius:14px;overflow:hidden;border:1px solid rgba(210,168,76,.3);background:#152926}
+.acc-btn{width:100%;min-height:56px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px system-ui,sans-serif;color:var(--brass);background:transparent;border:0;text-align:left}
 .acc-btn .left{display:flex;align-items:center;gap:12px}
 .acc-btn .icon{font-size:20px;width:28px;text-align:center}
 .acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.8;color:var(--brass)}
 .acc.open .acc-btn .chevron{transform:rotate(180deg)}
-.acc-body{
-  display:none;
-  padding:8px 14px 16px;
-  flex-direction:column;
-  gap:10px;
-  background:#1c322e;
-}
+.acc-body{display:none;padding:8px 14px 16px;flex-direction:column;gap:10px;background:#1c322e}
 .acc.open .acc-body{display:flex}
-
-/* Κουμπιά – ΑΠΟΛΥΤΑ ΔΙΑΚΡΙΤΑ */
-.staff-btn{
-  width:100%;
-  min-height:52px;
-  font:600 15px system-ui,sans-serif;
-  text-align:left;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 16px;
-  border-radius:10px;
-  border:none;
-  background:#e8e2d4;
-  color:#1a2a27;
-}
-.staff-btn:active{
-  background:#d2a84c;
-  color:#1a2a27;
-}
+.staff-btn{width:100%;min-height:52px;font:600 15px system-ui,sans-serif;text-align:left;display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:10px;border:none;background:#e8e2d4;color:#1a2a27}
+.staff-btn:active{background:#d2a84c;color:#1a2a27}
 .staff-btn .icon{width:26px;text-align:center;font-size:17px}
-
-.staff-btn.danger{
-  background:#c45c4a;
-  color:#fff;
-}
-.staff-btn.danger:active{
-  background:#a84838;
-}
-.staff-btn.primary{
-  background:#d2a84c;
-  color:#1a2a27;
-}
-.staff-btn.primary:active{
-  background:#b8923f;
-}
-
+.staff-btn.danger{background:#c45c4a;color:#fff}
+.staff-btn.danger:active{background:#a84838}
 .idle-row{display:flex;flex-direction:column;gap:8px}
 .idle-row label{font:14px system-ui,sans-serif;color:var(--mute)}
 .idle-row select{font:16px system-ui,sans-serif;padding:11px 12px;border-radius:9px;border:1.5px solid var(--mute);background:rgba(0,0,0,.25);color:var(--ink);width:100%}
-
 #exit-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;font:22px system-ui,sans-serif;text-align:center;padding:30px;gap:12px}
 #exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
 </style>
@@ -303,7 +244,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "b22";
+const BUILD = "a1";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
@@ -371,6 +312,17 @@ async function load() {
   buildLangButtons(); showWelcome();
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+
+  // Μήνυμα μετά από επιτυχημένη ενημέρωση
+  try {
+    const justUpdated = sessionStorage.getItem("mm-just-updated");
+    if (justUpdated) {
+      sessionStorage.removeItem("mm-just-updated");
+      setTimeout(() => {
+        setStatus("Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".");
+      }, 600);
+    }
+  } catch(_) {}
 }
 
 const NAV_UI = {
@@ -454,7 +406,7 @@ function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
   $("exit-screen").hidden = true;
-  closeStaff(); welcomeText(); checkUpdate();
+  closeStaff(); welcomeText(); checkUpdate(false);
   buildLangButtons(); window.scrollTo(0, 0);
 }
 function enterApp() {
@@ -576,18 +528,43 @@ async function keepAwake() { if (VISITOR) return; try { if ("wakeLock" in naviga
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
 
 let lastCheck = 0;
-async function checkUpdate() {
-  if (VISITOR || !navigator.onLine || Date.now() - lastCheck < 300000) return;
+async function checkUpdate(manual = false) {
+  if (VISITOR || !navigator.onLine) {
+    if (manual) setStatus("Χρειάζεται σύνδεση στο ίντερνετ.");
+    return;
+  }
+  if (!manual && Date.now() - lastCheck < 300000) return;
   lastCheck = Date.now();
+
   try {
     const txt = await (await fetch("index.html?nc=" + Date.now(), {cache: "no-store"})).text();
-    const m = new RegExp("BUILD" + " = \"([^\"]+)\"").exec(txt);
-    if (!m || m[1] === BUILD || sessionStorage.getItem("mm-upd") === m[1]) return;
-    sessionStorage.setItem("mm-upd", m[1]);
+    const m = /BUILD\s*=\s*"([^"]+)"/.exec(txt);
+    if (!m) {
+      if (manual) setStatus("Δεν ήταν δυνατός ο έλεγχος έκδοσης.");
+      return;
+    }
+    const remoteBuild = m[1];
+
+    if (remoteBuild === BUILD) {
+      if (manual) setStatus("Το σύστημά σας είναι ενημερωμένο.\nΔεν υπάρχει νεότερη έκδοση από την " + BUILD + ".");
+      return;
+    }
+
+    if (manual) {
+      const ok = confirm("Βρέθηκε νέα έκδοση " + remoteBuild + ".\n\nΝα την κατεβάσω;");
+      if (!ok) {
+        setStatus("Η ενημέρωση ακυρώθηκε.\nΤρέχουσα έκδοση: " + BUILD);
+        return;
+      }
+    }
+
+    sessionStorage.setItem("mm-just-updated", "1");
     (await caches.keys()).filter(k => k.startsWith("shell-")).forEach(k => caches.delete(k));
     for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
     location.reload();
-  } catch (_) {}
+  } catch (_) {
+    if (manual) setStatus("Σφάλμα κατά τον έλεγχο έκδοσης.");
+  }
 }
 
 function setStatus(x) { $("status").textContent = x; const e = $("sstatus"); if (e) e.textContent = x; }
@@ -681,7 +658,10 @@ async function importLocal(files) {
   location.reload();
 }
 $("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
-$("sapp").onclick = async () => { lastCheck = 0; sessionStorage.removeItem("mm-upd"); setStatus("Έλεγχος…"); await checkUpdate(); setStatus(navigator.onLine ? "Η εφαρμογή είναι στην τελευταία έκδοση." : "Χρειάζεται σύνδεση στο ίντερνετ."); };
+$("sapp").onclick = async () => {
+  setStatus("Έλεγχος για νέα έκδοση…");
+  await checkUpdate(true);
+};
 $("sload").onclick = () => $("sfile").click();
 $("sfile").onchange = e => importLocal(e.target.files);
 $("sidle").onchange = e => { localStorage.setItem("mm-idle", e.target.value); bump(); setStatus("Αποθηκεύτηκε."); };
