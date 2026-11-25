@@ -79,6 +79,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
+/* Staff menu */
 .staff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .staff-header h2{font-size:1.45rem;font-weight:700}
 .staff-badge{font:600 12px system-ui,sans-serif;background:var(--brass);color:#2a2110;padding:4px 10px;border-radius:999px}
@@ -226,7 +227,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "b19";
+const BUILD = "b18";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
@@ -280,26 +281,23 @@ const hasExt = p => /\.[A-Za-z0-9]{2,5}$/.test(p);
 const cands = (b, e) => hasExt(b) ? [b] : e.map(x => b + "." + x);
 const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 
-/* ========== Kiosk helpers ========== */
+/* ========== Kiosk / Lock helpers ========== */
 function requestFullscreen() {
   const el = document.documentElement;
   if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
   else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 }
 function keepInApp() {
+  // Προσπάθεια να μείνει σε fullscreen
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     requestFullscreen();
   }
 }
-
-/* Μπλοκάρισμα δεξιού κλικ / context menu παντού, ΕΚΤΟΣ από την ελληνική σημαία */
-document.addEventListener("contextmenu", e => {
-  // Επιτρέπουμε το long-press μόνο στην ελληνική σημαία
-  if (e.target.closest("button.flag[aria-label='Ελληνικά']")) return;
-  e.preventDefault();
-});
+// Μπλοκάρισμα δεξιού κλικ και long-press μενού
+document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("selectstart", e => e.preventDefault());
 
+// Όταν χάνει focus, προσπάθησε να επιστρέψει
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     keepInApp();
@@ -359,8 +357,10 @@ const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) +
 
 function exitApplication() {
   if (!confirm(t("exitconfirm"))) return;
+  // Βγαίνουμε από fullscreen
   if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
   else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  
   try { window.close(); } catch (_) {}
   setTimeout(() => {
     try { location.replace("about:blank"); }
@@ -383,27 +383,11 @@ function buildLangButtons() {
   const rows = [document.createElement("div"), document.createElement("div")];
   rows.forEach(r => { r.className = "frow"; host.appendChild(r); });
   LANGS.forEach(([c, n], idx) => {
-    const b = document.createElement("button"); 
-    b.className = "flag";
-    b.style.backgroundImage = flagUrl(c); 
-    b.setAttribute("aria-label", n); 
-    b.title = n;
+    const b = document.createElement("button"); b.className = "flag";
+    b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
     b.setAttribute("aria-pressed", c === lang);
-    
-    // Μόνο στην ελληνική σημαία ενεργοποιούμε το long-press για το προσωπικό
-    if (!VISITOR && c === "el") {
-      longPress(b, 3000, () => { 
-        lpAt = Date.now(); 
-        openPin(); 
-      });
-    }
-    
-    b.onclick = () => { 
-      if (Date.now() - lpAt < 1000) return; 
-      lang = c; 
-      buildLangButtons(); 
-      welcomeText(); 
-    };
+    if (!VISITOR && c === "el") longPress(b, 3000, () => { lpAt = Date.now(); openPin(); });
+    b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); welcomeText(); };
     rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
 }
@@ -559,31 +543,12 @@ async function sha(x) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("mm2027|" + x));
   return [...new Uint8Array(b)].map(v => v.toString(16).padStart(2, "0")).join("");
 }
-
-/* Long-press που δουλεύει σωστά μαζί με το μπλοκάρισμα contextmenu */
 function longPress(el, ms, fn) {
-  let timer = null;
-  const start = (e) => {
-    // Δεν κάνουμε preventDefault στο pointerdown για να μην χαλάσει το long-press
-    timer = setTimeout(() => {
-      timer = null;
-      fn();
-    }, ms);
-  };
-  const cancel = () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-  };
-  el.addEventListener("pointerdown", start);
-  el.addEventListener("pointerup", cancel);
-  el.addEventListener("pointerleave", cancel);
-  el.addEventListener("pointercancel", cancel);
-  // Μπλοκάρουμε το context menu πάνω στη σημαία, αλλά το long-press έχει ήδη πυροδοτηθεί
+  let tm; const c = () => clearTimeout(tm);
+  el.addEventListener("pointerdown", () => { c(); tm = setTimeout(fn, ms); });
+  ["pointerup","pointerleave","pointercancel"].forEach(e => el.addEventListener(e, c));
   el.addEventListener("contextmenu", e => e.preventDefault());
 }
-
 function openPin() {
   $("staff").hidden = false; $("pinView").hidden = false; $("panelView").hidden = true;
   $("pin").value = ""; $("pinmsg").textContent = ""; $("pin").focus();
