@@ -63,6 +63,11 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .btn.start,.btn.start2{width:min(92vw,520px);min-height:72px;font-size:22px;line-height:1.25}
 .btn.start2{min-width:0}
+.navbar{display:flex;gap:10px}
+.nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
+.nb svg{width:26px;height:26px;flex:none}
+html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
+#detail .navbar,#qr .navbar{align-self:flex-start}
 </style>
 </head>
 <body>
@@ -76,7 +81,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </section>
 
 <div id="app" hidden>
-  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
+  <header><div class="navbar" data-nav></div><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
   <nav id="menu"></nav>
   <main id="grid"></main>
   <footer><span id="status"></span><button id="retry" hidden></button></footer>
@@ -84,18 +89,20 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <section id="detail" hidden aria-modal="true" role="dialog">
   <div class="wrap">
+    <div class="navbar" data-nav></div>
     <img id="dimg" alt="">
     <h2 id="dtitle"></h2>
     <p id="dtext"></p>
-    <div class="row"><button class="btn" id="dplay" aria-pressed="false"></button><button class="btn close" id="dclose"></button></div>
+    <div class="row"><button class="btn" id="dplay" aria-pressed="false"></button><button class="btn close" id="dclose" hidden></button></div>
   </div>
 </section>
 
 <section id="qr" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
+    <div class="navbar" data-nav></div>
     <img id="qrimg" src="qr.svg" alt="QR">
     <p id="qrtext"></p>
-    <button class="btn close" id="qrclose"></button>
+    <button class="btn close" id="qrclose" hidden></button>
   </div>
 </section>
 
@@ -123,7 +130,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </section>
 
 <script>
-const BUILD = "b7";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b8";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"]];
 const UI = {
@@ -178,6 +185,29 @@ async function load() {
   buildLangButtons(); showWelcome(); if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
 
+/* ===== Πλοήγηση: βελάκι πίσω + αρχική σε κάθε οθόνη ===== */
+const NAV_UI = {
+  el:{back:"Πίσω",home:"Αρχική"}, en:{back:"Back",home:"Home"}, fr:{back:"Retour",home:"Accueil"}, de:{back:"Zurück",home:"Start"},
+  es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}, ar:{back:"رجوع",home:"الرئيسية"}
+};
+const SVG_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
+const SVG_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>';
+function buildNav() {
+  const n = NAV_UI[lang] || NAV_UI.el;
+  document.querySelectorAll("[data-nav]").forEach(el => {
+    el.innerHTML = '<button class="nb" data-act="back" aria-label="' + n.back + '">' + SVG_BACK + '<span>' + n.back + '</span></button>' +
+                   '<button class="nb" data-act="home" aria-label="' + n.home + '">' + SVG_HOME + '<span>' + n.home + '</span></button>';
+  });
+}
+function goBack() {
+  if (!$("qr").hidden) closeQR();
+  else if (openItem) closeDetail();
+  else showWelcome();
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".nb"); if (!b) return;
+  b.dataset.act === "back" ? goBack() : showWelcome();
+});
 const FLAGS = {
   el:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#0d5eaf'/><path fill='#fff' d='M0 4.4h60v4.4H0zM0 13.3h60v4.4H0zM0 22.2h60v4.4H0zM0 31.1h60v4.4H0z'/><rect width='22.2' height='22.2' fill='#0d5eaf'/><path fill='#fff' d='M8.9 0h4.4v22.2H8.9zM0 8.9h22.2v4.4H0z'/></svg>",
   en:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#012169'/><path d='M0 0L60 40M60 0L0 40' stroke='#fff' stroke-width='8'/><path d='M0 0L60 40M60 0L0 40' stroke='#c8102e' stroke-width='3'/><path d='M30 0v40M0 20h60' stroke='#fff' stroke-width='12'/><path d='M30 0v40M0 20h60' stroke='#c8102e' stroke-width='7'/></svg>",
@@ -202,7 +232,7 @@ function buildLangButtons() {
     });
   });
 }
-function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = TOUR[lang].tablet; $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
+function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = TOUR[lang].tablet; $("wpick").textContent = ""; setQRButtons(); buildNav(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
@@ -233,7 +263,7 @@ function renderApp() {
     b.onclick = () => openDetail(it);
     $("grid").appendChild(b);
   });
-  $("retry").textContent = t("retry"); setQRButtons();
+  $("retry").textContent = t("retry"); setQRButtons(); buildNav();
 }
 
 /* Κωδικός QR για το κινητό του επισκέπτη */
@@ -243,6 +273,7 @@ function setQRButtons() {
   $("hqr").textContent = QR_UI[lang].btn;
 }
 function openQR() {
+  buildNav();
   const w = !$("welcome").hidden;
   $("qrtext").textContent = w ? LANGS.map(l => QR_UI[l[0]].help.split("\n")[0]).join("\n") : QR_UI[lang].help;
   $("qrclose").textContent = "✕ " + (w ? QR_UI.el.close + " / " + QR_UI.en.close : QR_UI[lang].close);
@@ -260,6 +291,7 @@ $("qrclose").onclick = () => closeQR();
 function openDetail(it) { openItem = it; $("detail").hidden = false; refreshDetail(); history.pushState({d:1}, ""); }
 function refreshDetail() {
   if (!openItem) return;
+  buildNav();
   $("dimg").src = imgSrc(openItem.img); $("dimg").alt = tr(openItem.title);
   $("dtitle").textContent = tr(openItem.title); $("dtext").textContent = tr(openItem.text);
   $("dclose").textContent = "✕ " + t("close"); setPlay(playing);
