@@ -1,9 +1,9 @@
 /* Αποθηκάριος: σερβίρει αρχεία από τη μνήμη του tablet όταν δεν υπάρχει ίντερνετ */
-const SHELL = "shell-v1";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
+const SHELL = "shell-v3";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
 const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "exhibits.json"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(SHELL).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(SHELL).then(c => c.addAll(FILES.map(f => new Request(f, {cache: "reload"})))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(
@@ -29,10 +29,11 @@ async function rangeFrom(resp, req) {
 
 self.addEventListener("fetch", e => {
   const req = e.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin || new URL(req.url).searchParams.has("nc")) return;  // ?nc=... πάει κατευθείαν στο δίκτυο
   e.respondWith((async () => {
-    const isData = req.url.endsWith("exhibits.json");
-    if (isData) {                       // η λίστα: πρώτα δίκτυο (για ενημερώσεις), αλλιώς μνήμη
+    const p = new URL(req.url).pathname;
+    const isData = p.endsWith("exhibits.json") || p.endsWith("index.html") || p.endsWith("/");
+    if (isData) {                       // σελίδα και λίστα: πρώτα δίκτυο (για ενημερώσεις), αλλιώς μνήμη
       try {
         const net = await fetch(req, {cache: "no-store"});
         const c = await caches.open(SHELL); c.put(req, net.clone());
