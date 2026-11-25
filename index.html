@@ -61,6 +61,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #pinmsg{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.btn.start,.btn.start2{width:min(92vw,520px);min-height:72px;font-size:22px;line-height:1.25}
+.btn.start2{min-width:0}
 </style>
 </head>
 <body>
@@ -69,7 +71,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   <h1 id="wtitle"></h1>
   <p id="wpick"></p>
   <button class="btn start" id="wstart"></button>
-  <button class="btn qrbtn" id="wqr"></button>
+  <button class="btn start2" id="wqr"></button>
   <div class="langs flags wflags" id="wlangs"></div>
 </section>
 
@@ -144,6 +146,16 @@ const QR_UI = {
   ar:{btn:"📱 افتح على هاتفك",help:"امسح الرمز بكاميرا هاتفك.\nسيستخدم بيانات هاتفك المحمولة.",close:"إغلاق"},
   es:{btn:"📱 Abrir en tu móvil",help:"Escanea el código con la cámara de tu móvil.\nUsará los datos de tu móvil.",close:"Cerrar"}
 };
+const TOUR = {
+  el:{tablet:"Έναρξη ξενάγησης από το tablet",phone:"Έναρξη ξενάγησης από το κινητό σου"},
+  en:{tablet:"Start the tour on this tablet",phone:"Start the tour on your phone"},
+  fr:{tablet:"Commencer la visite sur cette tablette",phone:"Commencer la visite sur votre téléphone"},
+  de:{tablet:"Rundgang auf diesem Tablet starten",phone:"Rundgang auf Ihrem Handy starten"},
+  es:{tablet:"Empezar la visita en esta tableta",phone:"Empezar la visita en tu móvil"},
+  ru:{tablet:"Начать экскурсию на этом планшете",phone:"Начать экскурсию на вашем телефоне"},
+  zh:{tablet:"在此平板电脑上开始参观",phone:"在您的手机上开始参观"},
+  ar:{tablet:"ابدأ الجولة على هذا الجهاز اللوحي",phone:"ابدأ الجولة على هاتفك"}
+};
 let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
 const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
@@ -188,7 +200,7 @@ function buildLangButtons() {
     });
   });
 }
-function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = t("start"); $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
+function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = TOUR[lang].tablet; $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
@@ -225,7 +237,7 @@ function renderApp() {
 /* Κωδικός QR για το κινητό του επισκέπτη */
 function setQRButtons() {
   $("wqr").hidden = $("hqr").hidden = VISITOR;
-  $("wqr").textContent = QR_UI[lang].btn;
+  $("wqr").textContent = TOUR[lang].phone;
   $("hqr").textContent = QR_UI[lang].btn;
 }
 function openQR() {
