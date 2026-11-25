@@ -41,7 +41,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .btn{font-size:19px;font-weight:600;min-height:60px;padding:12px 26px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--brass)}
 .btn[aria-pressed="true"]{background:var(--brass);color:#2a2110}
 .btn.close{color:var(--ink);border-color:var(--mute)}
-.qrbtn{font-size:17px;min-height:56px;padding:10px 22px}
 #qr,#staff{position:fixed;inset:0;background:var(--bg);z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
 .qrwrap{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:700px}
 #qrimg{width:min(70vmin,420px);height:auto;background:#fff;border-radius:12px;display:block}
@@ -55,10 +54,9 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,520px)}
 #staff h2{margin:0}
-#sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:var(--panel);padding:16px 18px;border-radius:12px;border:1px solid rgba(210,168,76,.25)}
+#sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:rgba(0,0,0,.2);padding:14px 16px;border-radius:10px}
 #sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
-.srow{display:flex;flex-direction:column;gap:14px}
-.srow .btn{min-height:54px;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;padding:14px 18px}
+.srow{display:flex;flex-direction:column;gap:12px}
 #pin,#sidle{font:18px system-ui,sans-serif;padding:14px 16px;border-radius:10px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
 #pinmsg{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
@@ -68,10 +66,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .kw{display:inline-block;padding:2px 14px;margin:0 4px;border-radius:8px;font-size:1.12em;font-weight:800;line-height:1.35}
 .kw-t{background:var(--brass);color:#2a2110;font-family:Georgia,"Times New Roman",serif}
 .kw-p{background:#f3efe4;color:#17302d;font-family:"Courier New",Courier,monospace;letter-spacing:.5px}
-.navbar{display:flex;gap:10px}
 .nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
 .nb svg{width:26px;height:26px;flex:none}
-#detail .navbar,#qr .navbar{align-self:flex-start}
 #bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;background:var(--panel);border-top:2px solid var(--brass);padding-bottom:env(safe-area-inset-bottom)}
 #bottomnav .nb{flex:1;justify-content:center;min-height:76px;border:0;border-radius:0;font-size:22px;gap:12px}
 #bottomnav .nb svg{width:30px;height:30px}
@@ -81,94 +77,42 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
-/* ===== Βελτιωμένο μενού προσωπικού ===== */
-.staff-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:6px;
+.staff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.staff-header h2{font-size:1.45rem;font-weight:700}
+.staff-badge{font:600 12px system-ui,sans-serif;background:var(--brass);color:#2a2110;padding:4px 10px;border-radius:999px}
+
+.acc{border-radius:14px;overflow:hidden;border:1px solid rgba(210,168,76,.22);background:var(--panel)}
+.acc-btn{
+  width:100%;min-height:56px;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font:600 16px system-ui,sans-serif;color:var(--ink);
+  background:transparent;border:0;text-align:left;
 }
-.staff-header h2{
-  font-size:1.45rem;font-weight:700;letter-spacing:.3px;
-}
-.staff-badge{
-  font:600 12px system-ui,sans-serif;
-  background:var(--brass);color:#2a2110;
-  padding:4px 10px;border-radius:999px;
-}
-.staff-section{
-  background:var(--panel);
-  border-radius:14px;
-  padding:16px;
-  border:1px solid rgba(210,168,76,.18);
-}
-.staff-section-title{
-  font:600 13px system-ui,sans-serif;
-  color:var(--brass);
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  margin:0 0 12px;
-  opacity:.9;
-}
+.acc-btn .left{display:flex;align-items:center;gap:12px}
+.acc-btn .icon{font-size:20px;width:28px;text-align:center}
+.acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.7}
+.acc.open .acc-btn .chevron{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 16px 16px;flex-direction:column;gap:10px}
+.acc.open .acc-body{display:flex}
+
 .staff-btn{
-  width:100%;
-  min-height:52px;
-  font:600 16px system-ui,sans-serif;
-  text-align:left;
-  display:flex;align-items:center;gap:14px;
-  padding:13px 16px;
-  border-radius:11px;
-  border:1.5px solid rgba(169,189,184,.35);
-  background:rgba(0,0,0,.18);
-  color:var(--ink);
-  transition:background .15s,border-color .15s;
+  width:100%;min-height:50px;font:600 15px system-ui,sans-serif;
+  text-align:left;display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:10px;
+  border:1.5px solid rgba(169,189,184,.35);background:rgba(0,0,0,.18);color:var(--ink);
 }
-.staff-btn:active{
-  background:rgba(210,168,76,.18);
-  border-color:var(--brass);
-}
-.staff-btn .icon{
-  width:28px;height:28px;flex:none;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-}
-.staff-btn.danger{
-  border-color:rgba(196,92,74,.45);
-  color:#e8b4ab;
-}
-.staff-btn.danger:active{
-  background:rgba(196,92,74,.2);
-  border-color:var(--danger);
-}
-.staff-btn.primary{
-  border-color:var(--brass);
-  background:rgba(210,168,76,.12);
-  color:var(--brass);
-}
-.staff-btn.primary:active{
-  background:var(--brass);
-  color:#2a2110;
-}
-.idle-row{
-  display:flex;flex-direction:column;gap:8px;
-  padding:4px 2px;
-}
-.idle-row label{
-  font:15px system-ui,sans-serif;color:var(--mute);
-}
-.idle-row select{
-  font:17px system-ui,sans-serif;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1.5px solid var(--mute);
-  background:rgba(0,0,0,.25);
-  color:var(--ink);
-  width:100%;
-}
-#exit-screen{
-  position:fixed;inset:0;background:#000;z-index:9999;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  color:#666;font:22px system-ui,sans-serif;text-align:center;
-  padding:30px;gap:12px;
-}
+.staff-btn:active{background:rgba(210,168,76,.18);border-color:var(--brass)}
+.staff-btn .icon{width:26px;text-align:center;font-size:17px}
+.staff-btn.danger{border-color:rgba(196,92,74,.5);color:#e8b4ab;background:rgba(196,92,74,.12)}
+.staff-btn.danger:active{background:rgba(196,92,74,.25)}
+.staff-btn.primary{border-color:var(--brass);color:var(--brass);background:rgba(210,168,76,.1)}
+.staff-btn.primary:active{background:var(--brass);color:#2a2110}
+
+.idle-row{display:flex;flex-direction:column;gap:8px}
+.idle-row label{font:14px system-ui,sans-serif;color:var(--mute)}
+.idle-row select{font:16px system-ui,sans-serif;padding:11px 12px;border-radius:9px;border:1.5px solid var(--mute);background:rgba(0,0,0,.25);color:var(--ink);width:100%}
+
+#exit-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;font:22px system-ui,sans-serif;text-align:center;padding:30px;gap:12px}
 #exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
 </style>
 </head>
@@ -210,7 +154,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <section id="staff" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
-    <!-- PIN View -->
     <div id="pinView">
       <div class="staff-header">
         <h2>Μενού προσωπικού</h2>
@@ -225,24 +168,31 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
       </div>
     </div>
 
-    <!-- Panel View -->
     <div id="panelView" hidden class="srow">
       <div class="staff-header">
         <h2>Μενού προσωπικού</h2>
         <span class="staff-badge">Staff</span>
       </div>
 
-      <!-- Πληροφορίες -->
-      <div class="staff-section">
-        <div class="staff-section-title">Κατάσταση συστήματος</div>
-        <div id="sinfo"></div>
-        <p id="sstatus"></p>
+      <!-- 1. Πληροφορίες έκδοσης -->
+      <div class="acc" id="acc1">
+        <button class="acc-btn" onclick="toggleAcc('acc1')">
+          <span class="left"><span class="icon">ℹ️</span> Πληροφορίες έκδοσης</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="acc-body">
+          <div id="sinfo"></div>
+          <p id="sstatus"></p>
+        </div>
       </div>
 
-      <!-- Ενημερώσεις & δεδομένα -->
-      <div class="staff-section">
-        <div class="staff-section-title">Ενημερώσεις & Δεδομένα</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
+      <!-- 2. Ενημερώσεις & Δεδομένα -->
+      <div class="acc" id="acc2">
+        <button class="acc-btn" onclick="toggleAcc('acc2')">
+          <span class="left"><span class="icon">🔄</span> Ενημερώσεις & Δεδομένα</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="acc-body">
           <button class="staff-btn" id="supd">
             <span class="icon">🔄</span>
             <span id="supd-text">Ενημέρωση από το ίντερνετ</span>
@@ -258,42 +208,46 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
-      <!-- Ρυθμίσεις -->
-      <div class="staff-section">
-        <div class="staff-section-title">Ρυθμίσεις</div>
-        <div class="idle-row">
-          <label>Χρόνος αδράνειας μέχρι επιστροφή στην αρχική</label>
-          <select id="sidle">
-            <option value="60">1 λεπτό</option>
-            <option value="180">3 λεπτά</option>
-            <option value="300">5 λεπτά</option>
-            <option value="600">10 λεπτά</option>
-          </select>
+      <!-- 3. Ρυθμίσεις -->
+      <div class="acc" id="acc3">
+        <button class="acc-btn" onclick="toggleAcc('acc3')">
+          <span class="left"><span class="icon">⚙️</span> Ρυθμίσεις</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="idle-row">
+            <label>Χρόνος αδράνειας μέχρι επιστροφή στην αρχική</label>
+            <select id="sidle">
+              <option value="60">1 λεπτό</option>
+              <option value="180">3 λεπτά</option>
+              <option value="300">5 λεπτά</option>
+              <option value="600">10 λεπτά</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Ενέργειες -->
-      <div class="staff-section">
-        <div class="staff-section-title">Ενέργειες</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
+      <!-- 4. Ενέργειες -->
+      <div class="acc" id="acc4">
+        <button class="acc-btn" onclick="toggleAcc('acc4')">
+          <span class="left"><span class="icon">⚡</span> Ενέργειες</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="acc-body">
           <button class="staff-btn" id="shome">
             <span class="icon">🏠</span>
             <span>Επιστροφή στην αρχική οθόνη</span>
-          </button>
-          <button class="staff-btn primary" id="sexit">
-            <span class="icon">⏻</span>
-            <span>Κλείσιμο εφαρμογής</span>
           </button>
           <button class="staff-btn danger" id="swipe">
             <span class="icon">🗑️</span>
             <span>Σβήσιμο όλων των δεδομένων</span>
           </button>
+          <button class="staff-btn danger" id="sexit" style="background:rgba(196,92,74,.25);border-color:#c45c4a">
+            <span class="icon">⏻</span>
+            <span>Κλείσιμο εφαρμογής</span>
+          </button>
         </div>
       </div>
-
-      <button class="staff-btn" id="sclose" style="justify-content:center;margin-top:4px">
-        <span>✕ Κλείσιμο μενού</span>
-      </button>
 
       <input type="file" id="sfile" multiple hidden accept="image/*,audio/*,.json,.mp3,.m4a,.aac,.ogg,.wav,.jpg,.jpeg,.png,.webp">
     </div>
@@ -302,11 +256,11 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <div id="exit-screen" hidden>
   Η εφαρμογή έκλεισε.
-  <small>Για να ανοίξει ξανά πατήστε παρατεταμένα την ελληνική σημαία<br>ή επανεκκινήστε το tablet.</small>
+  <small>Το tablet είναι πλέον ξεκλείδωτο.</small>
 </div>
 
 <script>
-const BUILD = "b17";
+const BUILD = "b20";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
@@ -360,11 +314,21 @@ const hasExt = p => /\.[A-Za-z0-9]{2,5}$/.test(p);
 const cands = (b, e) => hasExt(b) ? [b] : e.map(x => b + "." + x);
 const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 
+function toggleAcc(id) {
+  const el = $(id);
+  const wasOpen = el.classList.contains("open");
+  document.querySelectorAll(".acc").forEach(a => a.classList.remove("open"));
+  if (!wasOpen) el.classList.add("open");
+}
+
 async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome(); if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+  buildLangButtons(); showWelcome(); 
+  // Long-press στο κουμπί "Έναρξη από tablet"
+  if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
+  if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
 
 const NAV_UI = {
@@ -432,7 +396,6 @@ function buildLangButtons() {
     const b = document.createElement("button"); b.className = "flag";
     b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
     b.setAttribute("aria-pressed", c === lang);
-    if (!VISITOR && c === "el") longPress(b, 3000, () => { lpAt = Date.now(); openPin(); });
     b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); welcomeText(); };
     rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
@@ -452,7 +415,10 @@ function showWelcome() {
   closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
 }
-function enterApp() { $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); }
+function enterApp() { 
+  if (Date.now() - lpAt < 1000) return; // αποφυγή ανοίγματος αν μόλις έγινε long-press
+  $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); 
+}
 
 function renderApp() {
   document.documentElement.lang = lang; document.documentElement.dir = "ltr";
@@ -588,12 +554,18 @@ async function sha(x) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("mm2027|" + x));
   return [...new Uint8Array(b)].map(v => v.toString(16).padStart(2, "0")).join("");
 }
+
 function longPress(el, ms, fn) {
-  let tm; const c = () => clearTimeout(tm);
-  el.addEventListener("pointerdown", () => { c(); tm = setTimeout(fn, ms); });
-  ["pointerup","pointerleave","pointercancel"].forEach(e => el.addEventListener(e, c));
+  let timer = null;
+  const start = () => { timer = setTimeout(() => { timer = null; fn(); }, ms); };
+  const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+  el.addEventListener("pointerdown", start);
+  el.addEventListener("pointerup", cancel);
+  el.addEventListener("pointerleave", cancel);
+  el.addEventListener("pointercancel", cancel);
   el.addEventListener("contextmenu", e => e.preventDefault());
 }
+
 function openPin() {
   $("staff").hidden = false; $("pinView").hidden = false; $("panelView").hidden = true;
   $("pin").value = ""; $("pinmsg").textContent = ""; $("pin").focus();
@@ -607,6 +579,9 @@ $("pinok").onclick = async () => {
     $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
+    // Ανοίγουμε την πρώτη καρτέλα από προεπιλογή
+    document.querySelectorAll(".acc").forEach(a => a.classList.remove("open"));
+    $("acc1").classList.add("open");
   } else {
     $("pin").value = ""; fails++;
     if (fails >= 3) { fails = 0; lockUntil = Date.now() + 30000; $("pinmsg").textContent = "Κλειδώθηκε για 30 δευτερόλεπτα."; }
@@ -614,7 +589,7 @@ $("pinok").onclick = async () => {
   }
 };
 $("pin").addEventListener("keydown", e => { if (e.key === "Enter") $("pinok").click(); });
-$("pinx").onclick = $("sclose").onclick = closeStaff;
+$("pinx").onclick = closeStaff;
 
 async function countFiles() {
   const names = (await caches.keys()).filter(k => k.startsWith("media-")); let ok = 0, total = 0;
