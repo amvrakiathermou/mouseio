@@ -15,8 +15,8 @@ body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman"
 button{font-family:system-ui,sans-serif;cursor:pointer}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 [hidden]{display:none!important}
-#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:32px 32px 220px;text-align:center}
-#welcome h1{font-size:clamp(2rem,6vw,3.4rem);margin:0;max-width:18ch;line-height:1.15}
+#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:22px;padding:24px 20px calc(16px + env(safe-area-inset-bottom));text-align:center}
+#welcome h1{font-size:clamp(2rem,6vw,3.4rem);margin:auto 0 0;max-width:18ch;line-height:1.15}
 #welcome p{margin:0;font:18px system-ui,sans-serif;color:var(--mute)}
 .langs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .langs button{font-size:20px;font-weight:600;min-width:150px;min-height:60px;padding:12px 24px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--ink)}
@@ -48,10 +48,10 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #qrtext{white-space:pre-line;margin:0;font:20px/1.6 system-ui,sans-serif}
 .langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
 .langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
-#welcome{position:relative}
-.wflags{position:absolute;left:0;right:0;bottom:0;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-end;gap:12px!important;padding:0 14px calc(14px + env(safe-area-inset-bottom))}
-.frow{display:flex;flex-wrap:nowrap;width:100%;gap:12px;direction:ltr}
-.wflags .flag{flex:1 1 0;width:auto!important;height:clamp(52px,11vh,110px)!important;border-radius:8px!important;border-width:3px!important;opacity:.85}
+/* Σημαίες: μικρές, μέσα στη ροή, κάτω-κάτω */
+.wflags{position:static;width:100%;margin-top:auto;flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important}
+.frow{display:flex;flex-wrap:nowrap;justify-content:center;gap:10px;direction:ltr}
+.wflags .flag{flex:0 0 auto;width:clamp(44px,12vw,64px)!important;height:auto!important;aspect-ratio:3/2;border-radius:6px!important;border-width:2px!important;opacity:.9}
 .wflags .flag[aria-pressed="true"]{opacity:1}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,640px)}
@@ -71,7 +71,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .navbar{display:flex;gap:10px}
 .nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
 .nb svg{width:26px;height:26px;flex:none}
-html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 #detail .navbar,#qr .navbar{align-self:flex-start}
 #bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;background:var(--panel);border-top:2px solid var(--brass);padding-bottom:env(safe-area-inset-bottom)}
 #bottomnav .nb{flex:1;justify-content:center;min-height:76px;border:0;border-radius:0;font-size:22px;gap:12px}
@@ -143,11 +142,11 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <script>
-const BUILD = "b13";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b14";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
-/* Σειρά σημαιών: 1η γραμμή = 5 πρώτες, 2η γραμμή = οι υπόλοιπες 5 */
-const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
-const FIRST_ROW = 5;
+/* Σειρά σημαιών: 1η γραμμή = 4 πρώτες, 2η γραμμή = οι υπόλοιπες 4 */
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
+const FIRST_ROW = 4;
 const UI = {
   el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
   en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
@@ -156,9 +155,7 @@ const UI = {
   it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta."},
   ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз."},
   zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。"},
-  ar:{start:"ابدأ",pick:"اختر اللغة",all:"الكل",listen:"استماع",pause:"إيقاف مؤقت",close:"إغلاق",ready:"✔ جاهز للاستخدام دون إنترنت",check:"جارٍ فحص الملفات",missing:"ملفات مفقودة",retry:"إعادة المحاولة",nosound:"الصوت غير متاح",nodata:"لم يتم العثور على بيانات. اتصل بالإنترنت مرة واحدة."},
-  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."},
-  ja:{start:"スタート",pick:"言語を選択してください",all:"すべて",listen:"聴く",pause:"一時停止",close:"閉じる",ready:"✔ オフラインで使用できます",check:"ファイルを確認中",missing:"ファイルがありません",retry:"再試行",nosound:"音声を再生できません",nodata:"データが見つかりません。一度インターネットに接続してください。"}
+  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
 };
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
@@ -170,22 +167,18 @@ const QR_UI = {
   it:{help:"Inquadra il codice con la fotocamera del telefono.\nCon questa opzione userai i dati mobili del tuo telefono.",close:"Chiudi"},
   es:{help:"Escanea el código con la cámara de tu móvil.\nCon esta opción consumirás los datos de tu móvil.",close:"Cerrar"},
   ru:{help:"Отсканируйте код камерой телефона.\nПри этом варианте будет расходоваться мобильный интернет вашего телефона.",close:"Закрыть"},
-  zh:{help:"用手机相机扫描二维码。\n选择此方式将消耗您手机的流量。",close:"关闭"},
-  ar:{help:"امسح الرمز بكاميرا هاتفك.\nعند اختيار هذا الخيار سيتم استهلاك بيانات هاتفك المحمول.",close:"إغلاق"},
-  ja:{help:"スマートフォンのカメラでコードを読み取ってください。\nこの方法では、お使いのスマートフォンのモバイルデータ通信を使用します。",close:"閉じる"}
+  zh:{help:"用手机相机扫描二维码。\n选择此方式将消耗您手机的流量。",close:"关闭"}
 };
 /* Κάθε κείμενο = [πριν, ΤΟΝΙΣΜΕΝΗ ΛΕΞΗ, μετά] */
 const TOUR = {
-  el:{tablet:["Έναρξη ξενάγησης από το ","tablet",""],phone:["Έναρξη ξενάγησης από το ","κινητό"," σου"]},
+  el:{tablet:["Έναρξη ξενάγησης από το ","tablet",""],phone:["Έναρξη ξενάγησης από το ","κινητό",""]},
   en:{tablet:["Start the tour on this ","tablet",""],phone:["Start the tour on your ","phone",""]},
   fr:{tablet:["Commencer la visite sur cette ","tablette",""],phone:["Commencer la visite sur votre ","téléphone",""]},
   de:{tablet:["Rundgang auf diesem ","Tablet"," starten"],phone:["Rundgang auf Ihrem ","Handy"," starten"]},
   it:{tablet:["Inizia la visita su questo ","tablet",""],phone:["Inizia la visita sul tuo ","telefono",""]},
   es:{tablet:["Empezar la visita en esta ","tableta",""],phone:["Empezar la visita en tu ","móvil",""]},
   ru:{tablet:["Начать экскурсию на этом ","планшете",""],phone:["Начать экскурсию на вашем ","телефоне",""]},
-  zh:{tablet:["在此","平板电脑","上开始参观"],phone:["在您的","手机","上开始参观"]},
-  ar:{tablet:["ابدأ الجولة على هذا ","الجهاز اللوحي",""],phone:["ابدأ الجولة على ","هاتفك",""]},
-  ja:{tablet:["","このタブレット","でツアーを開始"],phone:["","お使いのスマートフォン","でツアーを開始"]}
+  zh:{tablet:["在此","平板电脑","上开始参观"],phone:["在您的","手机","上开始参观"]}
 };
 function fillTour(btn, parts, cls) {
   btn.textContent = "";
@@ -216,7 +209,7 @@ async function load() {
 /* ===== Πλοήγηση: βελάκι πίσω + αρχική σε κάθε οθόνη ===== */
 const NAV_UI = {
   el:{back:"Πίσω",home:"Αρχική"}, en:{back:"Back",home:"Home"}, fr:{back:"Retour",home:"Accueil"}, de:{back:"Zurück",home:"Start"},
-  it:{back:"Indietro",home:"Home"}, es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}, ar:{back:"رجوع",home:"الرئيسية"}, ja:{back:"戻る",home:"ホーム"}
+  it:{back:"Indietro",home:"Home"}, es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}
 };
 const SVG_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
 const SVG_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>';
@@ -248,9 +241,7 @@ const FLAGS = {
   it:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='20' height='40' fill='#009246'/><rect x='20' width='20' height='40' fill='#fff'/><rect x='40' width='20' height='40' fill='#ce2b37'/></svg>",
   ru:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#fff'/><rect y='13.3' width='60' height='13.4' fill='#0039a6'/><rect y='26.6' width='60' height='13.4' fill='#d52b1e'/></svg>",
   zh:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#de2910'/><polygon fill='#ffde00' points='10,4 11.8,8.5 16.6,8.7 12.9,11.7 14.1,16.3 10,13.7 5.9,16.3 7.1,11.7 3.4,8.7 8.2,8.5'/><circle cx='21' cy='4' r='1.3' fill='#ffde00'/><circle cx='24' cy='8' r='1.3' fill='#ffde00'/><circle cx='24' cy='13' r='1.3' fill='#ffde00'/><circle cx='21' cy='17' r='1.3' fill='#ffde00'/></svg>",
-  ar:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#fff'/><rect y='26.6' width='60' height='13.4' fill='#007a3d'/><path d='M0 0L24 20L0 40z' fill='#ce1126'/></svg>",
-  es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>",
-  ja:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#fff'/><circle cx='30' cy='20' r='12' fill='#bc002d'/></svg>"
+  es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
 };
 const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
 function buildLangButtons() {
@@ -270,7 +261,7 @@ function welcomeText() {
   $("wtitle").textContent = tr(DATA.title);
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
-  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = lang; document.documentElement.dir = "ltr";
 }
 
 function showWelcome() {
@@ -282,7 +273,7 @@ function showWelcome() {
 function enterApp() { $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); }
 
 function renderApp() {
-  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.lang = lang; document.documentElement.dir = "ltr";
   $("title").textContent = tr(DATA.title); document.title = tr(DATA.title);
   const cats = ["all", ...new Set(DATA.items.map(i => i.cat))];
   $("menu").innerHTML = "";
