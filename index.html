@@ -42,6 +42,11 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .btn{font-size:19px;font-weight:600;min-height:60px;padding:12px 26px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--brass)}
 .btn[aria-pressed="true"]{background:var(--brass);color:#2a2110}
 .btn.close{color:var(--ink);border-color:var(--mute)}
+.qrbtn{font-size:17px;min-height:56px;padding:10px 22px}
+#qr{position:fixed;inset:0;background:var(--bg);z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.qrwrap{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:700px}
+#qrimg{width:min(70vmin,420px);height:auto;background:#fff;border-radius:12px;display:block}
+#qrtext{white-space:pre-line;margin:0;font:20px/1.6 system-ui,sans-serif}
 </style>
 </head>
 <body>
@@ -50,10 +55,11 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   <h1 id="wtitle"></h1>
   <p id="wpick"></p>
   <div class="langs" id="wlangs"></div>
+  <button class="btn qrbtn" id="wqr"></button>
 </section>
 
 <div id="app" hidden>
-  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div></header>
+  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
   <nav id="menu"></nav>
   <main id="grid"></main>
   <footer><span id="status"></span><button id="retry" hidden></button></footer>
@@ -68,6 +74,14 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   </div>
 </section>
 
+<section id="qr" hidden role="dialog" aria-modal="true">
+  <div class="qrwrap">
+    <img id="qrimg" src="qr.svg" alt="QR">
+    <p id="qrtext"></p>
+    <button class="btn close" id="qrclose"></button>
+  </div>
+</section>
+
 <script>
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"]];
@@ -77,6 +91,15 @@ const UI = {
   fr:{pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
   de:{pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
   es:{pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
+};
+/* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
+const VISITOR = new URLSearchParams(location.search).get("v") === "1";
+const QR_UI = {
+  el:{btn:"📱 Άνοιξε στο κινητό σου",help:"Σκάναρε τον κωδικό με την κάμερα του κινητού σου.\nΘα χρησιμοποιήσει τα δεδομένα (data) του κινητού σου.",close:"Κλείσιμο"},
+  en:{btn:"📱 Open on your phone",help:"Scan the code with your phone's camera.\nIt will use your phone's mobile data.",close:"Close"},
+  fr:{btn:"📱 Ouvrir sur votre téléphone",help:"Scannez le code avec l'appareil photo de votre téléphone.\nL'application utilisera vos données mobiles.",close:"Fermer"},
+  de:{btn:"📱 Auf dem Handy öffnen",help:"Scannen Sie den Code mit der Handykamera.\nEs werden Ihre mobilen Daten verwendet.",close:"Schließen"},
+  es:{btn:"📱 Abrir en tu móvil",help:"Escanea el código con la cámara de tu móvil.\nUsará los datos de tu móvil.",close:"Cerrar"}
 };
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
@@ -92,7 +115,8 @@ const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 async function load() {
   try { DATA = await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
-  buildLangButtons(); showWelcome(); syncMedia();
+  if (VISITOR) document.querySelector("footer").hidden = true;
+  buildLangButtons(); showWelcome(); if (!VISITOR) syncMedia();
 }
 
 function buildLangButtons() {
@@ -108,7 +132,7 @@ function buildLangButtons() {
 }
 
 function showWelcome() {
-  audio.pause(); closeDetail(true); lang = "el"; cat = "all";
+  audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
   $("wtitle").textContent = tr(DATA.title);
   $("wpick").textContent = LANGS.map(l => UI[l[0]].pick).join(" / ");
@@ -137,8 +161,28 @@ function renderApp() {
     b.onclick = () => openDetail(it);
     $("grid").appendChild(b);
   });
-  $("retry").textContent = t("retry");
+  $("retry").textContent = t("retry"); setQRButtons();
 }
+
+/* Κωδικός QR για το κινητό του επισκέπτη */
+function setQRButtons() {
+  $("wqr").hidden = $("hqr").hidden = VISITOR;
+  $("wqr").textContent = QR_UI.el.btn + " / " + QR_UI.en.btn;
+  $("hqr").textContent = QR_UI[lang].btn;
+}
+function openQR() {
+  const w = !$("welcome").hidden;
+  $("qrtext").textContent = w ? LANGS.map(l => QR_UI[l[0]].help.split("\n")[0]).join("\n") : QR_UI[lang].help;
+  $("qrclose").textContent = "✕ " + (w ? QR_UI.el.close + " / " + QR_UI.en.close : QR_UI[lang].close);
+  $("qr").hidden = false; history.pushState({q:1}, "");
+}
+function closeQR(silent) {
+  if ($("qr").hidden) return;
+  $("qr").hidden = true;
+  if (!silent && history.state && history.state.q) history.back();
+}
+$("wqr").onclick = $("hqr").onclick = openQR;
+$("qrclose").onclick = () => closeQR();
 
 /* Μεγάλη σελίδα εκθέματος */
 function openDetail(it) { openItem = it; $("detail").hidden = false; refreshDetail(); history.pushState({d:1}, ""); }
@@ -153,7 +197,7 @@ function closeDetail(silent) {
   audio.pause(); playing = false; openItem = null; $("detail").hidden = true;
   if (!silent && history.state && history.state.d) history.back();
 }
-window.addEventListener("popstate", () => { if (openItem) closeDetail(true); });
+window.addEventListener("popstate", () => { if (!$("qr").hidden) closeQR(true); else if (openItem) closeDetail(true); });
 $("dclose").onclick = () => closeDetail();
 
 /* Ήχος */
@@ -205,16 +249,16 @@ window.addEventListener("online", () => DATA && syncMedia());
 /* Επιστροφή στην αρχική οθόνη μετά από αδράνεια */
 function bump() {
   clearTimeout(idleTimer);
-  if (!DATA) return;
+  if (!DATA || VISITOR) return;
   idleTimer = setTimeout(() => { if (!$("welcome").hidden) return; showWelcome(); }, (DATA.idleSeconds || 180) * 1000);
 }
 ["pointerdown","keydown","touchstart"].forEach(e => document.addEventListener(e, bump, {passive:true}));
 
 /* Η οθόνη να μένει ανοιχτή */
-async function keepAwake() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (_) {} }
+async function keepAwake() { if (VISITOR) return; try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (_) {} }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
 
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
 </script>
 </body>
