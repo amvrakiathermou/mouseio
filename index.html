@@ -61,11 +61,52 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #pinmsg{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
-.btn.start,.btn.start2{width:min(92vw,560px);min-height:76px;font-size:22px;line-height:1.5;background:var(--panel);color:var(--ink);border:2px solid var(--brass);font-weight:500}
-.btn.start2{min-width:0}
-.kw{display:inline-block;padding:2px 14px;margin:0 4px;border-radius:8px;font-size:1.12em;font-weight:800;line-height:1.35}
-.kw-t{background:var(--brass);color:#2a2110;font-family:Georgia,"Times New Roman",serif}
-.kw-p{background:#f3efe4;color:#17302d;font-family:"Courier New",Courier,monospace;letter-spacing:.5px}
+
+/* ===== Τετράγωνα κουμπιά αρχικής ===== */
+.btn.start,.btn.start2{
+  width:min(88vw,340px);
+  aspect-ratio:1/1;
+  min-height:0;height:auto;
+  border-radius:22px;
+  font-size:22px;line-height:1.35;font-weight:500;
+  background:linear-gradient(160deg,#2a4a45 0%,#1a3330 45%,#152926 100%);
+  color:var(--ink);
+  border:2px solid transparent;
+  box-shadow:0 10px 28px rgba(0,0,0,.45),0 2px 0 rgba(255,255,255,.08) inset,0 -2px 0 rgba(0,0,0,.25) inset;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  padding:24px 20px;
+}
+.btn.start::before,.btn.start2::before{
+  content:"";position:absolute;top:-50%;left:-60%;width:50%;height:200%;
+  background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.07) 45%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.07) 55%,transparent 100%);
+  transform:rotate(25deg);pointer-events:none;animation:shine 5s ease-in-out infinite;
+}
+@keyframes shine{0%,100%{left:-60%;opacity:0}40%{opacity:1}60%{left:120%;opacity:0}}
+.btn.start::after,.btn.start2::after{
+  content:"";position:absolute;inset:0;border-radius:22px;padding:2px;
+  background:conic-gradient(from var(--angle,0deg),#0d3a5c,#d2a84c,#1a5a8a,#d2a84c,#0d3a5c);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .25s;pointer-events:none;
+  animation:spinBorder 3s linear infinite;animation-play-state:paused;
+}
+@property --angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes spinBorder{to{--angle:360deg}}
+.btn.start:active,.btn.start2:active,
+.btn.start:focus-visible,.btn.start2:focus-visible{
+  box-shadow:0 6px 18px rgba(0,0,0,.4),0 0 0 3px rgba(210,168,76,.35);
+}
+.btn.start:active::after,.btn.start2:active::after,
+.btn.start:focus-visible::after,.btn.start2:focus-visible::after{
+  opacity:1;animation-play-state:running;
+}
+.btn-line1{font-size:1.05em;font-weight:600;letter-spacing:.3px}
+.btn-line2{font-size:.95em;opacity:.92;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.kw{display:inline-block;padding:3px 14px;margin:0 2px;border-radius:8px;font-size:1.15em;font-weight:800;line-height:1.3}
+.kw-t{background:var(--brass);color:#2a2110;font-family:Georgia,"Times New Roman",serif;box-shadow:0 2px 8px rgba(210,168,76,.35)}
+.kw-p{background:#f3efe4;color:#17302d;font-family:"Courier New",Courier,monospace;letter-spacing:.5px;box-shadow:0 2px 8px rgba(243,239,228,.25)}
+
 .nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
 .nb svg{width:26px;height:26px;flex:none}
 #bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;background:var(--panel);border-top:2px solid var(--brass);padding-bottom:env(safe-area-inset-bottom)}
@@ -158,7 +199,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         <span class="staff-badge">Staff</span>
       </div>
 
-      <!-- 1. Πληροφορίες έκδοσης -->
       <div class="acc" id="acc1">
         <button class="acc-btn" onclick="toggleAcc('acc1')">
           <span class="left"><span class="icon">ℹ️</span> Πληροφορίες έκδοσης</span>
@@ -174,7 +214,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
-      <!-- 2. Ενημερώσεις & Δεδομένα -->
       <div class="acc" id="acc2">
         <button class="acc-btn" onclick="toggleAcc('acc2')">
           <span class="left"><span class="icon">🔄</span> Ενημερώσεις & Δεδομένα</span>
@@ -192,7 +231,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
-      <!-- 3. Ρυθμίσεις -->
       <div class="acc" id="acc3">
         <button class="acc-btn" onclick="toggleAcc('acc3')">
           <span class="left"><span class="icon">⚙️</span> Ρυθμίσεις</span>
@@ -211,7 +249,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
-      <!-- 4. Ενέργειες -->
       <div class="acc" id="acc4">
         <button class="acc-btn" onclick="toggleAcc('acc4')">
           <span class="left"><span class="icon">⚡</span> Ενέργειες</span>
@@ -270,20 +307,30 @@ const QR_UI = {
   zh:{help:"用手机相机扫描二维码。\n选择此方式将消耗您手机的流量。",close:"关闭"}
 };
 const TOUR = {
-  el:{tablet:["Έναρξη ξενάγησης από το ","tablet",""],phone:["Έναρξη ξενάγησης από το ","κινητό",""]},
-  en:{tablet:["Start the tour on this ","tablet",""],phone:["Start the tour on your ","phone",""]},
-  fr:{tablet:["Commencer la visite sur cette ","tablette",""],phone:["Commencer la visite sur votre ","téléphone",""]},
-  de:{tablet:["Rundgang auf diesem ","Tablet"," starten"],phone:["Rundgang auf Ihrem ","Handy"," starten"]},
-  it:{tablet:["Inizia la visita su questo ","tablet",""],phone:["Inizia la visita sul tuo ","telefono",""]},
-  es:{tablet:["Empezar la visita en esta ","tableta",""],phone:["Empezar la visita en tu ","móvil",""]},
-  ru:{tablet:["Начать экскурсию на этом ","планшете",""],phone:["Начать экскурсию на вашем ","телефоне",""]},
-  zh:{tablet:["在此","平板电脑","上开始参观"],phone:["在您的","手机","上开始参观"]}
+  el:{tablet:["από το ","tablet",""],phone:["από το ","κινητό",""]},
+  en:{tablet:["on this ","tablet",""],phone:["on your ","phone",""]},
+  fr:{tablet:["sur cette ","tablette",""],phone:["sur votre ","téléphone",""]},
+  de:{tablet:["auf diesem ","Tablet",""],phone:["auf Ihrem ","Handy",""]},
+  it:{tablet:["su questo ","tablet",""],phone:["sul tuo ","telefono",""]},
+  es:{tablet:["en esta ","tableta",""],phone:["en tu ","móvil",""]},
+  ru:{tablet:["на этом ","планшете",""],phone:["на вашем ","телефоне",""]},
+  zh:{tablet:["在此","平板电脑",""],phone:["在您的","手机",""]}
 };
 function fillTour(btn, parts, cls) {
-  btn.textContent = "";
-  if (parts[0]) btn.appendChild(document.createTextNode(parts[0]));
-  const s = document.createElement("span"); s.className = "kw " + cls; s.textContent = parts[1]; btn.appendChild(s);
-  if (parts[2]) btn.appendChild(document.createTextNode(parts[2]));
+  btn.innerHTML = "";
+  const line1 = document.createElement("span");
+  line1.className = "btn-line1";
+  line1.textContent = "Έναρξη ξενάγησης";
+  btn.appendChild(line1);
+  const line2 = document.createElement("span");
+  line2.className = "btn-line2";
+  if (parts[0]) line2.appendChild(document.createTextNode(parts[0]));
+  const s = document.createElement("span");
+  s.className = "kw " + cls;
+  s.textContent = parts[1];
+  line2.appendChild(s);
+  if (parts[2]) line2.appendChild(document.createTextNode(parts[2]));
+  btn.appendChild(line2);
 }
 let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
 const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
@@ -313,13 +360,12 @@ async function load() {
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 
-  // Μήνυμα μετά από επιτυχημένη ενημέρωση
   try {
     const justUpdated = sessionStorage.getItem("mm-just-updated");
     if (justUpdated) {
       sessionStorage.removeItem("mm-just-updated");
       setTimeout(() => {
-        setStatus("Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".");
+        alert("Το σύστημά σας έχει ενημερωθεί.\n\nΗ νέα έκδοση είναι η " + BUILD + ".");
       }, 600);
     }
   } catch(_) {}
@@ -530,7 +576,7 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 let lastCheck = 0;
 async function checkUpdate(manual = false) {
   if (VISITOR || !navigator.onLine) {
-    if (manual) setStatus("Χρειάζεται σύνδεση στο ίντερνετ.");
+    if (manual) alert("Χρειάζεται σύνδεση στο ίντερνετ.");
     return;
   }
   if (!manual && Date.now() - lastCheck < 300000) return;
@@ -540,30 +586,29 @@ async function checkUpdate(manual = false) {
     const txt = await (await fetch("index.html?nc=" + Date.now(), {cache: "no-store"})).text();
     const m = /BUILD\s*=\s*"([^"]+)"/.exec(txt);
     if (!m) {
-      if (manual) setStatus("Δεν ήταν δυνατός ο έλεγχος έκδοσης.");
+      if (manual) alert("Δεν ήταν δυνατός ο έλεγχος έκδοσης.");
       return;
     }
     const remoteBuild = m[1];
 
     if (remoteBuild === BUILD) {
-      if (manual) setStatus("Το σύστημά σας είναι ενημερωμένο.\nΔεν υπάρχει νεότερη έκδοση από την " + BUILD + ".");
+      if (manual) alert("Το σύστημά σας είναι ενημερωμένο.\n\nΔεν υπάρχει νεότερη έκδοση από την " + BUILD + ".");
       return;
     }
 
     if (manual) {
       const ok = confirm("Βρέθηκε νέα έκδοση " + remoteBuild + ".\n\nΝα την κατεβάσω;");
-      if (!ok) {
-        setStatus("Η ενημέρωση ακυρώθηκε.\nΤρέχουσα έκδοση: " + BUILD);
-        return;
-      }
+      if (!ok) return;
     }
 
-    sessionStorage.setItem("mm-just-updated", "1");
-    (await caches.keys()).filter(k => k.startsWith("shell-")).forEach(k => caches.delete(k));
-    for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+    sessionStorage.setItem("mm-just-updated", remoteBuild);
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k.startsWith("shell-")).map(k => caches.delete(k)));
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
     location.reload();
-  } catch (_) {
-    if (manual) setStatus("Σφάλμα κατά τον έλεγχο έκδοσης.");
+  } catch (err) {
+    if (manual) alert("Σφάλμα κατά τον έλεγχο έκδοσης.");
   }
 }
 
