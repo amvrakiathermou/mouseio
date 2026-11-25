@@ -85,8 +85,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .acc{
   border-radius:14px;
   overflow:hidden;
-  border:1px solid rgba(210,168,76,.25);
-  background:#1a3330;
+  border:1px solid rgba(210,168,76,.3);
+  background:#152926;
 }
 .acc-btn{
   width:100%;
@@ -104,53 +104,51 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 }
 .acc-btn .left{display:flex;align-items:center;gap:12px}
 .acc-btn .icon{font-size:20px;width:28px;text-align:center}
-.acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.7;color:var(--brass)}
+.acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.8;color:var(--brass)}
 .acc.open .acc-btn .chevron{transform:rotate(180deg)}
 .acc-body{
   display:none;
-  padding:4px 14px 16px;
+  padding:8px 14px 16px;
   flex-direction:column;
   gap:10px;
-  background:#243f3b;
+  background:#1c322e;
 }
 .acc.open .acc-body{display:flex}
 
+/* Κουμπιά – ΑΠΟΛΥΤΑ ΔΙΑΚΡΙΤΑ */
 .staff-btn{
   width:100%;
-  min-height:50px;
+  min-height:52px;
   font:600 15px system-ui,sans-serif;
   text-align:left;
   display:flex;
   align-items:center;
   gap:12px;
-  padding:12px 14px;
+  padding:13px 16px;
   border-radius:10px;
-  border:1.5px solid rgba(169,189,184,.4);
-  background:#2e4f4a;
-  color:var(--ink);
+  border:none;
+  background:#e8e2d4;
+  color:#1a2a27;
 }
 .staff-btn:active{
-  background:rgba(210,168,76,.25);
-  border-color:var(--brass);
+  background:#d2a84c;
+  color:#1a2a27;
 }
 .staff-btn .icon{width:26px;text-align:center;font-size:17px}
 
 .staff-btn.danger{
-  border-color:rgba(196,92,74,.55);
-  color:#f0c4bc;
-  background:rgba(196,92,74,.18);
+  background:#c45c4a;
+  color:#fff;
 }
 .staff-btn.danger:active{
-  background:rgba(196,92,74,.32);
+  background:#a84838;
 }
 .staff-btn.primary{
-  border-color:var(--brass);
-  color:var(--brass);
-  background:rgba(210,168,76,.15);
+  background:#d2a84c;
+  color:#1a2a27;
 }
 .staff-btn.primary:active{
-  background:var(--brass);
-  color:#2a2110;
+  background:#b8923f;
 }
 
 .idle-row{display:flex;flex-direction:column;gap:8px}
@@ -228,6 +226,10 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         <div class="acc-body">
           <div id="sinfo"></div>
           <p id="sstatus"></p>
+          <button class="staff-btn" id="sapp">
+            <span class="icon">⬆️</span>
+            <span>Έλεγχος νέας έκδοσης εφαρμογής</span>
+          </button>
         </div>
       </div>
 
@@ -241,10 +243,6 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
           <button class="staff-btn" id="supd">
             <span class="icon">🔄</span>
             <span id="supd-text">Ενημέρωση από το ίντερνετ</span>
-          </button>
-          <button class="staff-btn" id="sapp">
-            <span class="icon">⬆️</span>
-            <span>Έλεγχος νέας έκδοσης εφαρμογής</span>
           </button>
           <button class="staff-btn" id="sload">
             <span class="icon">📂</span>
@@ -287,7 +285,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
             <span class="icon">🗑️</span>
             <span>Σβήσιμο όλων των δεδομένων</span>
           </button>
-          <button class="staff-btn danger" id="sexit" style="background:rgba(196,92,74,.28);border-color:#c45c4a">
+          <button class="staff-btn danger" id="sexit">
             <span class="icon">⏻</span>
             <span>Κλείσιμο εφαρμογής</span>
           </button>
@@ -305,7 +303,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "b21";
+const BUILD = "b22";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
