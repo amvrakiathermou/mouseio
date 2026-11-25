@@ -54,7 +54,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,520px)}
 #staff h2{margin:0}
-#sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:rgba(0,0,0,.2);padding:14px 16px;border-radius:10px}
+#sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:rgba(0,0,0,.25);padding:14px 16px;border-radius:10px}
 #sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .srow{display:flex;flex-direction:column;gap:12px}
 #pin,#sidle{font:18px system-ui,sans-serif;padding:14px 16px;border-radius:10px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
@@ -77,36 +77,81 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
+/* ===== Staff Menu ===== */
 .staff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .staff-header h2{font-size:1.45rem;font-weight:700}
 .staff-badge{font:600 12px system-ui,sans-serif;background:var(--brass);color:#2a2110;padding:4px 10px;border-radius:999px}
 
-.acc{border-radius:14px;overflow:hidden;border:1px solid rgba(210,168,76,.22);background:var(--panel)}
+.acc{
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid rgba(210,168,76,.25);
+  background:#1a3330;
+}
 .acc-btn{
-  width:100%;min-height:56px;padding:14px 18px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  font:600 16px system-ui,sans-serif;color:var(--ink);
-  background:transparent;border:0;text-align:left;
+  width:100%;
+  min-height:56px;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font:600 16px system-ui,sans-serif;
+  color:var(--brass);
+  background:transparent;
+  border:0;
+  text-align:left;
 }
 .acc-btn .left{display:flex;align-items:center;gap:12px}
 .acc-btn .icon{font-size:20px;width:28px;text-align:center}
-.acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.7}
+.acc-btn .chevron{font-size:18px;transition:transform .2s;opacity:.7;color:var(--brass)}
 .acc.open .acc-btn .chevron{transform:rotate(180deg)}
-.acc-body{display:none;padding:0 16px 16px;flex-direction:column;gap:10px}
+.acc-body{
+  display:none;
+  padding:4px 14px 16px;
+  flex-direction:column;
+  gap:10px;
+  background:#243f3b;
+}
 .acc.open .acc-body{display:flex}
 
 .staff-btn{
-  width:100%;min-height:50px;font:600 15px system-ui,sans-serif;
-  text-align:left;display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:10px;
-  border:1.5px solid rgba(169,189,184,.35);background:rgba(0,0,0,.18);color:var(--ink);
+  width:100%;
+  min-height:50px;
+  font:600 15px system-ui,sans-serif;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1.5px solid rgba(169,189,184,.4);
+  background:#2e4f4a;
+  color:var(--ink);
 }
-.staff-btn:active{background:rgba(210,168,76,.18);border-color:var(--brass)}
+.staff-btn:active{
+  background:rgba(210,168,76,.25);
+  border-color:var(--brass);
+}
 .staff-btn .icon{width:26px;text-align:center;font-size:17px}
-.staff-btn.danger{border-color:rgba(196,92,74,.5);color:#e8b4ab;background:rgba(196,92,74,.12)}
-.staff-btn.danger:active{background:rgba(196,92,74,.25)}
-.staff-btn.primary{border-color:var(--brass);color:var(--brass);background:rgba(210,168,76,.1)}
-.staff-btn.primary:active{background:var(--brass);color:#2a2110}
+
+.staff-btn.danger{
+  border-color:rgba(196,92,74,.55);
+  color:#f0c4bc;
+  background:rgba(196,92,74,.18);
+}
+.staff-btn.danger:active{
+  background:rgba(196,92,74,.32);
+}
+.staff-btn.primary{
+  border-color:var(--brass);
+  color:var(--brass);
+  background:rgba(210,168,76,.15);
+}
+.staff-btn.primary:active{
+  background:var(--brass);
+  color:#2a2110;
+}
 
 .idle-row{display:flex;flex-direction:column;gap:8px}
 .idle-row label{font:14px system-ui,sans-serif;color:var(--mute)}
@@ -242,7 +287,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
             <span class="icon">🗑️</span>
             <span>Σβήσιμο όλων των δεδομένων</span>
           </button>
-          <button class="staff-btn danger" id="sexit" style="background:rgba(196,92,74,.25);border-color:#c45c4a">
+          <button class="staff-btn danger" id="sexit" style="background:rgba(196,92,74,.28);border-color:#c45c4a">
             <span class="icon">⏻</span>
             <span>Κλείσιμο εφαρμογής</span>
           </button>
@@ -260,7 +305,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "b20";
+const BUILD = "b21";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
@@ -325,8 +370,7 @@ async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome(); 
-  // Long-press στο κουμπί "Έναρξη από tablet"
+  buildLangButtons(); showWelcome();
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
@@ -415,9 +459,9 @@ function showWelcome() {
   closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
 }
-function enterApp() { 
-  if (Date.now() - lpAt < 1000) return; // αποφυγή ανοίγματος αν μόλις έγινε long-press
-  $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); 
+function enterApp() {
+  if (Date.now() - lpAt < 1000) return;
+  $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake();
 }
 
 function renderApp() {
@@ -579,7 +623,6 @@ $("pinok").onclick = async () => {
     $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
-    // Ανοίγουμε την πρώτη καρτέλα από προεπιλογή
     document.querySelectorAll(".acc").forEach(a => a.classList.remove("open"));
     $("acc1").classList.add("open");
   } else {
