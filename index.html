@@ -15,7 +15,7 @@ body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman"
 button{font-family:system-ui,sans-serif;cursor:pointer}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 [hidden]{display:none!important}
-#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:32px;text-align:center}
+#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:32px 32px 220px;text-align:center}
 #welcome h1{font-size:clamp(2rem,6vw,3.4rem);margin:0;max-width:18ch;line-height:1.15}
 #welcome p{margin:0;font:18px system-ui,sans-serif;color:var(--mute)}
 .langs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
@@ -49,9 +49,10 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
 .langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
 #welcome{position:relative}
-.wflags{flex-direction:column!important;flex-wrap:nowrap!important;align-items:center;gap:16px!important;margin-top:8px}
-.frow{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;direction:ltr}
-.btn.start{font-size:24px;min-width:240px;min-height:68px;background:var(--brass);color:#2a2110}
+.wflags{position:absolute;left:0;right:0;bottom:0;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-end;gap:12px!important;padding:0 14px calc(14px + env(safe-area-inset-bottom))}
+.frow{display:flex;flex-wrap:nowrap;width:100%;gap:12px;direction:ltr}
+.wflags .flag{flex:1 1 0;width:auto!important;height:clamp(52px,11vh,110px)!important;border-radius:8px!important;border-width:3px!important;opacity:.85}
+.wflags .flag[aria-pressed="true"]{opacity:1}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,640px)}
 #staff h2{margin:0}#sinfo{white-space:pre-line;font:17px/1.7 system-ui,sans-serif;background:var(--panel);padding:14px 16px;border-radius:10px}
@@ -61,8 +62,12 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #pinmsg{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
-.btn.start,.btn.start2{width:min(92vw,520px);min-height:72px;font-size:22px;line-height:1.25}
+/* Κουμπιά έναρξης ξενάγησης: απλό κείμενο + τονισμένη λέξη συσκευής */
+.btn.start,.btn.start2{width:min(92vw,560px);min-height:76px;font-size:22px;line-height:1.5;background:var(--panel);color:var(--ink);border:2px solid var(--brass);font-weight:500}
 .btn.start2{min-width:0}
+.kw{display:inline-block;padding:2px 14px;margin:0 4px;border-radius:8px;font-size:1.12em;font-weight:800;line-height:1.35}
+.kw-t{background:var(--brass);color:#2a2110;font-family:Georgia,"Times New Roman",serif}
+.kw-p{background:#f3efe4;color:#17302d;font-family:"Courier New",Courier,monospace;letter-spacing:.5px}
 .navbar{display:flex;gap:10px}
 .nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
 .nb svg{width:26px;height:26px;flex:none}
@@ -138,11 +143,11 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <script>
-const BUILD = "b10";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b13";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
-/* Σειρά σημαιών: 1η γραμμή = 4 πρώτες, 2η γραμμή = οι υπόλοιπες */
-const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
-const FIRST_ROW = 4;
+/* Σειρά σημαιών: 1η γραμμή = 5 πρώτες, 2η γραμμή = οι υπόλοιπες 5 */
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
+const FIRST_ROW = 5;
 const UI = {
   el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
   en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
@@ -158,8 +163,8 @@ const UI = {
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
 const QR_UI = {
-  el:{help:"Σκάναρε τον κωδικό \nμε την κάμερα του κινητού σου.\n\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) \nαπό το κινητό σου.",close:"Κλείσιμο"},
-  en:{help:"Scan the code \nwith your phone's camera.\nWith this option you will use your phone's mobile data.",close:"Close"},
+  el:{help:"Σκάναρε τον κωδικό με την κάμερα του κινητού σου.\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) από το κινητό σου.",close:"Κλείσιμο"},
+  en:{help:"Scan the code with your phone's camera.\nWith this option you will use your phone's mobile data.",close:"Close"},
   fr:{help:"Scannez le code avec l'appareil photo de votre téléphone.\nAvec cette option, vous utiliserez les données mobiles de votre téléphone.",close:"Fermer"},
   de:{help:"Scannen Sie den Code mit der Handykamera.\nBei dieser Option werden die mobilen Daten Ihres Handys verbraucht.",close:"Schließen"},
   it:{help:"Inquadra il codice con la fotocamera del telefono.\nCon questa opzione userai i dati mobili del tuo telefono.",close:"Chiudi"},
@@ -169,18 +174,25 @@ const QR_UI = {
   ar:{help:"امسح الرمز بكاميرا هاتفك.\nعند اختيار هذا الخيار سيتم استهلاك بيانات هاتفك المحمول.",close:"إغلاق"},
   ja:{help:"スマートフォンのカメラでコードを読み取ってください。\nこの方法では、お使いのスマートフォンのモバイルデータ通信を使用します。",close:"閉じる"}
 };
+/* Κάθε κείμενο = [πριν, ΤΟΝΙΣΜΕΝΗ ΛΕΞΗ, μετά] */
 const TOUR = {
-  el:{tablet:"Έναρξη ξενάγησης \nαπό το tablet",phone:"Έναρξη ξενάγησης \nαπό το κινητό σου"},
-  en:{tablet:"Start the tour on this tablet",phone:"Start the tour on your phone"},
-  fr:{tablet:"Commencer la visite sur cette tablette",phone:"Commencer la visite sur votre téléphone"},
-  de:{tablet:"Rundgang auf diesem Tablet starten",phone:"Rundgang auf Ihrem Handy starten"},
-  it:{tablet:"Inizia la visita su questo tablet",phone:"Inizia la visita sul tuo telefono"},
-  es:{tablet:"Empezar la visita en esta tableta",phone:"Empezar la visita en tu móvil"},
-  ru:{tablet:"Начать экскурсию на этом планшете",phone:"Начать экскурсию на вашем телефоне"},
-  zh:{tablet:"在此平板电脑上开始参观",phone:"在您的手机上开始参观"},
-  ar:{tablet:"ابدأ الجولة على هذا الجهاز اللوحي",phone:"ابدأ الجولة على هاتفك"},
-  ja:{tablet:"このタブレットでツアーを開始",phone:"お使いのスマートフォンでツアーを開始"}
+  el:{tablet:["Έναρξη ξενάγησης από το ","tablet",""],phone:["Έναρξη ξενάγησης από το ","κινητό"," σου"]},
+  en:{tablet:["Start the tour on this ","tablet",""],phone:["Start the tour on your ","phone",""]},
+  fr:{tablet:["Commencer la visite sur cette ","tablette",""],phone:["Commencer la visite sur votre ","téléphone",""]},
+  de:{tablet:["Rundgang auf diesem ","Tablet"," starten"],phone:["Rundgang auf Ihrem ","Handy"," starten"]},
+  it:{tablet:["Inizia la visita su questo ","tablet",""],phone:["Inizia la visita sul tuo ","telefono",""]},
+  es:{tablet:["Empezar la visita en esta ","tableta",""],phone:["Empezar la visita en tu ","móvil",""]},
+  ru:{tablet:["Начать экскурсию на этом ","планшете",""],phone:["Начать экскурсию на вашем ","телефоне",""]},
+  zh:{tablet:["在此","平板电脑","上开始参观"],phone:["在您的","手机","上开始参观"]},
+  ar:{tablet:["ابدأ الجولة على هذا ","الجهاز اللوحي",""],phone:["ابدأ الجولة على ","هاتفك",""]},
+  ja:{tablet:["","このタブレット","でツアーを開始"],phone:["","お使いのスマートフォン","でツアーを開始"]}
 };
+function fillTour(btn, parts, cls) {
+  btn.textContent = "";
+  if (parts[0]) btn.appendChild(document.createTextNode(parts[0]));
+  const s = document.createElement("span"); s.className = "kw " + cls; s.textContent = parts[1]; btn.appendChild(s);
+  if (parts[2]) btn.appendChild(document.createTextNode(parts[2]));
+}
 let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
 const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
@@ -254,7 +266,12 @@ function buildLangButtons() {
     rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
 }
-function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = TOUR[lang].tablet; $("wpick").textContent = ""; setQRButtons(); buildNav(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
+function welcomeText() {
+  $("wtitle").textContent = tr(DATA.title);
+  fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
+  $("wpick").textContent = ""; setQRButtons(); buildNav();
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+}
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
@@ -291,7 +308,7 @@ function renderApp() {
 /* Κωδικός QR για το κινητό του επισκέπτη (μόνο από την αρχική οθόνη) */
 function setQRButtons() {
   $("wqr").hidden = VISITOR;
-  $("wqr").textContent = TOUR[lang].phone;
+  fillTour($("wqr"), TOUR[lang].phone, "kw-p");
 }
 function openQR() {
   buildNav();
