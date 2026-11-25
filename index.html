@@ -80,6 +80,24 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #app{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
+
+/* Κουμπί κλεισίματος εφαρμογής δίπλα στις σημαίες */
+.exit-app{
+  margin-top:14px;
+  font-size:17px;
+  font-weight:600;
+  min-height:48px;
+  padding:10px 22px;
+  border-radius:10px;
+  border:2px solid var(--mute);
+  background:transparent;
+  color:var(--mute);
+  width:min(92vw,320px);
+}
+.exit-app:active{
+  background:var(--mute);
+  color:var(--bg);
+}
 </style>
 </head>
 <body>
@@ -142,20 +160,20 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </section>
 
 <script>
-const BUILD = "b14";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b15";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
 /* Σειρά σημαιών: 1η γραμμή = 4 πρώτες, 2η γραμμή = οι υπόλοιπες 4 */
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
 const UI = {
-  el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
-  en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
-  fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
-  de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
-  it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta."},
-  ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз."},
-  zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。"},
-  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
+  el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά.",exitapp:"Κλείσιμο εφαρμογής",exitconfirm:"Να κλείσει η εφαρμογή;"},
+  en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once.",exitapp:"Close application",exitconfirm:"Close the application?"},
+  fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois.",exitapp:"Fermer l'application",exitconfirm:"Fermer l'application ?"},
+  de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden.",exitapp:"Anwendung schließen",exitconfirm:"Anwendung schließen?"},
+  it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta.",exitapp:"Chiudi applicazione",exitconfirm:"Chiudere l'applicazione?"},
+  ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз.",exitapp:"Закрыть приложение",exitconfirm:"Закрыть приложение?"},
+  zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。",exitapp:"关闭应用",exitconfirm:"关闭应用程序？"},
+  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez.",exitapp:"Cerrar aplicación",exitconfirm:"¿Cerrar la aplicación?"}
 };
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
@@ -256,12 +274,29 @@ function buildLangButtons() {
     b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); welcomeText(); };
     rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
+
+  // Κουμπί κλεισίματος εφαρμογής δίπλα στις σημαίες (κάτω από τις 2 σειρές)
+  const exitBtn = document.createElement("button");
+  exitBtn.className = "exit-app";
+  exitBtn.id = "wexit";
+  exitBtn.textContent = t("exitapp");
+  exitBtn.onclick = () => {
+    if (confirm(t("exitconfirm"))) {
+      try { window.close(); } catch (_) {}
+      // Αν δεν κλείσει (συνηθισμένο σε browser), επιστρέφει στην αρχική
+      showWelcome();
+    }
+  };
+  host.appendChild(exitBtn);
 }
 function welcomeText() {
   $("wtitle").textContent = tr(DATA.title);
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
   document.documentElement.lang = lang; document.documentElement.dir = "ltr";
+  // Ενημέρωση κειμένου κουμπιού εξόδου
+  const exitBtn = $("wexit");
+  if (exitBtn) exitBtn.textContent = t("exitapp");
 }
 
 function showWelcome() {
