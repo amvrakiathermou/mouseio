@@ -111,6 +111,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
       <h2>Μενού προσωπικού</h2>
       <div id="sinfo"></div><p id="sstatus"></p>
       <button class="btn" id="supd"></button>
+      <button class="btn" id="sapp">Έλεγχος για νέα έκδοση της εφαρμογής</button>
       <button class="btn" id="sload">Φόρτωση από τη συσκευή (επιλογή αρχείων)</button>
       <label style="font:17px system-ui,sans-serif">Χρόνος αδράνειας<br><select id="sidle"><option value="60">1 λεπτό</option><option value="180">3 λεπτά</option><option value="300">5 λεπτά</option><option value="600">10 λεπτά</option></select></label>
       <button class="btn" id="shome">Επιστροφή στην αρχική οθόνη</button>
@@ -122,6 +123,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </section>
 
 <script>
+const BUILD = "b7";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"]];
 const UI = {
@@ -205,7 +207,7 @@ function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").t
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
-  closeStaff(); welcomeText();
+  closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
 }
 function enterApp() { $("welcome").hidden = true; $("app").hidden = false; buildLangButtons(); renderApp(); keepAwake(); }
@@ -329,6 +331,22 @@ async function keepAwake() { if (VISITOR) return; try { if ("wakeLock" in naviga
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
 
 
+/* ===== Αυτόματη ενημέρωση του κώδικα της εφαρμογής ===== */
+let lastCheck = 0;
+async function checkUpdate() {
+  if (VISITOR || !navigator.onLine || Date.now() - lastCheck < 300000) return;
+  lastCheck = Date.now();
+  try {
+    const txt = await (await fetch("index.html?nc=" + Date.now(), {cache: "no-store"})).text();
+    const m = new RegExp("BUILD" + " = \"([^\"]+)\"").exec(txt);
+    if (!m || m[1] === BUILD || sessionStorage.getItem("mm-upd") === m[1]) return;
+    sessionStorage.setItem("mm-upd", m[1]);
+    (await caches.keys()).filter(k => k.startsWith("shell-")).forEach(k => caches.delete(k));
+    for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+    location.reload();
+  } catch (_) {}
+}
+
 /* ===== Κρυφό μενού προσωπικού ===== */
 function setStatus(x) { $("status").textContent = x; const e = $("sstatus"); if (e) e.textContent = x; }
 async function sha(x) {
@@ -378,7 +396,7 @@ async function refreshInfo() {
   try { e = await navigator.storage.estimate(); } catch (_) {}
   const sz = x => x == null ? "?" : x >= 1073741824 ? (x / 1073741824).toFixed(1) + " GB" : Math.round(x / 1048576) + " MB";
   $("sinfo").textContent = [
-    "Έκδοση περιεχομένου: " + DATA.version,
+    "Έκδοση εφαρμογής: " + BUILD + " · περιεχομένου: " + DATA.version,
     "Αρχεία: " + ok + " από " + total + " αποθηκευμένα" + (ok < total ? "  ⚠ λείπουν" : "  ✔"),
     "Χώρος σε χρήση: " + sz(e.usage) + " · ελεύθερος: " + sz(e.quota - e.usage),
     "Σύνδεση ίντερνετ: " + (navigator.onLine ? "ναι" : "όχι"),
@@ -413,6 +431,7 @@ async function importLocal(files) {
   location.reload();
 }
 $("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
+$("sapp").onclick = async () => { lastCheck = 0; sessionStorage.removeItem("mm-upd"); setStatus("Έλεγχος…"); await checkUpdate(); setStatus(navigator.onLine ? "Η εφαρμογή είναι στην τελευταία έκδοση." : "Χρειάζεται σύνδεση στο ίντερνετ."); };
 $("sload").onclick = () => $("sfile").click();
 $("sfile").onchange = e => importLocal(e.target.files);
 $("sidle").onchange = e => { localStorage.setItem("mm-idle", e.target.value); bump(); setStatus("Αποθηκεύτηκε."); };
