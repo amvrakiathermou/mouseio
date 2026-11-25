@@ -2,18 +2,16 @@
 <html lang="el">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#17302d">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <title>Museum</title>
 <style>
 :root{--bg:#17302d;--panel:#1f3f3b;--ink:#f3efe4;--brass:#d2a84c;--mute:#a9bdb8;--danger:#c45c4a}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
-body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;-webkit-tap-highlight-color:transparent}
 button{font-family:system-ui,sans-serif;cursor:pointer}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 [hidden]{display:none!important}
@@ -28,7 +26,7 @@ header h1{margin:0;font-size:1.4rem}
 nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--panel)}
 nav button{font-size:18px;font-weight:600;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
 nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:20px;overflow:auto;height:calc(100vh - 180px)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:20px}
 .card{background:var(--panel);border:0;border-radius:10px;overflow:hidden;padding:0;color:var(--ink);text-align:start;display:block;width:100%}
 .card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#12261f;display:block}
 .card h2{margin:0;padding:14px 16px;font-size:1.3rem}
@@ -43,6 +41,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .btn{font-size:19px;font-weight:600;min-height:60px;padding:12px 26px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--brass)}
 .btn[aria-pressed="true"]{background:var(--brass);color:#2a2110}
 .btn.close{color:var(--ink);border-color:var(--mute)}
+.qrbtn{font-size:17px;min-height:56px;padding:10px 22px}
 #qr,#staff{position:fixed;inset:0;background:var(--bg);z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
 .qrwrap{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:700px}
 #qrimg{width:min(70vmin,420px);height:auto;background:#fff;border-radius:12px;display:block}
@@ -59,6 +58,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:var(--panel);padding:16px 18px;border-radius:12px;border:1px solid rgba(210,168,76,.25)}
 #sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .srow{display:flex;flex-direction:column;gap:14px}
+.srow .btn{min-height:54px;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;padding:14px 18px}
 #pin,#sidle{font:18px system-ui,sans-serif;padding:14px 16px;border-radius:10px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
 #pinmsg{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
@@ -68,8 +68,10 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .kw{display:inline-block;padding:2px 14px;margin:0 4px;border-radius:8px;font-size:1.12em;font-weight:800;line-height:1.35}
 .kw-t{background:var(--brass);color:#2a2110;font-family:Georgia,"Times New Roman",serif}
 .kw-p{background:#f3efe4;color:#17302d;font-family:"Courier New",Courier,monospace;letter-spacing:.5px}
+.navbar{display:flex;gap:10px}
 .nb{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:8px 18px;font:600 17px system-ui,sans-serif;border-radius:10px;border:1.5px solid var(--mute);background:transparent;color:var(--ink)}
 .nb svg{width:26px;height:26px;flex:none}
+#detail .navbar,#qr .navbar{align-self:flex-start}
 #bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;background:var(--panel);border-top:2px solid var(--brass);padding-bottom:env(safe-area-inset-bottom)}
 #bottomnav .nb{flex:1;justify-content:center;min-height:76px;border:0;border-radius:0;font-size:22px;gap:12px}
 #bottomnav .nb svg{width:30px;height:30px}
@@ -79,23 +81,94 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
-/* Staff menu */
-.staff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.staff-header h2{font-size:1.45rem;font-weight:700}
-.staff-badge{font:600 12px system-ui,sans-serif;background:var(--brass);color:#2a2110;padding:4px 10px;border-radius:999px}
-.staff-section{background:var(--panel);border-radius:14px;padding:16px;border:1px solid rgba(210,168,76,.18)}
-.staff-section-title{font:600 13px system-ui,sans-serif;color:var(--brass);text-transform:uppercase;letter-spacing:.8px;margin:0 0 12px;opacity:.9}
-.staff-btn{width:100%;min-height:52px;font:600 16px system-ui,sans-serif;text-align:left;display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:11px;border:1.5px solid rgba(169,189,184,.35);background:rgba(0,0,0,.18);color:var(--ink)}
-.staff-btn:active{background:rgba(210,168,76,.18);border-color:var(--brass)}
-.staff-btn .icon{width:28px;height:28px;flex:none;display:flex;align-items:center;justify-content:center;font-size:18px}
-.staff-btn.danger{border-color:rgba(196,92,74,.45);color:#e8b4ab}
-.staff-btn.danger:active{background:rgba(196,92,74,.2);border-color:var(--danger)}
-.staff-btn.primary{border-color:var(--brass);background:rgba(210,168,76,.12);color:var(--brass)}
-.staff-btn.primary:active{background:var(--brass);color:#2a2110}
-.idle-row{display:flex;flex-direction:column;gap:8px;padding:4px 2px}
-.idle-row label{font:15px system-ui,sans-serif;color:var(--mute)}
-.idle-row select{font:17px system-ui,sans-serif;padding:12px 14px;border-radius:10px;border:1.5px solid var(--mute);background:rgba(0,0,0,.25);color:var(--ink);width:100%}
-#exit-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;font:22px system-ui,sans-serif;text-align:center;padding:30px;gap:12px}
+/* ===== Βελτιωμένο μενού προσωπικού ===== */
+.staff-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;
+}
+.staff-header h2{
+  font-size:1.45rem;font-weight:700;letter-spacing:.3px;
+}
+.staff-badge{
+  font:600 12px system-ui,sans-serif;
+  background:var(--brass);color:#2a2110;
+  padding:4px 10px;border-radius:999px;
+}
+.staff-section{
+  background:var(--panel);
+  border-radius:14px;
+  padding:16px;
+  border:1px solid rgba(210,168,76,.18);
+}
+.staff-section-title{
+  font:600 13px system-ui,sans-serif;
+  color:var(--brass);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin:0 0 12px;
+  opacity:.9;
+}
+.staff-btn{
+  width:100%;
+  min-height:52px;
+  font:600 16px system-ui,sans-serif;
+  text-align:left;
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;
+  border-radius:11px;
+  border:1.5px solid rgba(169,189,184,.35);
+  background:rgba(0,0,0,.18);
+  color:var(--ink);
+  transition:background .15s,border-color .15s;
+}
+.staff-btn:active{
+  background:rgba(210,168,76,.18);
+  border-color:var(--brass);
+}
+.staff-btn .icon{
+  width:28px;height:28px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.staff-btn.danger{
+  border-color:rgba(196,92,74,.45);
+  color:#e8b4ab;
+}
+.staff-btn.danger:active{
+  background:rgba(196,92,74,.2);
+  border-color:var(--danger);
+}
+.staff-btn.primary{
+  border-color:var(--brass);
+  background:rgba(210,168,76,.12);
+  color:var(--brass);
+}
+.staff-btn.primary:active{
+  background:var(--brass);
+  color:#2a2110;
+}
+.idle-row{
+  display:flex;flex-direction:column;gap:8px;
+  padding:4px 2px;
+}
+.idle-row label{
+  font:15px system-ui,sans-serif;color:var(--mute);
+}
+.idle-row select{
+  font:17px system-ui,sans-serif;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1.5px solid var(--mute);
+  background:rgba(0,0,0,.25);
+  color:var(--ink);
+  width:100%;
+}
+#exit-screen{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  color:#666;font:22px system-ui,sans-serif;text-align:center;
+  padding:30px;gap:12px;
+}
 #exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
 </style>
 </head>
@@ -137,6 +210,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <section id="staff" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
+    <!-- PIN View -->
     <div id="pinView">
       <div class="staff-header">
         <h2>Μενού προσωπικού</h2>
@@ -151,18 +225,21 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
       </div>
     </div>
 
+    <!-- Panel View -->
     <div id="panelView" hidden class="srow">
       <div class="staff-header">
         <h2>Μενού προσωπικού</h2>
         <span class="staff-badge">Staff</span>
       </div>
 
+      <!-- Πληροφορίες -->
       <div class="staff-section">
         <div class="staff-section-title">Κατάσταση συστήματος</div>
         <div id="sinfo"></div>
         <p id="sstatus"></p>
       </div>
 
+      <!-- Ενημερώσεις & δεδομένα -->
       <div class="staff-section">
         <div class="staff-section-title">Ενημερώσεις & Δεδομένα</div>
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -181,6 +258,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
+      <!-- Ρυθμίσεις -->
       <div class="staff-section">
         <div class="staff-section-title">Ρυθμίσεις</div>
         <div class="idle-row">
@@ -194,6 +272,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
+      <!-- Ενέργειες -->
       <div class="staff-section">
         <div class="staff-section-title">Ενέργειες</div>
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -203,7 +282,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
           </button>
           <button class="staff-btn primary" id="sexit">
             <span class="icon">⏻</span>
-            <span>Κλείσιμο εφαρμογής (ξεκλείδωμα tablet)</span>
+            <span>Κλείσιμο εφαρμογής</span>
           </button>
           <button class="staff-btn danger" id="swipe">
             <span class="icon">🗑️</span>
@@ -223,23 +302,23 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <div id="exit-screen" hidden>
   Η εφαρμογή έκλεισε.
-  <small>Το tablet είναι πλέον ξεκλείδωτο.<br>Μπορείτε να χρησιμοποιήσετε άλλες εφαρμογές.</small>
+  <small>Για να ανοίξει ξανά πατήστε παρατεταμένα την ελληνική σημαία<br>ή επανεκκινήστε το tablet.</small>
 </div>
 
 <script>
-const BUILD = "b18";
+const BUILD = "b17";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
 const UI = {
-  el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά.",exitapp:"Κλείσιμο εφαρμογής",exitconfirm:"Να κλείσει η εφαρμογή και να ξεκλειδωθεί το tablet;"},
-  en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once.",exitapp:"Close application",exitconfirm:"Close the application and unlock the tablet?"},
-  fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois.",exitapp:"Fermer l'application",exitconfirm:"Fermer l'application et déverrouiller la tablette ?"},
-  de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden.",exitapp:"Anwendung schließen",exitconfirm:"Anwendung schließen und Tablet entsperren?"},
-  it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta.",exitapp:"Chiudi applicazione",exitconfirm:"Chiudere l'applicazione e sbloccare il tablet?"},
-  ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз.",exitapp:"Закрыть приложение",exitconfirm:"Закрыть приложение и разблокировать планшет?"},
-  zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。",exitapp:"关闭应用",exitconfirm:"关闭应用并解锁平板？"},
-  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez.",exitapp:"Cerrar aplicación",exitconfirm:"¿Cerrar la aplicación y desbloquear la tablet?"}
+  el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά.",exitapp:"Κλείσιμο εφαρμογής",exitconfirm:"Να κλείσει η εφαρμογή;"},
+  en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once.",exitapp:"Close application",exitconfirm:"Close the application?"},
+  fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois.",exitapp:"Fermer l'application",exitconfirm:"Fermer l'application ?"},
+  de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden.",exitapp:"Anwendung schließen",exitconfirm:"Anwendung schließen?"},
+  it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta.",exitapp:"Chiudi applicazione",exitconfirm:"Chiudere l'applicazione?"},
+  ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз.",exitapp:"Закрыть приложение",exitconfirm:"Закрыть приложение?"},
+  zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。",exitapp:"关闭应用",exitconfirm:"关闭应用程序？"},
+  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez.",exitapp:"Cerrar aplicación",exitconfirm:"¿Cerrar la aplicación?"}
 };
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
 const QR_UI = {
@@ -281,40 +360,11 @@ const hasExt = p => /\.[A-Za-z0-9]{2,5}$/.test(p);
 const cands = (b, e) => hasExt(b) ? [b] : e.map(x => b + "." + x);
 const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 
-/* ========== Kiosk / Lock helpers ========== */
-function requestFullscreen() {
-  const el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
-  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-}
-function keepInApp() {
-  // Προσπάθεια να μείνει σε fullscreen
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    requestFullscreen();
-  }
-}
-// Μπλοκάρισμα δεξιού κλικ και long-press μενού
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("selectstart", e => e.preventDefault());
-
-// Όταν χάνει focus, προσπάθησε να επιστρέψει
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    keepInApp();
-    keepAwake();
-  }
-});
-window.addEventListener("blur", () => {
-  setTimeout(() => { window.focus(); keepInApp(); }, 100);
-});
-
 async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome(); 
-  requestFullscreen();
-  if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+  buildLangButtons(); showWelcome(); if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
 
 const NAV_UI = {
@@ -357,15 +407,11 @@ const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) +
 
 function exitApplication() {
   if (!confirm(t("exitconfirm"))) return;
-  // Βγαίνουμε από fullscreen
-  if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
-  else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  
   try { window.close(); } catch (_) {}
   setTimeout(() => {
     try { location.replace("about:blank"); }
     catch (_) { showExitScreen(); }
-  }, 150);
+  }, 120);
 }
 
 function showExitScreen() {
@@ -405,9 +451,8 @@ function showWelcome() {
   $("exit-screen").hidden = true;
   closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
-  keepInApp();
 }
-function enterApp() { $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); keepInApp(); }
+function enterApp() { $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); }
 
 function renderApp() {
   document.documentElement.lang = lang; document.documentElement.dir = "ltr";
