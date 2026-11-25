@@ -68,6 +68,14 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .nb svg{width:26px;height:26px;flex:none}
 html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 #detail .navbar,#qr .navbar{align-self:flex-start}
+#bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;background:var(--panel);border-top:2px solid var(--brass);padding-bottom:env(safe-area-inset-bottom)}
+#bottomnav .nb{flex:1;justify-content:center;min-height:76px;border:0;border-radius:0;font-size:22px;gap:12px}
+#bottomnav .nb svg{width:30px;height:30px}
+#bottomnav .nb+.nb{border-inline-start:1px solid var(--mute)}
+#bottomnav .nb:active{background:var(--ink);color:var(--bg)}
+#app{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+#detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+#staff{z-index:9}
 </style>
 </head>
 <body>
@@ -81,7 +89,7 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <div id="app" hidden>
-  <header><div class="navbar" data-nav></div><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
+  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
   <nav id="menu"></nav>
   <main id="grid"></main>
   <footer><span id="status"></span><button id="retry" hidden></button></footer>
@@ -89,7 +97,6 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 
 <section id="detail" hidden aria-modal="true" role="dialog">
   <div class="wrap">
-    <div class="navbar" data-nav></div>
     <img id="dimg" alt="">
     <h2 id="dtitle"></h2>
     <p id="dtext"></p>
@@ -99,12 +106,13 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 
 <section id="qr" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
-    <div class="navbar" data-nav></div>
     <img id="qrimg" src="qr.svg" alt="QR">
     <p id="qrtext"></p>
     <button class="btn close" id="qrclose" hidden></button>
   </div>
 </section>
+
+<div id="bottomnav" data-nav hidden></div>
 
 <section id="staff" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
@@ -130,7 +138,7 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <script>
-const BUILD = "b8";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b9";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"]];
 const UI = {
@@ -208,6 +216,10 @@ document.addEventListener("click", e => {
   const b = e.target.closest(".nb"); if (!b) return;
   b.dataset.act === "back" ? goBack() : showWelcome();
 });
+const updNav = () => { $("bottomnav").hidden = $("app").hidden && $("qr").hidden && $("detail").hidden; };
+const navObs = new MutationObserver(updNav);
+["app","qr","detail","welcome"].forEach(id => navObs.observe($(id), {attributes: true, attributeFilter: ["hidden"]}));
+updNav();
 const FLAGS = {
   el:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#0d5eaf'/><path fill='#fff' d='M0 4.4h60v4.4H0zM0 13.3h60v4.4H0zM0 22.2h60v4.4H0zM0 31.1h60v4.4H0z'/><rect width='22.2' height='22.2' fill='#0d5eaf'/><path fill='#fff' d='M8.9 0h4.4v22.2H8.9zM0 8.9h22.2v4.4H0z'/></svg>",
   en:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#012169'/><path d='M0 0L60 40M60 0L0 40' stroke='#fff' stroke-width='8'/><path d='M0 0L60 40M60 0L0 40' stroke='#c8102e' stroke-width='3'/><path d='M30 0v40M0 20h60' stroke='#fff' stroke-width='12'/><path d='M30 0v40M0 20h60' stroke='#c8102e' stroke-width='7'/></svg>",
