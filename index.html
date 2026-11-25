@@ -16,7 +16,28 @@ button{font-family:system-ui,sans-serif;cursor:pointer}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 [hidden]{display:none!important}
 #welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:22px;padding:24px 20px calc(16px + env(safe-area-inset-bottom));text-align:center}
-#welcome h1{font-size:clamp(2rem,6vw,3.4rem);margin:auto 0 0;max-width:18ch;line-height:1.15}
+
+/* Ενότητα τίτλου με διαχωριστική γραμμή */
+#welcome h1{
+  font-size:clamp(2rem,6vw,3.4rem);
+  margin:auto 0 0;
+  max-width:18ch;
+  line-height:1.15;
+  padding-bottom:20px;
+  position:relative;
+}
+#welcome h1::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(75vw, 320px);
+  height:2px;
+  background:linear-gradient(90deg, transparent 0%, var(--brass) 25%, #f3efe4 50%, var(--brass) 75%, transparent 100%);
+  border-radius:2px;
+}
+
 #welcome p{margin:0;font:18px system-ui,sans-serif;color:var(--mute)}
 .langs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .langs button{font-size:20px;font-weight:600;min-width:150px;min-height:60px;padding:12px 24px;border-radius:10px;border:2px solid var(--brass);background:transparent;color:var(--ink)}
@@ -47,7 +68,25 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #qrtext{white-space:pre-line;margin:0;font:20px/1.6 system-ui,sans-serif}
 .langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
 .langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
-.wflags{position:static;width:100%;margin-top:auto;flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important}
+
+/* Μικτό πλαίσιο γύρω από τις σημαίες */
+.wflags{
+  position:static;
+  width:fit-content;
+  max-width:100%;
+  margin:auto auto 0;
+  padding:14px 18px;
+  border-radius:16px;
+  background:rgba(31, 63, 59, 0.75);
+  border:1.5px solid var(--brass);
+  outline:1px solid rgba(243, 239, 228, 0.25);
+  outline-offset:-5px;
+  box-shadow:0 8px 24px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(210, 168, 76, 0.12);
+  flex-direction:column!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:10px!important;
+}
 .frow{display:flex;flex-wrap:nowrap;justify-content:center;gap:10px;direction:ltr}
 .wflags .flag{flex:0 0 auto;width:clamp(44px,12vw,64px)!important;height:auto!important;aspect-ratio:3/2;border-radius:6px!important;border-width:2px!important;opacity:.9}
 .wflags .flag[aria-pressed="true"]{opacity:1}
@@ -74,29 +113,29 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:24px 20px;
 }
 
-  
 .btn.start::before,.btn.start2::before{
   content:"";position:absolute;top:-50%;left:-60%;width:50%;height:200%;
   background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.07) 45%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.07) 55%,transparent 100%);
   transform:rotate(25deg);pointer-events:none;animation:shine 5s ease-in-out infinite;
 }
 @keyframes shine{0%,100%{left:-60%;opacity:0}40%{opacity:1}60%{left:120%;opacity:0}}
+
+/* Μόνιμη περιστροφή περιγράμματος στα κουμπιά */
 .btn.start::after,.btn.start2::after{
-  content:"";position:absolute;inset:0;border-radius:22px;padding:2px;
+  content:"";position:absolute;inset:0;border-radius:22px;padding:2.5px;
   background:conic-gradient(from var(--angle,0deg),#0d3a5c,#d2a84c,#1a5a8a,#d2a84c,#0d3a5c);
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
-  opacity:0;transition:opacity .25s;pointer-events:none;
-  animation:spinBorder 3s linear infinite;animation-play-state:paused;
+  opacity:1;pointer-events:none;
+  animation:spinBorder 3s linear infinite;
+  animation-play-state:running;
 }
 @property --angle{syntax:"<angle>";initial-value:0deg;inherits:false}
 @keyframes spinBorder{to{--angle:360deg}}
 .btn.start:active,.btn.start2:active,.btn.start:focus-visible,.btn.start2:focus-visible{
   box-shadow:0 6px 18px rgba(0,0,0,.4),0 0 0 3px rgba(210,168,76,.35);
 }
-.btn.start:active::after,.btn.start2:active::after,.btn.start:focus-visible::after,.btn.start2:focus-visible::after{
-  opacity:1;animation-play-state:running;
-}
+
 .btn-line1{font-size:1.05em;font-weight:600;letter-spacing:.3px}
 .btn-line2{font-size:.95em;opacity:.92;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
 .kw{display:inline-block;padding:3px 14px;margin:0 2px;border-radius:8px;font-size:1.15em;font-weight:800;line-height:1.3}
