@@ -28,7 +28,7 @@ nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--pane
 nav button{font-size:18px;font-weight:600;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
 nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 main{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:20px}
-.card{background:var(--panel);border:0;border-radius:10px;overflow:hidden;padding:0;color:var(--ink);text-align:left;display:block;width:100%}
+.card{background:var(--panel);border:0;border-radius:10px;overflow:hidden;padding:0;color:var(--ink);text-align:start;display:block;width:100%}
 .card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#12261f;display:block}
 .card h2{margin:0;padding:14px 16px;font-size:1.3rem}
 footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
@@ -59,6 +59,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .srow{display:flex;flex-direction:column;gap:10px}.srow .btn{min-height:54px;font-size:17px;text-align:left}
 #pin,#sidle{font:20px system-ui,sans-serif;padding:12px;border-radius:8px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
 #pinmsg{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
+.langs{direction:ltr}#staff{direction:ltr}
+.langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 </style>
 </head>
 <body>
@@ -119,12 +121,15 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <script>
 const $ = id => document.getElementById(id);
-const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"]];
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"]];
 const UI = {
   el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
   en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
   fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
   de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
+  ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз."},
+  zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。"},
+  ar:{start:"ابدأ",pick:"اختر اللغة",all:"الكل",listen:"استماع",pause:"إيقاف مؤقت",close:"إغلاق",ready:"✔ جاهز للاستخدام دون إنترنت",check:"جارٍ فحص الملفات",missing:"ملفات مفقودة",retry:"إعادة المحاولة",nosound:"الصوت غير متاح",nodata:"لم يتم العثور على بيانات. اتصل بالإنترنت مرة واحدة."},
   es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
 };
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
@@ -134,9 +139,12 @@ const QR_UI = {
   en:{btn:"📱 Open on your phone",help:"Scan the code with your phone's camera.\nIt will use your phone's mobile data.",close:"Close"},
   fr:{btn:"📱 Ouvrir sur votre téléphone",help:"Scannez le code avec l'appareil photo de votre téléphone.\nL'application utilisera vos données mobiles.",close:"Fermer"},
   de:{btn:"📱 Auf dem Handy öffnen",help:"Scannen Sie den Code mit der Handykamera.\nEs werden Ihre mobilen Daten verwendet.",close:"Schließen"},
+  ru:{btn:"📱 Открыть на телефоне",help:"Отсканируйте код камерой телефона.\nБудет использован ваш мобильный интернет.",close:"Закрыть"},
+  zh:{btn:"📱 在手机上打开",help:"用手机相机扫描二维码。\n将使用您手机的流量。",close:"关闭"},
+  ar:{btn:"📱 افتح على هاتفك",help:"امسح الرمز بكاميرا هاتفك.\nسيستخدم بيانات هاتفك المحمولة.",close:"إغلاق"},
   es:{btn:"📱 Abrir en tu móvil",help:"Escanea el código con la cámara de tu móvil.\nUsará los datos de tu móvil.",close:"Cerrar"}
 };
-let LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
+let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
 const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
@@ -161,6 +169,9 @@ const FLAGS = {
   en:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#012169'/><path d='M0 0L60 40M60 0L0 40' stroke='#fff' stroke-width='8'/><path d='M0 0L60 40M60 0L0 40' stroke='#c8102e' stroke-width='3'/><path d='M30 0v40M0 20h60' stroke='#fff' stroke-width='12'/><path d='M30 0v40M0 20h60' stroke='#c8102e' stroke-width='7'/></svg>",
   fr:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='20' height='40' fill='#0055a4'/><rect x='20' width='20' height='40' fill='#fff'/><rect x='40' width='20' height='40' fill='#ef4135'/></svg>",
   de:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#d00'/><rect y='26.6' width='60' height='13.4' fill='#ffce00'/></svg>",
+  ru:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#fff'/><rect y='13.3' width='60' height='13.4' fill='#0039a6'/><rect y='26.6' width='60' height='13.4' fill='#d52b1e'/></svg>",
+  zh:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#de2910'/><polygon fill='#ffde00' points='10,4 11.8,8.5 16.6,8.7 12.9,11.7 14.1,16.3 10,13.7 5.9,16.3 7.1,11.7 3.4,8.7 8.2,8.5'/><circle cx='21' cy='4' r='1.3' fill='#ffde00'/><circle cx='24' cy='8' r='1.3' fill='#ffde00'/><circle cx='24' cy='13' r='1.3' fill='#ffde00'/><circle cx='21' cy='17' r='1.3' fill='#ffde00'/></svg>",
+  ar:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#fff'/><rect y='26.6' width='60' height='13.4' fill='#007a3d'/><path d='M0 0L24 20L0 40z' fill='#ce1126'/></svg>",
   es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
 };
 const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
@@ -171,12 +182,13 @@ function buildLangButtons() {
       const b = document.createElement("button"); b.className = "flag";
       b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
       b.setAttribute("aria-pressed", c === lang);
-      b.onclick = () => { lang = c; buildLangButtons(); id === "wlangs" ? welcomeText() : (renderApp(), refreshDetail()); };
+      if (!VISITOR && c === "el") longPress(b, 3000, () => { lpAt = Date.now(); openPin(); });
+      b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); id === "wlangs" ? welcomeText() : (renderApp(), refreshDetail()); };
       $(id).appendChild(b);
     });
   });
 }
-function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = t("start"); $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; }
+function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = t("start"); $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
@@ -187,7 +199,7 @@ function showWelcome() {
 function enterApp() { $("welcome").hidden = true; $("app").hidden = false; buildLangButtons(); renderApp(); keepAwake(); }
 
 function renderApp() {
-  document.documentElement.lang = lang;
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   $("title").textContent = tr(DATA.title); document.title = tr(DATA.title);
   const cats = ["all", ...new Set(DATA.items.map(i => i.cat))];
   $("menu").innerHTML = "";
@@ -339,7 +351,6 @@ $("pinok").onclick = async () => {
 };
 $("pin").addEventListener("keydown", e => { if (e.key === "Enter") $("pinok").click(); });
 $("pinx").onclick = $("sclose").onclick = closeStaff;
-if (!VISITOR) { longPress($("wtitle"), 3000, openPin); longPress($("title"), 3000, openPin); }
 
 async function countFiles() {
   const names = (await caches.keys()).filter(k => k.startsWith("media-")); let ok = 0, total = 0;
