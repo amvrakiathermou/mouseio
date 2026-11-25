@@ -23,7 +23,6 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .langs button[aria-pressed="true"],#welcome .langs button:active{background:var(--brass);color:#2a2110}
 header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:2px solid var(--brass)}
 header h1{margin:0;font-size:1.4rem}
-header .langs button{font-size:15px;min-width:0;min-height:44px;padding:8px 14px;border-width:1.5px}
 nav{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:var(--panel)}
 nav button{font-size:18px;font-weight:600;white-space:nowrap;color:var(--ink);background:transparent;border:1.5px solid var(--mute);border-radius:999px;padding:10px 22px;min-height:52px}
 nav button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -50,7 +49,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
 .langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
 #welcome{position:relative}
-.wflags{position:absolute;left:0;right:0;bottom:22px;gap:14px!important}
+.wflags{flex-direction:column!important;flex-wrap:nowrap!important;align-items:center;gap:16px!important;margin-top:8px}
+.frow{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;direction:ltr}
 .btn.start{font-size:24px;min-width:240px;min-height:68px;background:var(--brass);color:#2a2110}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,640px)}
@@ -89,7 +89,7 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <div id="app" hidden>
-  <header><h1 id="title"></h1><div class="langs" id="hlangs"></div><button class="btn qrbtn" id="hqr"></button></header>
+  <header><h1 id="title"></h1></header>
   <nav id="menu"></nav>
   <main id="grid"></main>
   <footer><span id="status"></span><button id="retry" hidden></button></footer>
@@ -138,40 +138,48 @@ html[dir="rtl"] .nb[data-act="back"] svg{transform:scaleX(-1)}
 </section>
 
 <script>
-const BUILD = "a1";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b10";   // αλλάζει σε κάθε νέα έκδοση του index.html
 const $ = id => document.getElementById(id);
-const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"]];
+/* Σειρά σημαιών: 1η γραμμή = 4 πρώτες, 2η γραμμή = οι υπόλοιπες */
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
+const FIRST_ROW = 4;
 const UI = {
   el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
   en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
   fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
   de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
+  it:{start:"Inizia",pick:"Scegli la lingua",all:"Tutto",listen:"Ascolta",pause:"Pausa",close:"Chiudi",ready:"✔ Pronto per l'uso offline",check:"Controllo dei file",missing:"File mancanti",retry:"Riprova",nosound:"L'audio non è disponibile",nodata:"Nessun dato trovato. Collegati a Internet una volta."},
   ru:{start:"Начать",pick:"Выберите язык",all:"Все",listen:"Слушать",pause:"Пауза",close:"Закрыть",ready:"✔ Готово к работе без интернета",check:"Проверка файлов",missing:"Не хватает файлов",retry:"Повторить",nosound:"Звук недоступен",nodata:"Данные не найдены. Подключитесь к интернету один раз."},
   zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。"},
   ar:{start:"ابدأ",pick:"اختر اللغة",all:"الكل",listen:"استماع",pause:"إيقاف مؤقت",close:"إغلاق",ready:"✔ جاهز للاستخدام دون إنترنت",check:"جارٍ فحص الملفات",missing:"ملفات مفقودة",retry:"إعادة المحاولة",nosound:"الصوت غير متاح",nodata:"لم يتم العثور على بيانات. اتصل بالإنترنت مرة واحدة."},
-  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
+  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."},
+  ja:{start:"スタート",pick:"言語を選択してください",all:"すべて",listen:"聴く",pause:"一時停止",close:"閉じる",ready:"✔ オフラインで使用できます",check:"ファイルを確認中",missing:"ファイルがありません",retry:"再試行",nosound:"音声を再生できません",nodata:"データが見つかりません。一度インターネットに接続してください。"}
 };
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
 const QR_UI = {
-  el:{btn:"📱 Άνοιξε στο κινητό σου",help:"Σκάναρε τον κωδικό με την κάμερα του κινητού σου.\nΘα χρησιμοποιήσει τα δεδομένα (data) του κινητού σου.",close:"Κλείσιμο"},
-  en:{btn:"📱 Open on your phone",help:"Scan the code with your phone's camera.\nIt will use your phone's mobile data.",close:"Close"},
-  fr:{btn:"📱 Ouvrir sur votre téléphone",help:"Scannez le code avec l'appareil photo de votre téléphone.\nL'application utilisera vos données mobiles.",close:"Fermer"},
-  de:{btn:"📱 Auf dem Handy öffnen",help:"Scannen Sie den Code mit der Handykamera.\nEs werden Ihre mobilen Daten verwendet.",close:"Schließen"},
-  ru:{btn:"📱 Открыть на телефоне",help:"Отсканируйте код камерой телефона.\nБудет использован ваш мобильный интернет.",close:"Закрыть"},
-  zh:{btn:"📱 在手机上打开",help:"用手机相机扫描二维码。\n将使用您手机的流量。",close:"关闭"},
-  ar:{btn:"📱 افتح على هاتفك",help:"امسح الرمز بكاميرا هاتفك.\nسيستخدم بيانات هاتفك المحمولة.",close:"إغلاق"},
-  es:{btn:"📱 Abrir en tu móvil",help:"Escanea el código con la cámara de tu móvil.\nUsará los datos de tu móvil.",close:"Cerrar"}
+  el:{help:"Σκάναρε τον κωδικό με την κάμερα του κινητού σου.\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) από το κινητό σου.",close:"Κλείσιμο"},
+  en:{help:"Scan the code with your phone's camera.\nWith this option you will use your phone's mobile data.",close:"Close"},
+  fr:{help:"Scannez le code avec l'appareil photo de votre téléphone.\nAvec cette option, vous utiliserez les données mobiles de votre téléphone.",close:"Fermer"},
+  de:{help:"Scannen Sie den Code mit der Handykamera.\nBei dieser Option werden die mobilen Daten Ihres Handys verbraucht.",close:"Schließen"},
+  it:{help:"Inquadra il codice con la fotocamera del telefono.\nCon questa opzione userai i dati mobili del tuo telefono.",close:"Chiudi"},
+  es:{help:"Escanea el código con la cámara de tu móvil.\nCon esta opción consumirás los datos de tu móvil.",close:"Cerrar"},
+  ru:{help:"Отсканируйте код камерой телефона.\nПри этом варианте будет расходоваться мобильный интернет вашего телефона.",close:"Закрыть"},
+  zh:{help:"用手机相机扫描二维码。\n选择此方式将消耗您手机的流量。",close:"关闭"},
+  ar:{help:"امسح الرمز بكاميرا هاتفك.\nعند اختيار هذا الخيار سيتم استهلاك بيانات هاتفك المحمول.",close:"إغلاق"},
+  ja:{help:"スマートフォンのカメラでコードを読み取ってください。\nこの方法では、お使いのスマートフォンのモバイルデータ通信を使用します。",close:"閉じる"}
 };
 const TOUR = {
   el:{tablet:"Έναρξη ξενάγησης από το tablet",phone:"Έναρξη ξενάγησης από το κινητό σου"},
   en:{tablet:"Start the tour on this tablet",phone:"Start the tour on your phone"},
   fr:{tablet:"Commencer la visite sur cette tablette",phone:"Commencer la visite sur votre téléphone"},
   de:{tablet:"Rundgang auf diesem Tablet starten",phone:"Rundgang auf Ihrem Handy starten"},
+  it:{tablet:"Inizia la visita su questo tablet",phone:"Inizia la visita sul tuo telefono"},
   es:{tablet:"Empezar la visita en esta tableta",phone:"Empezar la visita en tu móvil"},
   ru:{tablet:"Начать экскурсию на этом планшете",phone:"Начать экскурсию на вашем телефоне"},
   zh:{tablet:"在此平板电脑上开始参观",phone:"在您的手机上开始参观"},
-  ar:{tablet:"ابدأ الجولة على هذا الجهاز اللوحي",phone:"ابدأ الجولة على هاتفك"}
+  ar:{tablet:"ابدأ الجولة على هذا الجهاز اللوحي",phone:"ابدأ الجولة على هاتفك"},
+  ja:{tablet:"このタブレットでツアーを開始",phone:"お使いのスマートフォンでツアーを開始"}
 };
 let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
 const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
@@ -196,7 +204,7 @@ async function load() {
 /* ===== Πλοήγηση: βελάκι πίσω + αρχική σε κάθε οθόνη ===== */
 const NAV_UI = {
   el:{back:"Πίσω",home:"Αρχική"}, en:{back:"Back",home:"Home"}, fr:{back:"Retour",home:"Accueil"}, de:{back:"Zurück",home:"Start"},
-  es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}, ar:{back:"رجوع",home:"الرئيسية"}
+  it:{back:"Indietro",home:"Home"}, es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}, ar:{back:"رجوع",home:"الرئيسية"}, ja:{back:"戻る",home:"ホーム"}
 };
 const SVG_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
 const SVG_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>';
@@ -225,23 +233,25 @@ const FLAGS = {
   en:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#012169'/><path d='M0 0L60 40M60 0L0 40' stroke='#fff' stroke-width='8'/><path d='M0 0L60 40M60 0L0 40' stroke='#c8102e' stroke-width='3'/><path d='M30 0v40M0 20h60' stroke='#fff' stroke-width='12'/><path d='M30 0v40M0 20h60' stroke='#c8102e' stroke-width='7'/></svg>",
   fr:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='20' height='40' fill='#0055a4'/><rect x='20' width='20' height='40' fill='#fff'/><rect x='40' width='20' height='40' fill='#ef4135'/></svg>",
   de:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#d00'/><rect y='26.6' width='60' height='13.4' fill='#ffce00'/></svg>",
+  it:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='20' height='40' fill='#009246'/><rect x='20' width='20' height='40' fill='#fff'/><rect x='40' width='20' height='40' fill='#ce2b37'/></svg>",
   ru:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#fff'/><rect y='13.3' width='60' height='13.4' fill='#0039a6'/><rect y='26.6' width='60' height='13.4' fill='#d52b1e'/></svg>",
   zh:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#de2910'/><polygon fill='#ffde00' points='10,4 11.8,8.5 16.6,8.7 12.9,11.7 14.1,16.3 10,13.7 5.9,16.3 7.1,11.7 3.4,8.7 8.2,8.5'/><circle cx='21' cy='4' r='1.3' fill='#ffde00'/><circle cx='24' cy='8' r='1.3' fill='#ffde00'/><circle cx='24' cy='13' r='1.3' fill='#ffde00'/><circle cx='21' cy='17' r='1.3' fill='#ffde00'/></svg>",
   ar:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#fff'/><rect y='26.6' width='60' height='13.4' fill='#007a3d'/><path d='M0 0L24 20L0 40z' fill='#ce1126'/></svg>",
-  es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
+  es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>",
+  ja:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#fff'/><circle cx='30' cy='20' r='12' fill='#bc002d'/></svg>"
 };
 const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
 function buildLangButtons() {
-  ["wlangs","hlangs"].forEach(id => {
-    $(id).innerHTML = "";
-    LANGS.forEach(([c, n]) => {
-      const b = document.createElement("button"); b.className = "flag";
-      b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
-      b.setAttribute("aria-pressed", c === lang);
-      if (!VISITOR && c === "el") longPress(b, 3000, () => { lpAt = Date.now(); openPin(); });
-      b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); id === "wlangs" ? welcomeText() : (renderApp(), refreshDetail()); };
-      $(id).appendChild(b);
-    });
+  const host = $("wlangs"); host.innerHTML = "";
+  const rows = [document.createElement("div"), document.createElement("div")];
+  rows.forEach(r => { r.className = "frow"; host.appendChild(r); });
+  LANGS.forEach(([c, n], idx) => {
+    const b = document.createElement("button"); b.className = "flag";
+    b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
+    b.setAttribute("aria-pressed", c === lang);
+    if (!VISITOR && c === "el") longPress(b, 3000, () => { lpAt = Date.now(); openPin(); });
+    b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); welcomeText(); };
+    rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
 }
 function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = TOUR[lang].tablet; $("wpick").textContent = ""; setQRButtons(); buildNav(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; }
@@ -252,7 +262,7 @@ function showWelcome() {
   closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
 }
-function enterApp() { $("welcome").hidden = true; $("app").hidden = false; buildLangButtons(); renderApp(); keepAwake(); }
+function enterApp() { $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake(); }
 
 function renderApp() {
   document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -278,17 +288,16 @@ function renderApp() {
   $("retry").textContent = t("retry"); setQRButtons(); buildNav();
 }
 
-/* Κωδικός QR για το κινητό του επισκέπτη */
+/* Κωδικός QR για το κινητό του επισκέπτη (μόνο από την αρχική οθόνη) */
 function setQRButtons() {
-  $("wqr").hidden = $("hqr").hidden = VISITOR;
+  $("wqr").hidden = VISITOR;
   $("wqr").textContent = TOUR[lang].phone;
-  $("hqr").textContent = QR_UI[lang].btn;
 }
 function openQR() {
   buildNav();
-  const w = !$("welcome").hidden;
-  $("qrtext").textContent = w ? LANGS.map(l => QR_UI[l[0]].help.split("\n")[0]).join("\n") : QR_UI[lang].help;
-  $("qrclose").textContent = "✕ " + (w ? QR_UI.el.close + " / " + QR_UI.en.close : QR_UI[lang].close);
+  const q = QR_UI[lang] || QR_UI.el;
+  $("qrtext").textContent = q.help;
+  $("qrclose").textContent = "✕ " + q.close;
   $("qr").hidden = false; history.pushState({q:1}, "");
 }
 function closeQR(silent) {
@@ -296,7 +305,7 @@ function closeQR(silent) {
   $("qr").hidden = true;
   if (!silent && history.state && history.state.q) history.back();
 }
-$("wqr").onclick = $("hqr").onclick = openQR;
+$("wqr").onclick = openQR;
 $("qrclose").onclick = () => closeQR();
 
 /* Μεγάλη σελίδα εκθέματος */
