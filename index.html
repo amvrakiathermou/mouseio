@@ -63,7 +63,9 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 
 .btn.start,.btn.start2{
-  width:min(88vw,340px);aspect-ratio:1/1;min-height:0;height:auto;border-radius:22px;
+  width:min(88vw,340px);
+  aspect-ratio:10/7;
+  min-height:0;height:auto;border-radius:22px;
   font-size:22px;line-height:1.35;font-weight:500;
   background:linear-gradient(160deg,#2a4a45 0%,#1a3330 45%,#152926 100%);
   color:var(--ink);border:2px solid transparent;
@@ -71,6 +73,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:24px 20px;
 }
+
+  
 .btn.start::before,.btn.start2::before{
   content:"";position:absolute;top:-50%;left:-60%;width:50%;height:200%;
   background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.07) 45%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.07) 55%,transparent 100%);
