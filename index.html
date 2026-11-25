@@ -43,10 +43,22 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .btn[aria-pressed="true"]{background:var(--brass);color:#2a2110}
 .btn.close{color:var(--ink);border-color:var(--mute)}
 .qrbtn{font-size:17px;min-height:56px;padding:10px 22px}
-#qr{position:fixed;inset:0;background:var(--bg);z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#qr,#staff{position:fixed;inset:0;background:var(--bg);z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
 .qrwrap{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:700px}
 #qrimg{width:min(70vmin,420px);height:auto;background:#fff;border-radius:12px;display:block}
 #qrtext{white-space:pre-line;margin:0;font:20px/1.6 system-ui,sans-serif}
+.langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
+.langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
+#welcome{position:relative}
+.wflags{position:absolute;left:0;right:0;bottom:22px;gap:14px!important}
+.btn.start{font-size:24px;min-width:240px;min-height:68px;background:var(--brass);color:#2a2110}
+#wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,640px)}
+#staff h2{margin:0}#sinfo{white-space:pre-line;font:17px/1.7 system-ui,sans-serif;background:var(--panel);padding:14px 16px;border-radius:10px}
+#sstatus{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
+.srow{display:flex;flex-direction:column;gap:10px}.srow .btn{min-height:54px;font-size:17px;text-align:left}
+#pin,#sidle{font:20px system-ui,sans-serif;padding:12px;border-radius:8px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
+#pinmsg{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
 </style>
 </head>
 <body>
@@ -54,8 +66,9 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 <section id="welcome">
   <h1 id="wtitle"></h1>
   <p id="wpick"></p>
-  <div class="langs" id="wlangs"></div>
+  <button class="btn start" id="wstart"></button>
   <button class="btn qrbtn" id="wqr"></button>
+  <div class="langs flags wflags" id="wlangs"></div>
 </section>
 
 <div id="app" hidden>
@@ -82,15 +95,37 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   </div>
 </section>
 
+<section id="staff" hidden role="dialog" aria-modal="true">
+  <div class="qrwrap">
+    <div id="pinView">
+      <h2>Μενού προσωπικού</h2><br>
+      <input id="pin" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Κωδικός">
+      <p id="pinmsg"></p>
+      <div class="row"><button class="btn" id="pinok">OK</button><button class="btn close" id="pinx">Ακύρωση</button></div>
+    </div>
+    <div id="panelView" hidden class="srow">
+      <h2>Μενού προσωπικού</h2>
+      <div id="sinfo"></div><p id="sstatus"></p>
+      <button class="btn" id="supd"></button>
+      <button class="btn" id="sload">Φόρτωση από τη συσκευή (επιλογή αρχείων)</button>
+      <label style="font:17px system-ui,sans-serif">Χρόνος αδράνειας<br><select id="sidle"><option value="60">1 λεπτό</option><option value="180">3 λεπτά</option><option value="300">5 λεπτά</option><option value="600">10 λεπτά</option></select></label>
+      <button class="btn" id="shome">Επιστροφή στην αρχική οθόνη</button>
+      <button class="btn" id="swipe">Σβήσιμο όλων των δεδομένων του tablet</button>
+      <button class="btn close" id="sclose">✕ Κλείσιμο</button>
+      <input type="file" id="sfile" multiple hidden accept="image/*,audio/*,.json,.mp3,.m4a,.aac,.ogg,.wav,.jpg,.jpeg,.png,.webp">
+    </div>
+  </div>
+</section>
+
 <script>
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"]];
 const UI = {
-  el:{pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
-  en:{pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
-  fr:{pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
-  de:{pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
-  es:{pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
+  el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά."},
+  en:{start:"Start",pick:"Choose your language",all:"All",listen:"Listen",pause:"Pause",close:"Close",ready:"✔ Ready to use offline",check:"Checking files",missing:"Missing files",retry:"Try again",nosound:"Sound is not available",nodata:"No data found. Connect to the internet once."},
+  fr:{start:"Commencer",pick:"Choisissez votre langue",all:"Tout",listen:"Écouter",pause:"Pause",close:"Fermer",ready:"✔ Prêt pour une utilisation hors ligne",check:"Vérification des fichiers",missing:"Fichiers manquants",retry:"Réessayer",nosound:"Le son n'est pas disponible",nodata:"Aucune donnée. Connectez-vous à Internet une fois."},
+  de:{start:"Start",pick:"Sprache wählen",all:"Alle",listen:"Anhören",pause:"Pause",close:"Schließen",ready:"✔ Offline einsatzbereit",check:"Dateien werden geprüft",missing:"Dateien fehlen",retry:"Erneut versuchen",nosound:"Ton nicht verfügbar",nodata:"Keine Daten gefunden. Einmal mit dem Internet verbinden."},
+  es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez."}
 };
 /* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
@@ -101,6 +136,8 @@ const QR_UI = {
   de:{btn:"📱 Auf dem Handy öffnen",help:"Scannen Sie den Code mit der Handykamera.\nEs werden Ihre mobilen Daten verwendet.",close:"Schließen"},
   es:{btn:"📱 Abrir en tu móvil",help:"Escanea el código con la cámara de tu móvil.\nUsará los datos de tu móvil.",close:"Cerrar"}
 };
+let LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
+const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
 let DATA = null, lang = "el", cat = "all", openItem = null, playing = false, idleTimer = null, wake = null;
@@ -113,29 +150,38 @@ const cands = (b, e) => hasExt(b) ? [b] : e.map(x => b + "." + x);
 const imgSrc = p => hasExt(p) ? p : (RES[p] || p);
 
 async function load() {
-  try { DATA = await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
+  try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome(); if (!VISITOR) syncMedia();
+  buildLangButtons(); showWelcome(); if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
 
+const FLAGS = {
+  el:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#0d5eaf'/><path fill='#fff' d='M0 4.4h60v4.4H0zM0 13.3h60v4.4H0zM0 22.2h60v4.4H0zM0 31.1h60v4.4H0z'/><rect width='22.2' height='22.2' fill='#0d5eaf'/><path fill='#fff' d='M8.9 0h4.4v22.2H8.9zM0 8.9h22.2v4.4H0z'/></svg>",
+  en:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#012169'/><path d='M0 0L60 40M60 0L0 40' stroke='#fff' stroke-width='8'/><path d='M0 0L60 40M60 0L0 40' stroke='#c8102e' stroke-width='3'/><path d='M30 0v40M0 20h60' stroke='#fff' stroke-width='12'/><path d='M30 0v40M0 20h60' stroke='#c8102e' stroke-width='7'/></svg>",
+  fr:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='20' height='40' fill='#0055a4'/><rect x='20' width='20' height='40' fill='#fff'/><rect x='40' width='20' height='40' fill='#ef4135'/></svg>",
+  de:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#d00'/><rect y='26.6' width='60' height='13.4' fill='#ffce00'/></svg>",
+  es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
+};
+const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
 function buildLangButtons() {
   ["wlangs","hlangs"].forEach(id => {
     $(id).innerHTML = "";
     LANGS.forEach(([c, n]) => {
-      const b = document.createElement("button");
-      b.textContent = n; b.setAttribute("aria-pressed", c === lang);
-      b.onclick = () => { lang = c; id === "wlangs" ? enterApp() : (buildLangButtons(), renderApp(), refreshDetail()); };
+      const b = document.createElement("button"); b.className = "flag";
+      b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n;
+      b.setAttribute("aria-pressed", c === lang);
+      b.onclick = () => { lang = c; buildLangButtons(); id === "wlangs" ? welcomeText() : (renderApp(), refreshDetail()); };
       $(id).appendChild(b);
     });
   });
 }
+function welcomeText() { $("wtitle").textContent = tr(DATA.title); $("wstart").textContent = t("start"); $("wpick").textContent = ""; setQRButtons(); document.documentElement.lang = lang; }
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
-  $("wtitle").textContent = tr(DATA.title);
-  $("wpick").textContent = LANGS.map(l => UI[l[0]].pick).join(" / ");
+  closeStaff(); welcomeText();
   buildLangButtons(); window.scrollTo(0, 0);
 }
 function enterApp() { $("welcome").hidden = true; $("app").hidden = false; buildLangButtons(); renderApp(); keepAwake(); }
@@ -167,7 +213,7 @@ function renderApp() {
 /* Κωδικός QR για το κινητό του επισκέπτη */
 function setQRButtons() {
   $("wqr").hidden = $("hqr").hidden = VISITOR;
-  $("wqr").textContent = QR_UI.el.btn + " / " + QR_UI.en.btn;
+  $("wqr").textContent = QR_UI[lang].btn;
   $("hqr").textContent = QR_UI[lang].btn;
 }
 function openQR() {
@@ -216,7 +262,7 @@ async function audioSrc(base) {
 $("dplay").onclick = async () => {
   if (playing) { audio.pause(); setPlay(false); return; }
   try { audio.src = await audioSrc(openItem.audio); await audio.play(); setPlay(true); }
-  catch (_) { $("status").textContent = t("nosound"); }
+  catch (_) { setStatus(t("nosound")); }
 };
 audio.onended = () => setPlay(false);
 
@@ -234,29 +280,127 @@ async function syncMedia() {
       try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); found = u; break; } } catch (_) {}
     }
     if (found) { if (found !== base) RES[base] = found; } else failed++;
-    done++; $("status").textContent = `${t("check")} ${done}/${jobs.length}…`;
+    done++; setStatus(`${t("check")} ${done}/${jobs.length}…`);
   }
   try { localStorage.setItem("mm-res", JSON.stringify(RES)); } catch (_) {}
   if (JSON.stringify(RES) !== before && !$("app").hidden) { renderApp(); refreshDetail(); }
-  if (failed) { $("status").textContent = `${t("missing")}: ${failed}`; $("retry").hidden = false; return; }
+  if (failed) { setStatus(`${t("missing")}: ${failed}`); $("retry").hidden = false; return; }
   (await caches.keys()).filter(k => k.startsWith("media-") && k !== name).forEach(k => caches.delete(k));
-  $("status").textContent = t("ready");
+  setStatus(t("ready"));
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
 }
 $("retry").onclick = syncMedia;
-window.addEventListener("online", () => DATA && syncMedia());
+window.addEventListener("online", () => DATA && !LOCAL && !VISITOR && syncMedia());
 
 /* Επιστροφή στην αρχική οθόνη μετά από αδράνεια */
 function bump() {
   clearTimeout(idleTimer);
   if (!DATA || VISITOR) return;
-  idleTimer = setTimeout(() => { if (!$("welcome").hidden) return; showWelcome(); }, (DATA.idleSeconds || 180) * 1000);
+  idleTimer = setTimeout(() => { if (!$("welcome").hidden) return; showWelcome(); }, (Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180) * 1000);
 }
 ["pointerdown","keydown","touchstart"].forEach(e => document.addEventListener(e, bump, {passive:true}));
 
 /* Η οθόνη να μένει ανοιχτή */
 async function keepAwake() { if (VISITOR) return; try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (_) {} }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
+
+
+/* ===== Κρυφό μενού προσωπικού ===== */
+function setStatus(x) { $("status").textContent = x; const e = $("sstatus"); if (e) e.textContent = x; }
+async function sha(x) {
+  if (!(window.crypto && crypto.subtle)) return "";
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("mm2027|" + x));
+  return [...new Uint8Array(b)].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+function longPress(el, ms, fn) {
+  let tm; const c = () => clearTimeout(tm);
+  el.addEventListener("pointerdown", () => { c(); tm = setTimeout(fn, ms); });
+  ["pointerup","pointerleave","pointercancel"].forEach(e => el.addEventListener(e, c));
+  el.addEventListener("contextmenu", e => e.preventDefault());
+}
+function openPin() {
+  $("staff").hidden = false; $("pinView").hidden = false; $("panelView").hidden = true;
+  $("pin").value = ""; $("pinmsg").textContent = ""; $("pin").focus();
+}
+function closeStaff() { $("staff").hidden = true; }
+let fails = 0, lockUntil = 0;
+$("pinok").onclick = async () => {
+  if (Date.now() < lockUntil) { $("pinmsg").textContent = "Περίμενε " + Math.ceil((lockUntil - Date.now()) / 1000) + " δευτ."; return; }
+  if (await sha($("pin").value.trim()) === PIN_HASH) {
+    fails = 0; $("pinView").hidden = true; $("panelView").hidden = false;
+    $("supd").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ (νέα λήψη όλων)";
+    $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
+    setStatus(""); refreshInfo();
+  } else {
+    $("pin").value = ""; fails++;
+    if (fails >= 3) { fails = 0; lockUntil = Date.now() + 30000; $("pinmsg").textContent = "Κλειδώθηκε για 30 δευτερόλεπτα."; }
+    else $("pinmsg").textContent = "Λάθος κωδικός.";
+  }
+};
+$("pin").addEventListener("keydown", e => { if (e.key === "Enter") $("pinok").click(); });
+$("pinx").onclick = $("sclose").onclick = closeStaff;
+if (!VISITOR) { longPress($("wtitle"), 3000, openPin); longPress($("title"), 3000, openPin); }
+
+async function countFiles() {
+  const names = (await caches.keys()).filter(k => k.startsWith("media-")); let ok = 0, total = 0;
+  for (const it of DATA.items) for (const [b, ex] of [[it.img, IMG_EXT], [it.audio, AUD_EXT]]) {
+    total++; let f = false;
+    for (const n of names) { const c = await caches.open(n); for (const u of cands(b, ex)) if (await c.match(u)) { f = true; break; } if (f) break; }
+    if (f) ok++;
+  }
+  return {ok, total};
+}
+async function refreshInfo() {
+  const {ok, total} = await countFiles(); let e = {};
+  try { e = await navigator.storage.estimate(); } catch (_) {}
+  const sz = x => x == null ? "?" : x >= 1073741824 ? (x / 1073741824).toFixed(1) + " GB" : Math.round(x / 1048576) + " MB";
+  $("sinfo").textContent = [
+    "Έκδοση περιεχομένου: " + DATA.version,
+    "Αρχεία: " + ok + " από " + total + " αποθηκευμένα" + (ok < total ? "  ⚠ λείπουν" : "  ✔"),
+    "Χώρος σε χρήση: " + sz(e.usage) + " · ελεύθερος: " + sz(e.quota - e.usage),
+    "Σύνδεση ίντερνετ: " + (navigator.onLine ? "ναι" : "όχι"),
+    "Λειτουργία: " + (LOCAL ? "τοπική (αρχεία της συσκευής)" : "κανονική (από το GitHub)")
+  ].join("\n");
+}
+async function forceUpdate() {
+  if (!navigator.onLine) { setStatus("Χρειάζεται σύνδεση στο ίντερνετ."); return; }
+  try { DATA = await (await fetch("exhibits.json", {cache:"no-store"})).json(); } catch (_) { setStatus("Δεν ήταν δυνατή η λήψη της λίστας."); return; }
+  await Promise.all((await caches.keys()).filter(k => k.startsWith("media-")).map(k => caches.delete(k)));
+  RES = {}; try { localStorage.removeItem("mm-res"); } catch (_) {}
+  await syncMedia(); refreshInfo();
+}
+async function exitLocal() {
+  ["mm-local","mm-local-data","mm-res"].forEach(k => localStorage.removeItem(k));
+  await caches.delete("media-local"); location.reload();
+}
+async function importLocal(files) {
+  files = [...files]; const j = files.find(f => /exhibits\.json$/i.test(f.name));
+  if (!j) { setStatus("Λείπει το αρχείο exhibits.json από την επιλογή."); return; }
+  let data; try { data = JSON.parse(await j.text()); } catch (_) { setStatus("Το exhibits.json έχει λάθος."); return; }
+  setStatus("Αποθήκευση αρχείων…");
+  await caches.delete("media-local"); const c = await caches.open("media-local"); const res = {};
+  for (const f of files) {
+    if (f === j) continue;
+    const isA = f.type.startsWith("audio") || /\.(mp3|m4a|aac|ogg|wav)$/i.test(f.name);
+    const path = (isA ? "audio/" : "img/") + f.name;
+    await c.put(new URL(path, location.href).href, new Response(f, {headers: {"Content-Type": f.type || (isA ? "audio/mpeg" : "image/jpeg")}}));
+    res[path.replace(/\.[^.\/]+$/, "")] = path;
+  }
+  localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-res", JSON.stringify(res)); localStorage.setItem("mm-local", "1");
+  location.reload();
+}
+$("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
+$("sload").onclick = () => $("sfile").click();
+$("sfile").onchange = e => importLocal(e.target.files);
+$("sidle").onchange = e => { localStorage.setItem("mm-idle", e.target.value); bump(); setStatus("Αποθηκεύτηκε."); };
+$("shome").onclick = () => showWelcome();
+$("wstart").onclick = enterApp;
+$("swipe").onclick = async () => {
+  if (!confirm("Να σβηστούν ΟΛΑ τα δεδομένα του tablet;") || !confirm("Σίγουρα; Θα χρειαστεί νέα λήψη με wifi.")) return;
+  localStorage.clear(); await Promise.all((await caches.keys()).map(k => caches.delete(k)));
+  try { for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (_) {}
+  location.reload();
+};
 
 if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
