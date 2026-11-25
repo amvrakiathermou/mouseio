@@ -8,7 +8,7 @@
 <link rel="icon" href="icon-192.png">
 <title>Museum</title>
 <style>
-:root{--bg:#17302d;--panel:#1f3f3b;--ink:#f3efe4;--brass:#d2a84c;--mute:#a9bdb8}
+:root{--bg:#17302d;--panel:#1f3f3b;--ink:#f3efe4;--brass:#d2a84c;--mute:#a9bdb8;--danger:#c45c4a}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;-webkit-tap-highlight-color:transparent}
@@ -48,21 +48,21 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #qrtext{white-space:pre-line;margin:0;font:20px/1.6 system-ui,sans-serif}
 .langs button.flag{width:46px;height:32px;min-width:0;min-height:0;padding:0;border-radius:5px;border:2px solid transparent;background-size:cover;background-position:center;opacity:.7}
 .langs button.flag[aria-pressed="true"]{border-color:var(--brass);opacity:1}
-/* Σημαίες: μικρές, μέσα στη ροή, κάτω-κάτω */
 .wflags{position:static;width:100%;margin-top:auto;flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important}
 .frow{display:flex;flex-wrap:nowrap;justify-content:center;gap:10px;direction:ltr}
 .wflags .flag{flex:0 0 auto;width:clamp(44px,12vw,64px)!important;height:auto!important;aspect-ratio:3/2;border-radius:6px!important;border-width:2px!important;opacity:.9}
 .wflags .flag[aria-pressed="true"]{opacity:1}
 #wtitle,#title{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,640px)}
-#staff h2{margin:0}#sinfo{white-space:pre-line;font:17px/1.7 system-ui,sans-serif;background:var(--panel);padding:14px 16px;border-radius:10px}
-#sstatus{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
-.srow{display:flex;flex-direction:column;gap:10px}.srow .btn{min-height:54px;font-size:17px;text-align:left}
-#pin,#sidle{font:20px system-ui,sans-serif;padding:12px;border-radius:8px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
-#pinmsg{margin:0;min-height:1.4em;font:16px system-ui,sans-serif;color:var(--brass)}
+#staff .qrwrap{align-items:stretch;text-align:left;width:min(100%,520px)}
+#staff h2{margin:0}
+#sinfo{white-space:pre-line;font:15px/1.65 system-ui,sans-serif;background:var(--panel);padding:16px 18px;border-radius:12px;border:1px solid rgba(210,168,76,.25)}
+#sstatus{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
+.srow{display:flex;flex-direction:column;gap:14px}
+.srow .btn{min-height:54px;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;padding:14px 18px}
+#pin,#sidle{font:18px system-ui,sans-serif;padding:14px 16px;border-radius:10px;border:1.5px solid var(--mute);background:var(--panel);color:var(--ink);width:100%}
+#pinmsg{margin:0;min-height:1.4em;font:15px system-ui,sans-serif;color:var(--brass)}
 .langs{direction:ltr}#staff{direction:ltr}
 .langs button.flag{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
-/* Κουμπιά έναρξης ξενάγησης: απλό κείμενο + τονισμένη λέξη συσκευής */
 .btn.start,.btn.start2{width:min(92vw,560px);min-height:76px;font-size:22px;line-height:1.5;background:var(--panel);color:var(--ink);border:2px solid var(--brass);font-weight:500}
 .btn.start2{min-width:0}
 .kw{display:inline-block;padding:2px 14px;margin:0 4px;border-radius:8px;font-size:1.12em;font-weight:800;line-height:1.35}
@@ -81,23 +81,95 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #detail,#qr{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #staff{z-index:9}
 
-/* Κουμπί κλεισίματος εφαρμογής δίπλα στις σημαίες */
-.exit-app{
-  margin-top:14px;
-  font-size:17px;
-  font-weight:600;
-  min-height:48px;
-  padding:10px 22px;
+/* ===== Βελτιωμένο μενού προσωπικού ===== */
+.staff-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;
+}
+.staff-header h2{
+  font-size:1.45rem;font-weight:700;letter-spacing:.3px;
+}
+.staff-badge{
+  font:600 12px system-ui,sans-serif;
+  background:var(--brass);color:#2a2110;
+  padding:4px 10px;border-radius:999px;
+}
+.staff-section{
+  background:var(--panel);
+  border-radius:14px;
+  padding:16px;
+  border:1px solid rgba(210,168,76,.18);
+}
+.staff-section-title{
+  font:600 13px system-ui,sans-serif;
+  color:var(--brass);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin:0 0 12px;
+  opacity:.9;
+}
+.staff-btn{
+  width:100%;
+  min-height:52px;
+  font:600 16px system-ui,sans-serif;
+  text-align:left;
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;
+  border-radius:11px;
+  border:1.5px solid rgba(169,189,184,.35);
+  background:rgba(0,0,0,.18);
+  color:var(--ink);
+  transition:background .15s,border-color .15s;
+}
+.staff-btn:active{
+  background:rgba(210,168,76,.18);
+  border-color:var(--brass);
+}
+.staff-btn .icon{
+  width:28px;height:28px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.staff-btn.danger{
+  border-color:rgba(196,92,74,.45);
+  color:#e8b4ab;
+}
+.staff-btn.danger:active{
+  background:rgba(196,92,74,.2);
+  border-color:var(--danger);
+}
+.staff-btn.primary{
+  border-color:var(--brass);
+  background:rgba(210,168,76,.12);
+  color:var(--brass);
+}
+.staff-btn.primary:active{
+  background:var(--brass);
+  color:#2a2110;
+}
+.idle-row{
+  display:flex;flex-direction:column;gap:8px;
+  padding:4px 2px;
+}
+.idle-row label{
+  font:15px system-ui,sans-serif;color:var(--mute);
+}
+.idle-row select{
+  font:17px system-ui,sans-serif;
+  padding:12px 14px;
   border-radius:10px;
-  border:2px solid var(--mute);
-  background:transparent;
-  color:var(--mute);
-  width:min(92vw,320px);
+  border:1.5px solid var(--mute);
+  background:rgba(0,0,0,.25);
+  color:var(--ink);
+  width:100%;
 }
-.exit-app:active{
-  background:var(--mute);
-  color:var(--bg);
+#exit-screen{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  color:#666;font:22px system-ui,sans-serif;text-align:center;
+  padding:30px;gap:12px;
 }
+#exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -138,31 +210,104 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 
 <section id="staff" hidden role="dialog" aria-modal="true">
   <div class="qrwrap">
+    <!-- PIN View -->
     <div id="pinView">
-      <h2>Μενού προσωπικού</h2><br>
-      <input id="pin" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Κωδικός">
+      <div class="staff-header">
+        <h2>Μενού προσωπικού</h2>
+        <span class="staff-badge">Staff</span>
+      </div>
+      <p style="margin:0 0 14px;font:15px system-ui,sans-serif;color:var(--mute)">Εισάγετε τον κωδικό για να συνεχίσετε</p>
+      <input id="pin" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Κωδικός πρόσβασης">
       <p id="pinmsg"></p>
-      <div class="row"><button class="btn" id="pinok">OK</button><button class="btn close" id="pinx">Ακύρωση</button></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn primary" id="pinok" style="flex:1">Είσοδος</button>
+        <button class="btn close" id="pinx">Ακύρωση</button>
+      </div>
     </div>
+
+    <!-- Panel View -->
     <div id="panelView" hidden class="srow">
-      <h2>Μενού προσωπικού</h2>
-      <div id="sinfo"></div><p id="sstatus"></p>
-      <button class="btn" id="supd"></button>
-      <button class="btn" id="sapp">Έλεγχος για νέα έκδοση της εφαρμογής</button>
-      <button class="btn" id="sload">Φόρτωση από τη συσκευή (επιλογή αρχείων)</button>
-      <label style="font:17px system-ui,sans-serif">Χρόνος αδράνειας<br><select id="sidle"><option value="60">1 λεπτό</option><option value="180">3 λεπτά</option><option value="300">5 λεπτά</option><option value="600">10 λεπτά</option></select></label>
-      <button class="btn" id="shome">Επιστροφή στην αρχική οθόνη</button>
-      <button class="btn" id="swipe">Σβήσιμο όλων των δεδομένων του tablet</button>
-      <button class="btn close" id="sclose">✕ Κλείσιμο</button>
+      <div class="staff-header">
+        <h2>Μενού προσωπικού</h2>
+        <span class="staff-badge">Staff</span>
+      </div>
+
+      <!-- Πληροφορίες -->
+      <div class="staff-section">
+        <div class="staff-section-title">Κατάσταση συστήματος</div>
+        <div id="sinfo"></div>
+        <p id="sstatus"></p>
+      </div>
+
+      <!-- Ενημερώσεις & δεδομένα -->
+      <div class="staff-section">
+        <div class="staff-section-title">Ενημερώσεις & Δεδομένα</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="staff-btn" id="supd">
+            <span class="icon">🔄</span>
+            <span id="supd-text">Ενημέρωση από το ίντερνετ</span>
+          </button>
+          <button class="staff-btn" id="sapp">
+            <span class="icon">⬆️</span>
+            <span>Έλεγχος νέας έκδοσης εφαρμογής</span>
+          </button>
+          <button class="staff-btn" id="sload">
+            <span class="icon">📂</span>
+            <span>Φόρτωση από τη συσκευή</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ρυθμίσεις -->
+      <div class="staff-section">
+        <div class="staff-section-title">Ρυθμίσεις</div>
+        <div class="idle-row">
+          <label>Χρόνος αδράνειας μέχρι επιστροφή στην αρχική</label>
+          <select id="sidle">
+            <option value="60">1 λεπτό</option>
+            <option value="180">3 λεπτά</option>
+            <option value="300">5 λεπτά</option>
+            <option value="600">10 λεπτά</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ενέργειες -->
+      <div class="staff-section">
+        <div class="staff-section-title">Ενέργειες</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="staff-btn" id="shome">
+            <span class="icon">🏠</span>
+            <span>Επιστροφή στην αρχική οθόνη</span>
+          </button>
+          <button class="staff-btn primary" id="sexit">
+            <span class="icon">⏻</span>
+            <span>Κλείσιμο εφαρμογής</span>
+          </button>
+          <button class="staff-btn danger" id="swipe">
+            <span class="icon">🗑️</span>
+            <span>Σβήσιμο όλων των δεδομένων</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="staff-btn" id="sclose" style="justify-content:center;margin-top:4px">
+        <span>✕ Κλείσιμο μενού</span>
+      </button>
+
       <input type="file" id="sfile" multiple hidden accept="image/*,audio/*,.json,.mp3,.m4a,.aac,.ogg,.wav,.jpg,.jpeg,.png,.webp">
     </div>
   </div>
 </section>
 
+<div id="exit-screen" hidden>
+  Η εφαρμογή έκλεισε.
+  <small>Για να ανοίξει ξανά πατήστε παρατεταμένα την ελληνική σημαία<br>ή επανεκκινήστε το tablet.</small>
+</div>
+
 <script>
-const BUILD = "b15";   // αλλάζει σε κάθε νέα έκδοση του index.html
+const BUILD = "b17";
 const $ = id => document.getElementById(id);
-/* Σειρά σημαιών: 1η γραμμή = 4 πρώτες, 2η γραμμή = οι υπόλοιπες 4 */
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
 const FIRST_ROW = 4;
 const UI = {
@@ -175,7 +320,6 @@ const UI = {
   zh:{start:"开始",pick:"请选择语言",all:"全部",listen:"收听",pause:"暂停",close:"关闭",ready:"✔ 已可离线使用",check:"正在检查文件",missing:"缺少文件",retry:"重试",nosound:"无法播放声音",nodata:"未找到数据。请联网一次。",exitapp:"关闭应用",exitconfirm:"关闭应用程序？"},
   es:{start:"Empezar",pick:"Elija su idioma",all:"Todo",listen:"Escuchar",pause:"Pausa",close:"Cerrar",ready:"✔ Listo para usar sin conexión",check:"Comprobando archivos",missing:"Faltan archivos",retry:"Reintentar",nosound:"El sonido no está disponible",nodata:"No hay datos. Conéctese a Internet una vez.",exitapp:"Cerrar aplicación",exitconfirm:"¿Cerrar la aplicación?"}
 };
-/* Τρόπος επισκέπτη: το QR ανοίγει την εφαρμογή με ?v=1 – χωρίς μαζική λήψη αρχείων στο κινητό */
 const VISITOR = new URLSearchParams(location.search).get("v") === "1";
 const QR_UI = {
   el:{help:"Σκάναρε τον κωδικό με την κάμερα του κινητού σου.\nΜε αυτή την επιλογή θα καταναλώσεις δεδομένα (data) από το κινητό σου.",close:"Κλείσιμο"},
@@ -187,7 +331,6 @@ const QR_UI = {
   ru:{help:"Отсканируйте код камерой телефона.\nПри этом варианте будет расходоваться мобильный интернет вашего телефона.",close:"Закрыть"},
   zh:{help:"用手机相机扫描二维码。\n选择此方式将消耗您手机的流量。",close:"关闭"}
 };
-/* Κάθε κείμενο = [πριν, ΤΟΝΙΣΜΕΝΗ ΛΕΞΗ, μετά] */
 const TOUR = {
   el:{tablet:["Έναρξη ξενάγησης από το ","tablet",""],phone:["Έναρξη ξενάγησης από το ","κινητό",""]},
   en:{tablet:["Start the tour on this ","tablet",""],phone:["Start the tour on your ","phone",""]},
@@ -224,7 +367,6 @@ async function load() {
   buildLangButtons(); showWelcome(); if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 }
 
-/* ===== Πλοήγηση: βελάκι πίσω + αρχική σε κάθε οθόνη ===== */
 const NAV_UI = {
   el:{back:"Πίσω",home:"Αρχική"}, en:{back:"Back",home:"Home"}, fr:{back:"Retour",home:"Accueil"}, de:{back:"Zurück",home:"Start"},
   it:{back:"Indietro",home:"Home"}, es:{back:"Atrás",home:"Inicio"}, ru:{back:"Назад",home:"Главная"}, zh:{back:"返回",home:"主页"}
@@ -262,6 +404,26 @@ const FLAGS = {
   es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
 };
 const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
+
+function exitApplication() {
+  if (!confirm(t("exitconfirm"))) return;
+  try { window.close(); } catch (_) {}
+  setTimeout(() => {
+    try { location.replace("about:blank"); }
+    catch (_) { showExitScreen(); }
+  }, 120);
+}
+
+function showExitScreen() {
+  $("welcome").hidden = true;
+  $("app").hidden = true;
+  $("detail").hidden = true;
+  $("qr").hidden = true;
+  $("staff").hidden = true;
+  $("bottomnav").hidden = true;
+  $("exit-screen").hidden = false;
+}
+
 function buildLangButtons() {
   const host = $("wlangs"); host.innerHTML = "";
   const rows = [document.createElement("div"), document.createElement("div")];
@@ -274,34 +436,19 @@ function buildLangButtons() {
     b.onclick = () => { if (Date.now() - lpAt < 1000) return; lang = c; buildLangButtons(); welcomeText(); };
     rows[idx < FIRST_ROW ? 0 : 1].appendChild(b);
   });
-
-  // Κουμπί κλεισίματος εφαρμογής δίπλα στις σημαίες (κάτω από τις 2 σειρές)
-  const exitBtn = document.createElement("button");
-  exitBtn.className = "exit-app";
-  exitBtn.id = "wexit";
-  exitBtn.textContent = t("exitapp");
-  exitBtn.onclick = () => {
-    if (confirm(t("exitconfirm"))) {
-      try { window.close(); } catch (_) {}
-      // Αν δεν κλείσει (συνηθισμένο σε browser), επιστρέφει στην αρχική
-      showWelcome();
-    }
-  };
-  host.appendChild(exitBtn);
 }
+
 function welcomeText() {
   $("wtitle").textContent = tr(DATA.title);
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
   document.documentElement.lang = lang; document.documentElement.dir = "ltr";
-  // Ενημέρωση κειμένου κουμπιού εξόδου
-  const exitBtn = $("wexit");
-  if (exitBtn) exitBtn.textContent = t("exitapp");
 }
 
 function showWelcome() {
   audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
+  $("exit-screen").hidden = true;
   closeStaff(); welcomeText(); checkUpdate();
   buildLangButtons(); window.scrollTo(0, 0);
 }
@@ -331,7 +478,6 @@ function renderApp() {
   $("retry").textContent = t("retry"); setQRButtons(); buildNav();
 }
 
-/* Κωδικός QR για το κινητό του επισκέπτη (μόνο από την αρχική οθόνη) */
 function setQRButtons() {
   $("wqr").hidden = VISITOR;
   fillTour($("wqr"), TOUR[lang].phone, "kw-p");
@@ -351,7 +497,6 @@ function closeQR(silent) {
 $("wqr").onclick = openQR;
 $("qrclose").onclick = () => closeQR();
 
-/* Μεγάλη σελίδα εκθέματος */
 function openDetail(it) { openItem = it; $("detail").hidden = false; refreshDetail(); history.pushState({d:1}, ""); }
 function refreshDetail() {
   if (!openItem) return;
@@ -368,7 +513,6 @@ function closeDetail(silent) {
 window.addEventListener("popstate", () => { if (!$("qr").hidden) closeQR(true); else if (openItem) closeDetail(true); });
 $("dclose").onclick = () => closeDetail();
 
-/* Ήχος */
 function setPlay(on) {
   playing = on; const b = $("dplay");
   b.setAttribute("aria-pressed", on); b.textContent = (on ? "❚❚ " + t("pause") : "▶ " + t("listen"));
@@ -388,7 +532,6 @@ $("dplay").onclick = async () => {
 };
 audio.onended = () => setPlay(false);
 
-/* Λήψη αρχείων στο tablet */
 async function syncMedia() {
   if (!("caches" in window)) return;
   const name = "media-v" + DATA.version, cache = await caches.open(name);
@@ -414,7 +557,6 @@ async function syncMedia() {
 $("retry").onclick = syncMedia;
 window.addEventListener("online", () => DATA && !LOCAL && !VISITOR && syncMedia());
 
-/* Επιστροφή στην αρχική οθόνη μετά από αδράνεια */
 function bump() {
   clearTimeout(idleTimer);
   if (!DATA || VISITOR) return;
@@ -422,12 +564,9 @@ function bump() {
 }
 ["pointerdown","keydown","touchstart"].forEach(e => document.addEventListener(e, bump, {passive:true}));
 
-/* Η οθόνη να μένει ανοιχτή */
 async function keepAwake() { if (VISITOR) return; try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (_) {} }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("app").hidden) keepAwake(); });
 
-
-/* ===== Αυτόματη ενημέρωση του κώδικα της εφαρμογής ===== */
 let lastCheck = 0;
 async function checkUpdate() {
   if (VISITOR || !navigator.onLine || Date.now() - lastCheck < 300000) return;
@@ -443,7 +582,6 @@ async function checkUpdate() {
   } catch (_) {}
 }
 
-/* ===== Κρυφό μενού προσωπικού ===== */
 function setStatus(x) { $("status").textContent = x; const e = $("sstatus"); if (e) e.textContent = x; }
 async function sha(x) {
   if (!(window.crypto && crypto.subtle)) return "";
@@ -466,7 +604,7 @@ $("pinok").onclick = async () => {
   if (Date.now() < lockUntil) { $("pinmsg").textContent = "Περίμενε " + Math.ceil((lockUntil - Date.now()) / 1000) + " δευτ."; return; }
   if (await sha($("pin").value.trim()) === PIN_HASH) {
     fails = 0; $("pinView").hidden = true; $("panelView").hidden = false;
-    $("supd").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ (νέα λήψη όλων)";
+    $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
   } else {
@@ -531,7 +669,8 @@ $("sapp").onclick = async () => { lastCheck = 0; sessionStorage.removeItem("mm-u
 $("sload").onclick = () => $("sfile").click();
 $("sfile").onchange = e => importLocal(e.target.files);
 $("sidle").onchange = e => { localStorage.setItem("mm-idle", e.target.value); bump(); setStatus("Αποθηκεύτηκε."); };
-$("shome").onclick = () => showWelcome();
+$("shome").onclick = () => { closeStaff(); showWelcome(); };
+$("sexit").onclick = exitApplication;
 $("wstart").onclick = enterApp;
 $("swipe").onclick = async () => {
   if (!confirm("Να σβηστούν ΟΛΑ τα δεδομένα του tablet;") || !confirm("Σίγουρα; Θα χρειαστεί νέα λήψη με wifi.")) return;
