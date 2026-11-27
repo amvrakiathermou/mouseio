@@ -161,9 +161,21 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .vid{width:100%;max-height:68vh;object-fit:contain;border-radius:10px;background:#000;display:block}
 #q{width:100%;margin:0 0 12px;font:18px system-ui,sans-serif;padding:14px;border-radius:10px;border:1.5px solid var(--mu);background:var(--pn);color:var(--ink)}
 #np{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));background:var(--pn);border-top:1px solid #34605a;z-index:6;display:none;align-items:center;gap:12px;padding:8px 16px;font:15px system-ui,sans-serif}
+:root{--tb:62px}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:12;height:calc(var(--tb) + env(safe-area-inset-top));padding:env(safe-area-inset-top) 14px 0;display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:2px solid var(--brass);font:700 clamp(16px,4.8vw,28px) Georgia,'Times New Roman',serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wtitle{display:none}
+#welcome{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
+#app{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
+#qr,#staff{top:calc(var(--tb) + env(safe-area-inset-top))}
+footer{display:none!important}
+#bottomnav .nb{flex:1 1 auto;white-space:nowrap;min-width:0;font-size:clamp(15px,4.4vw,22px);padding:8px 10px;gap:8px}
+#bottomnav .nb span{overflow:hidden;text-overflow:ellipsis}
+#bottomnav .nb svg{width:26px;height:26px;flex:none}
+.acts{display:flex;flex-wrap:wrap;gap:12px}.acts .btn{flex:0 0 auto;white-space:nowrap}
 </style>
 </head>
 <body>
+<div id="topbar"></div>
 
 <section id="welcome">
   <h1 id="wtitle"></h1>
@@ -303,7 +315,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "a4";
+const BUILD = "a5";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -413,7 +425,7 @@ function goBack() {
 }
 document.addEventListener("click", e => {
   const b = e.target.closest(".nb"); if (!b) return;
-  b.dataset.act === "back" ? goBack() : showWelcome();
+  { const a = b.dataset.act; if (a === "back") goBack(); else if (a === "sec") { stack = [{v:"menu"}, {v:"list", k:b.dataset.k}]; renderApp(); window.scrollTo(0, 0); } else showWelcome(); }
 });
 const updNav = () => { $("bottomnav").hidden = $("app").hidden && $("qr").hidden && $("detail").hidden; };
 const navObs = new MutationObserver(updNav);
@@ -502,7 +514,7 @@ function buildLangButtons() {
 }
 
 function welcomeText() {
-  $("wtitle").textContent = tr(DATA.title);
+  $("wtitle").textContent = tr(DATA.title); setTitle();
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
   document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -810,10 +822,10 @@ function goBack() {
 }
 function renderApp() {
   document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  document.title = tr(DATA.title); buildNav(); setQRButtons();
+  document.title = tr(DATA.title); setTitle(); buildNav(); setQRButtons();
   $("retry").textContent = t("retry");
   const s = stack[stack.length - 1]; let h = "";
-  if (s.v === "menu") h = `<h2 class="center">${esc(tr(DATA.title))}</h2>` + (GRP[lang] || GRP.el).split("|").map((gn, gi) => `<div class="gt">${gn}</div><div class="lgrid">` + SEC.map((c, i) => c.g === gi ? `<button class="tile" data-go="list" data-k="${c.k}"><span class="ic">${c.i}</span><span><b>${String(i + 1).padStart(2, "0")} · ${secT(c.k)}</b></span></button>` : "").join("") + `</div>`).join("");
+  if (s.v === "menu") h = (GRP[lang] || GRP.el).split("|").map((gn, gi) => `<div class="gt">${gn}</div><div class="lgrid">` + SEC.map((c, i) => c.g === gi ? `<button class="tile" data-go="list" data-k="${c.k}"><span class="ic">${c.i}</span><span><b>${String(i + 1).padStart(2, "0")} · ${secT(c.k)}</b></span></button>` : "").join("") + `</div>`).join("");
   else if (s.v === "list") h = listV(s.k);
   else if (s.v === "item") h = itemV(s.k, s.id);
   else if (s.v === "sub") h = subV(s.id, s.sv);
@@ -957,6 +969,20 @@ async function importLocal(files) {
     }
     localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-local", "1"); location.reload();
   } catch (e) { setStatus("Σφάλμα στο πακέτο: " + e.message); }
+}
+/* ===== a5: τίτλος σε γραμμή πάνω, κουμπιά πλοήγησης ανάλογα με την οθόνη ===== */
+function setTitle() { const el = $("topbar"); if (el && DATA && DATA.title) el.textContent = tr(DATA.title); }
+function buildNav() {
+  const n = NAV_UI[lang] || NAV_UI.el, appOn = !$("app").hidden, qrOn = !$("qr").hidden, s = stack[stack.length - 1];
+  const B = (act, svg, label, extra) => `<button class="nb" data-act="${act}" ${extra || ""} aria-label="${esc(label)}">${svg}<span>${esc(label)}</span></button>`;
+  let b = [];
+  if (!qrOn && appOn && stack.length === 1) b = [B("home", SVG_HOME, n.home)];
+  else {
+    b.push(B("back", SVG_BACK, n.back));
+    if (!qrOn && appOn && stack.length > 2) { const k = s.k || (s.v === "sub" ? "musicians" : null); if (k) b.push(B("sec", "", secT(k), `data-k="${k}"`)); }
+    b.push(B("home", SVG_HOME, n.home));
+  }
+  document.querySelectorAll("[data-nav]").forEach(el => el.innerHTML = b.join(""));
 }
 if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
