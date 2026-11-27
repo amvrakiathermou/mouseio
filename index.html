@@ -172,10 +172,20 @@ footer{display:none!important}
 #bottomnav .nb span{overflow:hidden;text-overflow:ellipsis}
 #bottomnav .nb svg{width:26px;height:26px;flex:none}
 .acts{display:flex;flex-wrap:wrap;gap:12px}.acts .btn{flex:0 0 auto;white-space:nowrap}
+.wflags{bottom:0!important;border-top:2px solid var(--brass);padding:14px 0 calc(16px + env(safe-area-inset-bottom));background:var(--bg)}
+#bottomnav:empty{display:none}
+html.web{--bg:#13293a;--panel:#1d3d54;--mute:#a9bdcb;--tb:76px}
+html.web #topbar{flex-direction:column;gap:2px}
+.webtag{font:700 11px system-ui,sans-serif;letter-spacing:.14em;color:var(--brass);text-transform:uppercase}
+#vlangs{position:fixed;top:calc(var(--tb) + env(safe-area-inset-top));left:0;right:0;z-index:11;background:var(--bg);border-bottom:1px solid #34605a;display:flex;justify-content:center;gap:8px;padding:7px 8px;flex-wrap:nowrap;direction:ltr}
+#vlangs[hidden]{display:none}
+#vlangs button.flag{width:30px;height:21px;border-width:2px;border-radius:4px;flex:none}
+html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </style>
 </head>
 <body>
 <div id="topbar"></div>
+<div id="vlangs" class="langs" hidden></div>
 
 <section id="welcome">
   <h1 id="wtitle"></h1>
@@ -315,7 +325,7 @@ footer{display:none!important}
 </div>
 
 <script>
-const BUILD = "a5";
+const BUILD = "a6";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -390,7 +400,8 @@ async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome();
+  if (VISITOR) { document.documentElement.classList.add("web"); const bl = (navigator.language || "").slice(0, 2); if (LANGS.some(l => l[0] === bl)) lang = bl; buildWebLangs(); } else buildLangButtons();
+  showWelcome();
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
 
@@ -479,6 +490,9 @@ const LBL = {
  ja:"経歴|写真|録音|動画|行事|証言|共演者|音楽グループ|音楽家|メンバー|演奏した人|語り手|まだ項目がありません|文字を大きく|検索…|見つかりません|動画は利用できません|存命"};
 const LB = i => (LBL[lang] || LBL.el).split("|")[i];
 const SEC = [{k:"musicians",g:0,i:"👥"},{k:"families",g:0,i:"🏠"},{k:"testimonies",g:0,i:"🎙"},{k:"newgen",g:0,i:"🎓"},{k:"instruments",g:1,i:"🎻"},{k:"recordings",g:1,i:"🎧"},{k:"videos",g:1,i:"🎬"},{k:"photos",g:2,i:"🖼"},{k:"events",g:2,i:"📅"},{k:"history",g:2,i:"🏛"}];
+const CATT = {el:"Έγχορδα|Πνευστά|Κρουστά|Άλλο",en:"Strings|Wind|Percussion|Other",fr:"Cordes|Vents|Percussions|Autre",de:"Saiteninstrumente|Blasinstrumente|Schlaginstrumente|Andere",it:"Corde|Fiati|Percussioni|Altro",es:"Cuerdas|Viento|Percusión|Otros",ru:"Струнные|Духовые|Ударные|Другое",zh:"弦乐器|管乐器|打击乐器|其他",ar:"الآلات الوترية|آلات النفخ|آلات الإيقاع|أخرى",ja:"弦楽器|管楽器|打楽器|その他"};
+const catName = c => { const i = ["Έγχορδα","Πνευστά","Κρουστά","Άλλο"].indexOf(c); return i < 0 ? c : (CATT[lang] || CATT.el).split("|")[i]; };
+const WEBT = {el:"Έκδοση web",en:"Web version",fr:"Version web",de:"Web-Version",it:"Versione web",es:"Versión web",ru:"Веб-версия",zh:"网页版",ar:"نسخة الويب",ja:"Web版"};
 const secT = k => (SECT[lang] || SECT.el).split("|")[SEC.findIndex(s => s.k === k)];
 
 function exitApplication() {
@@ -494,7 +508,7 @@ function showExitScreen() {
   $("welcome").hidden = true;
   $("app").hidden = true;
   $("detail").hidden = true;
-  $("qr").hidden = true;
+  $("qr").hidden = true; buildNav();
   $("staff").hidden = true;
   $("bottomnav").hidden = true;
   $("exit-screen").hidden = false;
@@ -565,7 +579,7 @@ function openQR() {
   const q = QR_UI[lang] || QR_UI.el;
   $("qrtext").textContent = q.help;
   $("qrclose").textContent = "✕ " + q.close;
-  $("qr").hidden = false; history.pushState({q:1}, "");
+  $("qr").hidden = false; buildNav(); history.pushState({q:1}, "");
 }
 function closeQR(silent) {
   if ($("qr").hidden) return;
@@ -838,7 +852,7 @@ function listV(k) {
   if (k === "photos") return h + `<div class="pgrid">` + a.map(p => `<button data-go="item" data-k="photos" data-id="${p.id}" aria-label="${esc(nm(p))}"><img src="${p.file}" alt="${esc(nm(p))}"></button>`).join("") + `</div>`;
   const ic = SEC.find(x => x.k === k).i, search = a.length > 8 ? `<input id="q" type="search" placeholder="${LB(14)}">` : "";
   if (["history", "testimonies", "events", "newgen"].includes(k)) return h + search + `<div id="rows">` + a.map(x => `<button class="tile" style="margin-bottom:10px" data-go="item" data-k="${k}" data-id="${x.id}"><span><b>${esc(nm(x))}</b><small>${esc(x.period || x.date || x.when || "")}</small></span></button>`).join("") + `</div>`;
-  const row = x => { const src = x.file || pimg(x.cover || x.photo); const sb = k === "musicians" ? `${years(x)}<br>${esc((x.inst || []).map(i => nm(by("instruments", i))).join(", "))}` : esc(x.cat || x.date || ""); return `<button class="lrow" data-go="item" data-k="${k}" data-id="${x.id}">${src ? `<img src="${src}" alt="">` : `<span class="ic" style="width:80px;text-align:center;font-size:2rem">${ic}</span>`}<span><b>${esc(nm(x))}</b><span class="sub">${sb}</span></span></button>`; };
+  const row = x => { const src = x.file || pimg(x.cover || x.photo); const sb = k === "musicians" ? `${years(x)}<br>${esc((x.inst || []).map(i => nm(by("instruments", i))).join(", "))}` : esc(catName(x.cat) || x.date || ""); return `<button class="lrow" data-go="item" data-k="${k}" data-id="${x.id}">${src ? `<img src="${src}" alt="">` : `<span class="ic" style="width:80px;text-align:center;font-size:2rem">${ic}</span>`}<span><b>${esc(nm(x))}</b><span class="sub">${sb}</span></span></button>`; };
   return h + search + `<div class="lgrid" id="rows">` + a.map(row).join("") + `</div><p class="sub" id="nores" hidden>${LB(15)}</p>`;
 }
 function recRow(r) { return `<div class="rec"><button class="play" data-play="${r.id}" aria-pressed="${playId === r.id}">${playId === r.id ? "❚❚" : "▶"}</button><div style="flex:1"><b>${esc(nm(r))}</b><div class="sub">${esc(r.year || "")} ${esc(r.place || "")}</div><div>${chips(r.musicians, "musicians")}</div></div></div>`; }
@@ -850,7 +864,7 @@ function itemV(k, id) {
   } else if (k === "photos") h = `<img class="vid" src="${x.file}" alt=""><h2>${esc(nm(x))}</h2><div class="sub">${esc([x.year, x.place, x.src].filter(Boolean).join(" · "))}</div><div style="margin-top:8px">${chips(x.musicians, "musicians")}</div>`;
   else if (k === "videos") h = `<h2>${esc(nm(x))}</h2>` + videoBox(x) + `<div style="margin-top:10px">${chips(x.musicians, "musicians")}</div>`;
   else {
-    const e = x.file || pimg(x.cover); h = (e ? `<img class="vid" style="max-height:40vh" src="${e}" alt="">` : "") + `<h2>${esc(nm(x))}</h2><div class="sub">${esc(x.cat || x.date || x.period || x.when || "")}</div>${g(x, "text") ? `<div class="paper" style="font-size:1.1rem;margin:12px 0">${esc(g(x, "text"))}</div>` : ""}`;
+    const e = x.file || pimg(x.cover); h = (e ? `<img class="vid" style="max-height:40vh" src="${e}" alt="">` : "") + `<h2>${esc(nm(x))}</h2><div class="sub">${esc(catName(x.cat) || x.date || x.period || x.when || "")}</div>${g(x, "text") ? `<div class="paper" style="font-size:1.1rem;margin:12px 0">${esc(g(x, "text"))}</div>` : ""}`;
     if (x.musicians && x.musicians.length) h += `<div class="gt">${LB(8)}</div>` + chips(x.musicians, "musicians");
     if (x.members && x.members.length) h += `<div class="gt">${LB(9)}</div>` + chips(x.members, "musicians");
     if (x.players && x.players.length) h += `<div class="gt">${LB(10)}</div>` + chips(x.players, "musicians");
@@ -896,7 +910,13 @@ function play(id) {
 }
 $("npb").onclick = () => { stopAudio(); renderApp(); };
 audio.onended = () => { stopAudio(); renderApp(); };
-const _showWelcome = showWelcome; showWelcome = function () { stopAudio(); stack = [{v:"menu"}]; _showWelcome(); };
+const _showWelcome = showWelcome;
+showWelcome = function () { stopAudio(); stack = [{v:"menu"}]; if (VISITOR) { closeQR(true); $("welcome").hidden = true; $("app").hidden = false; renderApp(); window.scrollTo(0, 0); } else _showWelcome(); };
+function buildWebLangs() {
+  const h = $("vlangs"); h.innerHTML = "";
+  LANGS.forEach(([c, n]) => { const b = document.createElement("button"); b.className = "flag"; b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n; b.setAttribute("aria-pressed", c === lang); b.onclick = () => { lang = c; buildWebLangs(); renderApp(); }; h.appendChild(b); });
+  h.hidden = false;
+}
 /* ===== a4: δεδομένα, λήψη αρχείων, πακέτο .zip ===== */
 const mediaUrls = () => [...DATA.photos.map(p => p.file), ...DATA.recordings.map(r => r.file), ...(LOCAL ? DATA.videos.map(v => v.file) : [])].filter(Boolean);
 function applyMeta() { const M = DATA.meta || {}; DATA.title = M.title; DATA.version = M.version || 1; DATA.idleSeconds = M.idleSeconds; }
@@ -904,7 +924,8 @@ async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("data.json", {cache:"no-store"})).json(); applyMeta(); }
   catch (_) { $("wpick").textContent = t("nodata"); return; }
   if (VISITOR) document.querySelector("footer").hidden = true;
-  buildLangButtons(); showWelcome();
+  if (VISITOR) { document.documentElement.classList.add("web"); const bl = (navigator.language || "").slice(0, 2); if (LANGS.some(l => l[0] === bl)) lang = bl; buildWebLangs(); } else buildLangButtons();
+  showWelcome();
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
   try {
@@ -971,12 +992,13 @@ async function importLocal(files) {
   } catch (e) { setStatus("Σφάλμα στο πακέτο: " + e.message); }
 }
 /* ===== a5: τίτλος σε γραμμή πάνω, κουμπιά πλοήγησης ανάλογα με την οθόνη ===== */
-function setTitle() { const el = $("topbar"); if (el && DATA && DATA.title) el.textContent = tr(DATA.title); }
+function setTitle() { const el = $("topbar"); if (el && DATA && DATA.title) el.innerHTML = esc(tr(DATA.title)) + (VISITOR ? `<span class="webtag">${esc(WEBT[lang] || WEBT.el)}</span>` : ""); }
 function buildNav() {
   const n = NAV_UI[lang] || NAV_UI.el, appOn = !$("app").hidden, qrOn = !$("qr").hidden, s = stack[stack.length - 1];
   const B = (act, svg, label, extra) => `<button class="nb" data-act="${act}" ${extra || ""} aria-label="${esc(label)}">${svg}<span>${esc(label)}</span></button>`;
   let b = [];
-  if (!qrOn && appOn && stack.length === 1) b = [B("home", SVG_HOME, n.home)];
+  if (qrOn || (appOn && stack.length === 1 && !VISITOR)) b = [B("home", SVG_HOME, n.home)];
+  else if (appOn && stack.length === 1) b = [];
   else {
     b.push(B("back", SVG_BACK, n.back));
     if (!qrOn && appOn && stack.length > 2) { const k = s.k || (s.v === "sub" ? "musicians" : null); if (k) b.push(B("sec", "", secT(k), `data-k="${k}"`)); }
