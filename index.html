@@ -135,6 +135,32 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .idle-row select{font:16px system-ui,sans-serif;padding:11px 12px;border-radius:9px;border:1.5px solid var(--mute);background:rgba(0,0,0,.25);color:var(--ink);width:100%}
 #exit-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;font:22px system-ui,sans-serif;text-align:center;padding:30px;gap:12px}
 #exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
+:root{--pn:var(--panel);--br:var(--brass);--mu:var(--mute);--paper:#f7f2e6;--tx:#2b2418}
+#view{max-width:1100px;margin:0 auto;padding:18px}
+#view h1{font-size:2rem;margin:.2em 0}#view h2{margin:.2em 0 .6em}
+.sub{color:var(--mu);font:15px system-ui,sans-serif}.center{text-align:center}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
+.tile{background:var(--pn);border:1.5px solid #34605a;border-radius:12px;padding:16px;display:flex;gap:12px;align-items:center;text-align:start;width:100%;color:var(--ink);font:inherit;cursor:pointer}
+.tile .ic{font-size:1.8rem}.tile b{display:block}.tile small{display:block;color:var(--mu);font:14px system-ui,sans-serif}
+.gt{color:var(--br);letter-spacing:.12em;font:700 13px system-ui,sans-serif;margin:22px 0 8px;text-transform:uppercase}
+.lrow{display:flex;gap:14px;align-items:center;background:var(--pn);border:0;border-radius:12px;padding:8px;text-align:start;width:100%;min-height:96px;color:var(--ink);font:inherit;cursor:pointer}
+.lrow img{width:80px;height:80px;object-fit:cover;object-position:50% 25%;border-radius:10px;flex:none;background:#0e2321}
+.lrow b{display:block;font-size:1.08rem;line-height:1.25}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.pgrid button{padding:0;border:0;border-radius:10px;overflow:hidden;aspect-ratio:1;background:#0e2321;display:block;cursor:pointer}
+.pgrid img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.hero{display:flex;gap:22px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.hero img{width:min(260px,40vw);aspect-ratio:3/4;object-fit:cover;border-radius:14px}
+.chip{display:inline-block;border:1.5px solid var(--br);border-radius:999px;padding:6px 14px;margin:4px 6px 4px 0;background:transparent;color:var(--ink);font:15px system-ui,sans-serif;cursor:pointer}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:14px}.acts .btn{text-align:start}
+.btn.gold{background:var(--br);color:#2a2110}
+.paper{background:var(--paper);color:var(--tx);border-radius:14px;padding:26px 30px;font-size:1.25rem;line-height:1.7}
+.paper blockquote{border-inline-start:4px solid var(--br);margin:0 0 18px;padding-inline-start:16px;font-style:italic}
+.rec{display:flex;gap:14px;align-items:center;background:var(--pn);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.play{width:54px;height:54px;border-radius:50%;border:2px solid var(--br);background:transparent;color:var(--br);font-size:20px;flex:none;cursor:pointer}
+.play[aria-pressed=true]{background:var(--br);color:#2a2110}
+.vid{width:100%;max-height:68vh;object-fit:contain;border-radius:10px;background:#000;display:block}
+#q{width:100%;margin:0 0 12px;font:18px system-ui,sans-serif;padding:14px;border-radius:10px;border:1.5px solid var(--mu);background:var(--pn);color:var(--ink)}
+#np{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));background:var(--pn);border-top:1px solid #34605a;z-index:6;display:none;align-items:center;gap:12px;padding:8px 16px;font:15px system-ui,sans-serif}
 </style>
 </head>
 <body>
@@ -148,9 +174,8 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </section>
 
 <div id="app" hidden>
-  <header><h1 id="title"></h1></header>
-  <nav id="menu"></nav>
-  <main id="grid"></main>
+  <header hidden><h1 id="title"></h1></header>
+  <div id="view"></div>
   <footer><span id="status"></span><button id="retry" hidden></button></footer>
 </div>
 
@@ -171,6 +196,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   </div>
 </section>
 
+<div id="np"><span id="npt" style="flex:1"></span><button class="chip" id="npb">❚❚</button></div>
 <div id="bottomnav" data-nav hidden></div>
 
 <section id="staff" hidden role="dialog" aria-modal="true">
@@ -266,7 +292,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
         </div>
       </div>
 
-      <input type="file" id="sfile" multiple hidden accept="image/*,audio/*,.json,.mp3,.m4a,.aac,.ogg,.wav,.jpg,.jpeg,.png,.webp">
+      <input type="file" id="sfile" hidden accept=".zip,application/zip,application/x-zip-compressed">
     </div>
   </div>
 </section>
@@ -277,9 +303,9 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 </div>
 
 <script>
-const BUILD = "a3";
+const BUILD = "a4";
 const $ = id => document.getElementById(id);
-const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["es","Español"],["it","Italiano"],["ru","Русский"],["zh","中文"]];
+const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
 const UI = {
   el:{start:"Έναρξη",pick:"Επιλέξτε γλώσσα",all:"Όλα",listen:"Ακρόαση",pause:"Παύση",close:"Κλείσιμο",ready:"✔ Έτοιμο για χρήση χωρίς σύνδεση",check:"Έλεγχος αρχείων",missing:"Λείπουν αρχεία",retry:"Νέα προσπάθεια",nosound:"Ο ήχος δεν είναι διαθέσιμος",nodata:"Δεν βρέθηκαν δεδομένα. Συνδεθείτε στο ίντερνετ μία φορά.",exitapp:"Κλείσιμο εφαρμογής",exitconfirm:"Να κλείσει η εφαρμογή;"},
@@ -316,7 +342,7 @@ function fillTour(btn, parts, cls) {
   btn.innerHTML = "";
   const line1 = document.createElement("span");
   line1.className = "btn-line1";
-  line1.textContent = "Έναρξη ξενάγησης";
+  line1.textContent = TOURL[lang] || TOURL.el;
   btn.appendChild(line1);
   const line2 = document.createElement("span");
   line2.className = "btn-line2";
@@ -404,6 +430,44 @@ const FLAGS = {
   es:"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#aa151b'/><rect y='10' width='60' height='20' fill='#f1bf00'/></svg>"
 };
 const flagUrl = c => 'url("data:image/svg+xml,' + encodeURIComponent(FLAGS[c]) + '")';
+/* ===== a4: νέες γλώσσες (ar, ja) και κείμενα της νέας δομής ===== */
+Object.assign(UI, {
+  ar:{start:"ابدأ",pick:"اختر اللغة",all:"الكل",listen:"استماع",pause:"إيقاف مؤقت",close:"إغلاق",ready:"✔ جاهز للاستخدام دون إنترنت",check:"جارٍ فحص الملفات",missing:"ملفات مفقودة",retry:"إعادة المحاولة",nosound:"الصوت غير متاح",nodata:"لم يتم العثور على بيانات. اتصل بالإنترنت مرة واحدة.",exitapp:"إغلاق التطبيق",exitconfirm:"هل تريد إغلاق التطبيق؟"},
+  ja:{start:"開始",pick:"言語を選択",all:"すべて",listen:"聴く",pause:"一時停止",close:"閉じる",ready:"✔ オフラインで利用可能",check:"ファイルを確認中",missing:"ファイルが不足",retry:"再試行",nosound:"音声を再生できません",nodata:"データが見つかりません。一度インターネットに接続してください。",exitapp:"アプリを閉じる",exitconfirm:"アプリを閉じますか？"}});
+Object.assign(QR_UI, {
+  ar:{help:"امسح الرمز بكاميرا هاتفك.\nسيستخدم هذا الخيار بيانات هاتفك المحمولة.",close:"إغلاق"},
+  ja:{help:"スマートフォンのカメラでコードを読み取ってください。\nこの方法ではスマートフォンのモバイルデータを使用します。",close:"閉じる"}});
+Object.assign(TOUR, {ar:{tablet:["على هذا ","الجهاز اللوحي",""],phone:["على ","هاتفك",""]}, ja:{tablet:["この","タブレット","で"],phone:["あなたの","スマートフォン","で"]}});
+Object.assign(NAV_UI, {ar:{back:"رجوع",home:"الرئيسية"}, ja:{back:"戻る",home:"ホーム"}});
+FLAGS.ar = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='13.4' fill='#000'/><rect y='13.3' width='60' height='13.4' fill='#fff'/><rect y='26.6' width='60' height='13.4' fill='#007a3d'/><path d='M0 0L24 20L0 40z' fill='#ce1126'/></svg>";
+FLAGS.ja = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'><rect width='60' height='40' fill='#fff'/><circle cx='30' cy='20' r='12' fill='#bc002d'/></svg>";
+const TOURL = {el:"Έναρξη ξενάγησης",en:"Start the tour",fr:"Commencer la visite",de:"Rundgang starten",it:"Inizia la visita",es:"Empezar la visita",ru:"Начать экскурсию",zh:"开始参观",ar:"ابدأ الجولة",ja:"ツアーを始める"};
+const SECT = {
+ el:"Οι μουσικοί μας|Μουσικές οικογένειες|Μαρτυρίες και αφηγήσεις|Η νέα γενιά|Μουσικά όργανα|Ηχογραφήσεις|Βίντεο|Φωτογραφικό αρχείο|Πανηγύρια και εκδηλώσεις|Ιστορική διαδρομή",
+ en:"Our musicians|Musical families|Testimonies and stories|The new generation|Musical instruments|Recordings|Videos|Photo archive|Festivals and events|Historical timeline",
+ fr:"Nos musiciens|Familles musicales|Témoignages et récits|La nouvelle génération|Instruments de musique|Enregistrements|Vidéos|Archives photographiques|Fêtes et événements|Parcours historique",
+ de:"Unsere Musiker|Musikerfamilien|Zeitzeugen und Erzählungen|Die neue Generation|Musikinstrumente|Aufnahmen|Videos|Fotoarchiv|Feste und Veranstaltungen|Historischer Rückblick",
+ it:"I nostri musicisti|Famiglie musicali|Testimonianze e racconti|La nuova generazione|Strumenti musicali|Registrazioni|Video|Archivio fotografico|Feste ed eventi|Percorso storico",
+ es:"Nuestros músicos|Familias musicales|Testimonios y relatos|La nueva generación|Instrumentos musicales|Grabaciones|Vídeos|Archivo fotográfico|Fiestas y eventos|Recorrido histórico",
+ ru:"Наши музыканты|Музыкальные семьи|Свидетельства и рассказы|Новое поколение|Музыкальные инструменты|Записи|Видео|Фотоархив|Праздники и события|Исторический путь",
+ zh:"我们的音乐家|音乐世家|见证与讲述|新一代|乐器|录音|视频|照片档案|节庆与活动|历史历程",
+ ar:"موسيقيونا|العائلات الموسيقية|شهادات وحكايات|الجيل الجديد|الآلات الموسيقية|التسجيلات|الفيديو|أرشيف الصور|المهرجانات والفعاليات|المسار التاريخي",
+ ja:"私たちの音楽家|音楽一家|証言と語り|新しい世代|楽器|録音|動画|写真アーカイブ|祭りと行事|歴史の歩み"};
+const GRP = {el:"Άνθρωποι|Μουσική|Μνήμη",en:"People|Music|Memory",fr:"Personnes|Musique|Mémoire",de:"Menschen|Musik|Erinnerung",it:"Persone|Musica|Memoria",es:"Personas|Música|Memoria",ru:"Люди|Музыка|Память",zh:"人物|音乐|记忆",ar:"الأشخاص|الموسيقى|الذاكرة",ja:"人々|音楽|記憶"};
+const LBL = {
+ el:"Βιογραφία|Φωτογραφίες|Ηχογραφήσεις|Βίντεο|Εκδηλώσεις|Μαρτυρίες|Συνεργάτες|Μουσικά σχήματα|Μουσικοί|Μέλη|Ποιοι το έπαιζαν|Αφηγητής|Δεν υπάρχουν ακόμα εγγραφές|Μεγαλύτερα γράμματα|Αναζήτηση…|Δεν βρέθηκε τίποτα|Το βίντεο δεν είναι διαθέσιμο|ζει",
+ en:"Biography|Photos|Recordings|Videos|Events|Testimonies|Collaborators|Musical groups|Musicians|Members|Who played it|Narrator|No entries yet|Larger text|Search…|Nothing found|Video not available|alive",
+ fr:"Biographie|Photos|Enregistrements|Vidéos|Événements|Témoignages|Collaborateurs|Formations musicales|Musiciens|Membres|Qui en jouait|Narrateur|Aucune entrée pour le moment|Texte plus grand|Rechercher…|Aucun résultat|Vidéo indisponible|vivant",
+ de:"Biografie|Fotos|Aufnahmen|Videos|Veranstaltungen|Zeugnisse|Weggefährten|Musikgruppen|Musiker|Mitglieder|Wer es spielte|Erzähler|Noch keine Einträge|Größere Schrift|Suchen…|Nichts gefunden|Video nicht verfügbar|lebt",
+ it:"Biografia|Foto|Registrazioni|Video|Eventi|Testimonianze|Collaboratori|Formazioni musicali|Musicisti|Membri|Chi lo suonava|Narratore|Ancora nessun contenuto|Testo più grande|Cerca…|Nessun risultato|Video non disponibile|vivente",
+ es:"Biografía|Fotos|Grabaciones|Vídeos|Eventos|Testimonios|Colaboradores|Agrupaciones musicales|Músicos|Miembros|Quién lo tocaba|Narrador|Aún no hay entradas|Texto más grande|Buscar…|No se encontró nada|Vídeo no disponible|vive",
+ ru:"Биография|Фото|Записи|Видео|События|Свидетельства|Коллеги|Музыкальные коллективы|Музыканты|Участники|Кто на нём играл|Рассказчик|Пока нет записей|Крупнее шрифт|Поиск…|Ничего не найдено|Видео недоступно|жив",
+ zh:"生平|照片|录音|视频|活动|见证|合作者|音乐团体|音乐家|成员|演奏者|讲述者|暂无内容|放大文字|搜索…|未找到|视频不可用|在世",
+ ar:"السيرة|الصور|التسجيلات|الفيديو|الفعاليات|الشهادات|المتعاونون|الفرق الموسيقية|الموسيقيون|الأعضاء|من عزف عليها|الراوي|لا توجد مدخلات بعد|تكبير الخط|بحث…|لا شيء|الفيديو غير متاح|على قيد الحياة",
+ ja:"経歴|写真|録音|動画|行事|証言|共演者|音楽グループ|音楽家|メンバー|演奏した人|語り手|まだ項目がありません|文字を大きく|検索…|見つかりません|動画は利用できません|存命"};
+const LB = i => (LBL[lang] || LBL.el).split("|")[i];
+const SEC = [{k:"musicians",g:0,i:"👥"},{k:"families",g:0,i:"🏠"},{k:"testimonies",g:0,i:"🎙"},{k:"newgen",g:0,i:"🎓"},{k:"instruments",g:1,i:"🎻"},{k:"recordings",g:1,i:"🎧"},{k:"videos",g:1,i:"🎬"},{k:"photos",g:2,i:"🖼"},{k:"events",g:2,i:"📅"},{k:"history",g:2,i:"🏛"}];
+const secT = k => (SECT[lang] || SECT.el).split("|")[SEC.findIndex(s => s.k === k)];
 
 function exitApplication() {
   if (!confirm(t("exitconfirm"))) return;
@@ -441,7 +505,7 @@ function welcomeText() {
   $("wtitle").textContent = tr(DATA.title);
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
-  document.documentElement.lang = lang; document.documentElement.dir = "ltr";
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
 }
 
 function showWelcome() {
@@ -457,7 +521,7 @@ function enterApp() {
 }
 
 function renderApp() {
-  document.documentElement.lang = lang; document.documentElement.dir = "ltr";
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   $("title").textContent = tr(DATA.title); document.title = tr(DATA.title);
   const cats = ["all", ...new Set(DATA.items.map(i => i.cat))];
   $("menu").innerHTML = "";
@@ -721,6 +785,179 @@ $("swipe").onclick = async () => {
   location.reload();
 };
 
+/* ===== a4: οθόνες της νέας δομής (μενού, λίστες, καρτέλες) ===== */
+const MIME = {jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",mp3:"audio/mpeg",m4a:"audio/mp4",aac:"audio/aac",ogg:"audio/ogg",wav:"audio/wav",mp4:"video/mp4",json:"application/json"};
+let stack = [{v:"menu"}], playId = null;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const by = (k, id) => (DATA[k] || []).find(x => x.id === id);
+const g = (x, f) => { const T = DATA.tr && DATA.tr[lang]; return (T && T[x.id] && T[x.id][f]) || x[f]; };
+const nm = x => g(x, "name") || g(x, "title");
+const pimg = pid => { const p = by("photos", pid); return p ? p.file : ""; };
+const years = m => m.born ? m.born + (m.died ? "–" + m.died : " (" + LB(17) + ")") : "";
+const chips = (ids, k) => (ids || []).filter(i => by(k, i)).map(i => `<button class="chip" data-go="item" data-k="${k}" data-id="${i}">${esc(nm(by(k, i)))}</button>`).join("");
+const cnt = (a, label, v, id) => a && a.length ? `<button class="btn" data-go="sub" data-id="${id}" data-v="${v}">${label} (${a.length})</button>` : "";
+const ytId = l => { const m = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(l || ""); return m && m[1]; };
+const go = s => { stack.push(s); renderApp(); window.scrollTo(0, 0); };
+
+function enterApp() {
+  if (Date.now() - lpAt < 1000) return;
+  stack = [{v:"menu"}]; $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake();
+}
+function goBack() {
+  if (!$("qr").hidden) closeQR();
+  else if (stack.length > 1) { stack.pop(); renderApp(); window.scrollTo(0, 0); }
+  else showWelcome();
+}
+function renderApp() {
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.title = tr(DATA.title); buildNav(); setQRButtons();
+  $("retry").textContent = t("retry");
+  const s = stack[stack.length - 1]; let h = "";
+  if (s.v === "menu") h = `<h2 class="center">${esc(tr(DATA.title))}</h2>` + (GRP[lang] || GRP.el).split("|").map((gn, gi) => `<div class="gt">${gn}</div><div class="lgrid">` + SEC.map((c, i) => c.g === gi ? `<button class="tile" data-go="list" data-k="${c.k}"><span class="ic">${c.i}</span><span><b>${String(i + 1).padStart(2, "0")} · ${secT(c.k)}</b></span></button>` : "").join("") + `</div>`).join("");
+  else if (s.v === "list") h = listV(s.k);
+  else if (s.v === "item") h = itemV(s.k, s.id);
+  else if (s.v === "sub") h = subV(s.id, s.sv);
+  $("view").innerHTML = h;
+}
+function listV(k) {
+  const a = DATA[k] || []; let h = `<h2>${secT(k)}</h2>`;
+  if (!a.length) return h + `<p class="sub">${LB(12)}</p>`;
+  if (k === "recordings") return h + a.map(recRow).join("");
+  if (k === "photos") return h + `<div class="pgrid">` + a.map(p => `<button data-go="item" data-k="photos" data-id="${p.id}" aria-label="${esc(nm(p))}"><img src="${p.file}" alt="${esc(nm(p))}"></button>`).join("") + `</div>`;
+  const ic = SEC.find(x => x.k === k).i, search = a.length > 8 ? `<input id="q" type="search" placeholder="${LB(14)}">` : "";
+  if (["history", "testimonies", "events", "newgen"].includes(k)) return h + search + `<div id="rows">` + a.map(x => `<button class="tile" style="margin-bottom:10px" data-go="item" data-k="${k}" data-id="${x.id}"><span><b>${esc(nm(x))}</b><small>${esc(x.period || x.date || x.when || "")}</small></span></button>`).join("") + `</div>`;
+  const row = x => { const src = x.file || pimg(x.cover || x.photo); const sb = k === "musicians" ? `${years(x)}<br>${esc((x.inst || []).map(i => nm(by("instruments", i))).join(", "))}` : esc(x.cat || x.date || ""); return `<button class="lrow" data-go="item" data-k="${k}" data-id="${x.id}">${src ? `<img src="${src}" alt="">` : `<span class="ic" style="width:80px;text-align:center;font-size:2rem">${ic}</span>`}<span><b>${esc(nm(x))}</b><span class="sub">${sb}</span></span></button>`; };
+  return h + search + `<div class="lgrid" id="rows">` + a.map(row).join("") + `</div><p class="sub" id="nores" hidden>${LB(15)}</p>`;
+}
+function recRow(r) { return `<div class="rec"><button class="play" data-play="${r.id}" aria-pressed="${playId === r.id}">${playId === r.id ? "❚❚" : "▶"}</button><div style="flex:1"><b>${esc(nm(r))}</b><div class="sub">${esc(r.year || "")} ${esc(r.place || "")}</div><div>${chips(r.musicians, "musicians")}</div></div></div>`; }
+function itemV(k, id) {
+  const x = by(k, id); if (!x) return ""; let h = "";
+  if (k === "musicians") {
+    h = `<div class="hero"><img src="${pimg(x.photo)}" alt=""><div style="flex:1;min-width:230px"><h1>${esc(nm(x))}</h1><div class="sub">${years(x)}${x.origin ? " · " + esc(g(x, "origin")) : ""}</div><div style="margin:8px 0">${chips(x.inst, "instruments")}</div><p>${esc(g(x, "tag") || "")}</p>${x.groups ? `<div class="sub">${LB(7)}: ${esc(g(x, "groups"))}</div>` : ""}</div></div>
+    <div class="acts"><button class="btn gold" data-go="sub" data-id="${id}" data-v="bio">📖 ${LB(0)}</button>${cnt(x.photos, "🖼 " + LB(1), "photos", id)}${cnt(x.recs, "🎧 " + LB(2), "recs", id)}${cnt(x.vids, "🎬 " + LB(3), "vids", id)}${cnt(x.events, "📅 " + LB(4), "events", id)}${cnt(x.tes, "🎙 " + LB(5), "tes", id)}${cnt(x.collab, "🤝 " + LB(6), "collab", id)}${x.fam && by("families", x.fam) ? `<button class="btn" data-go="item" data-k="families" data-id="${x.fam}">🏠 ${esc(nm(by("families", x.fam)))}</button>` : ""}</div>`;
+  } else if (k === "photos") h = `<img class="vid" src="${x.file}" alt=""><h2>${esc(nm(x))}</h2><div class="sub">${esc([x.year, x.place, x.src].filter(Boolean).join(" · "))}</div><div style="margin-top:8px">${chips(x.musicians, "musicians")}</div>`;
+  else if (k === "videos") h = `<h2>${esc(nm(x))}</h2>` + videoBox(x) + `<div style="margin-top:10px">${chips(x.musicians, "musicians")}</div>`;
+  else {
+    const e = x.file || pimg(x.cover); h = (e ? `<img class="vid" style="max-height:40vh" src="${e}" alt="">` : "") + `<h2>${esc(nm(x))}</h2><div class="sub">${esc(x.cat || x.date || x.period || x.when || "")}</div>${g(x, "text") ? `<div class="paper" style="font-size:1.1rem;margin:12px 0">${esc(g(x, "text"))}</div>` : ""}`;
+    if (x.musicians && x.musicians.length) h += `<div class="gt">${LB(8)}</div>` + chips(x.musicians, "musicians");
+    if (x.members && x.members.length) h += `<div class="gt">${LB(9)}</div>` + chips(x.members, "musicians");
+    if (x.players && x.players.length) h += `<div class="gt">${LB(10)}</div>` + chips(x.players, "musicians");
+    if (x.narrator) h += `<div class="gt">${LB(11)}</div>` + chips([x.narrator], "musicians");
+    if (k === "events" || k === "instruments") { const r = DATA.recordings.filter(r => k === "events" ? r.evt === id : (r.inst || []).includes(id)); if (r.length) h += `<div class="gt">${LB(2)}</div>` + r.map(recRow).join(""); }
+    if (k === "events") { const ph = DATA.photos.filter(p => p.evt === id); if (ph.length) h += `<div class="gt">${LB(1)}</div><div class="pgrid">${ph.map(p => `<button data-go="item" data-k="photos" data-id="${p.id}"><img src="${p.file}" alt=""></button>`).join("")}</div>`; }
+  }
+  return h;
+}
+function videoBox(x) {
+  if (LOCAL && x.file) return `<video class="vid" controls src="${x.file}"></video>`;
+  const y = ytId(x.link);
+  if (y && navigator.onLine !== false) return `<iframe class="vid" style="aspect-ratio:16/9;border:0" src="https://www.youtube.com/embed/${y}" allowfullscreen></iframe>`;
+  return `<p class="sub">${LB(16)}</p>`;
+}
+function subV(id, v) {
+  const m = by("musicians", id), T = `<h2>${esc(nm(m))}</h2>`, L = (a, k, fn) => (a || []).filter(i => by(k, i)).map(fn).join("");
+  if (v === "bio") return `<div class="hero" style="margin-bottom:10px"><img src="${pimg(m.photo)}" style="width:90px;aspect-ratio:1" alt=""><div><h2 style="margin:0">${esc(nm(m))}</h2><div class="sub">${years(m)}</div></div></div><div class="paper" id="bio">${g(m, "quote") ? `<blockquote>«${esc(g(m, "quote"))}»</blockquote>` : ""}${esc(g(m, "bio")).split("\n").filter(Boolean).map(p => `<p>${p}</p>`).join("")}</div><p class="center"><button class="btn" id="az">Α+ ${LB(13)}</button></p>`;
+  if (v === "photos") return T + `<div class="pgrid">${L(m.photos, "photos", p => `<button data-go="item" data-k="photos" data-id="${p}"><img src="${by("photos", p).file}" alt=""></button>`)}</div>`;
+  if (v === "recs") return T + L(m.recs, "recordings", r => recRow(by("recordings", r)));
+  if (v === "vids") return T + L(m.vids, "videos", i => `<h3>${esc(nm(by("videos", i)))}</h3>${videoBox(by("videos", i))}`);
+  if (v === "events") return T + L(m.events, "events", i => `<button class="tile" style="margin-bottom:10px" data-go="item" data-k="events" data-id="${i}"><span><b>${esc(nm(by("events", i)))}</b><small>${esc(by("events", i).date || "")}</small></span></button>`);
+  if (v === "tes") return T + L(m.tes, "testimonies", i => `<button class="tile" style="margin-bottom:10px" data-go="item" data-k="testimonies" data-id="${i}"><span><b>${esc(nm(by("testimonies", i)))}</b></span></button>`);
+  if (v === "collab") return T + chips(m.collab, "musicians");
+}
+document.addEventListener("click", e => {
+  const gEl = e.target.closest("#view [data-go]"), p = e.target.closest("[data-play]");
+  if (p) return play(p.dataset.play);
+  if (e.target.id === "az") { const b = $("bio"); b.style.fontSize = (parseFloat(getComputedStyle(b).fontSize) + 4) + "px"; return; }
+  if (!gEl) return; const d = gEl.dataset;
+  go(d.go === "list" ? {v:"list", k:d.k} : d.go === "item" ? {v:"item", k:d.k, id:d.id} : {v:"sub", id:d.id, sv:d.v});
+});
+document.addEventListener("input", e => {
+  if (e.target.id !== "q") return; const q = e.target.value.trim().toLowerCase(); let n = 0;
+  document.querySelectorAll("#rows > *").forEach(r => { const ok = !q || r.textContent.toLowerCase().includes(q); r.hidden = !ok; if (ok) n++; });
+  if ($("nores")) $("nores").hidden = n > 0;
+});
+function stopAudio() { audio.pause(); playId = null; $("np").style.display = "none"; }
+function play(id) {
+  const r = by("recordings", id);
+  if (playId === id) stopAudio(); else { audio.src = r.file; audio.play(); playId = id; $("npt").textContent = "♪ " + nm(r); $("np").style.display = "flex"; }
+  renderApp();
+}
+$("npb").onclick = () => { stopAudio(); renderApp(); };
+audio.onended = () => { stopAudio(); renderApp(); };
+const _showWelcome = showWelcome; showWelcome = function () { stopAudio(); stack = [{v:"menu"}]; _showWelcome(); };
+/* ===== a4: δεδομένα, λήψη αρχείων, πακέτο .zip ===== */
+const mediaUrls = () => [...DATA.photos.map(p => p.file), ...DATA.recordings.map(r => r.file), ...(LOCAL ? DATA.videos.map(v => v.file) : [])].filter(Boolean);
+function applyMeta() { const M = DATA.meta || {}; DATA.title = M.title; DATA.version = M.version || 1; DATA.idleSeconds = M.idleSeconds; }
+async function load() {
+  try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("data.json", {cache:"no-store"})).json(); applyMeta(); }
+  catch (_) { $("wpick").textContent = t("nodata"); return; }
+  if (VISITOR) document.querySelector("footer").hidden = true;
+  buildLangButtons(); showWelcome();
+  if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
+  if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+  try {
+    if (sessionStorage.getItem("mm-just-updated")) { sessionStorage.removeItem("mm-just-updated"); setTimeout(() => alert("Το σύστημά σας έχει ενημερωθεί.\n\nΗ νέα έκδοση είναι η " + BUILD + "."), 600); }
+  } catch (_) {}
+}
+async function syncMedia() {
+  if (!("caches" in window) || !DATA) return;
+  const name = "media-v" + DATA.version, cache = await caches.open(name), urls = mediaUrls();
+  let done = 0, failed = 0; $("retry").hidden = true;
+  for (const u of urls) {
+    if (!(await cache.match(u))) {
+      if (!navigator.onLine) failed++;
+      else { try { const r = await fetch(u); if (r.ok) await cache.put(u, r); else failed++; } catch (_) { failed++; } }
+    }
+    done++; setStatus(`${t("check")} ${done}/${urls.length}…`);
+  }
+  if (failed) { setStatus(`${t("missing")}: ${failed}`); $("retry").hidden = false; return; }
+  (await caches.keys()).filter(k => k.startsWith("media-") && k !== name && k !== "media-local").forEach(k => caches.delete(k));
+  setStatus(t("ready")); if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+}
+async function countFiles() {
+  const names = (await caches.keys()).filter(k => k.startsWith("media-")), urls = mediaUrls(); let ok = 0;
+  for (const u of urls) for (const n of names) if (await (await caches.open(n)).match(u)) { ok++; break; }
+  return {ok, total: urls.length};
+}
+async function forceUpdate() {
+  if (!navigator.onLine) { setStatus("Χρειάζεται σύνδεση στο ίντερνετ."); return; }
+  try { DATA = await (await fetch("data.json", {cache:"no-store"})).json(); applyMeta(); } catch (_) { setStatus("Δεν ήταν δυνατή η λήψη των δεδομένων."); return; }
+  await Promise.all((await caches.keys()).filter(k => k.startsWith("media-") && k !== "media-local").map(k => caches.delete(k)));
+  await syncMedia(); refreshInfo(); if (!$("app").hidden) renderApp();
+}
+/* Ανάγνωση .zip χωρίς βιβλιοθήκη: διαβάζει ένα-ένα τα αρχεία, ώστε να μη γεμίζει η μνήμη */
+async function readZip(file) {
+  const tail = new Uint8Array(await file.slice(Math.max(0, file.size - 70000)).arrayBuffer()); let e = -1;
+  for (let i = tail.length - 22; i >= 0; i--) if (tail[i] == 0x50 && tail[i+1] == 0x4b && tail[i+2] == 5 && tail[i+3] == 6) { e = i; break; }
+  if (e < 0) throw new Error("δεν είναι αρχείο zip");
+  const dv = new DataView(tail.buffer), n = dv.getUint16(e + 10, true), cdSize = dv.getUint32(e + 12, true), cdOff = dv.getUint32(e + 16, true);
+  const cd = new DataView(await file.slice(cdOff, cdOff + cdSize).arrayBuffer()), out = []; let p = 0;
+  for (let i = 0; i < n; i++) {
+    const nl = cd.getUint16(p + 28, true), el = cd.getUint16(p + 30, true), cl = cd.getUint16(p + 32, true);
+    out.push({m: cd.getUint16(p + 10, true), cs: cd.getUint32(p + 20, true), off: cd.getUint32(p + 42, true), name: new TextDecoder().decode(new Uint8Array(cd.buffer, p + 46, nl))});
+    p += 46 + nl + el + cl;
+  }
+  return out;
+}
+async function zipBlob(file, en) {
+  const h = new DataView(await file.slice(en.off, en.off + 30).arrayBuffer()), s = en.off + 30 + h.getUint16(26, true) + h.getUint16(28, true), b = file.slice(s, s + en.cs);
+  return en.m === 0 ? b : await new Response(b.stream().pipeThrough(new DecompressionStream("deflate-raw"))).blob();
+}
+async function importLocal(files) {
+  const f = files && files[0]; if (!f) return; setStatus("Άνοιγμα πακέτου…");
+  try {
+    const list = await readZip(f), dj = list.find(x => /(^|\/)data\.json$/.test(x.name));
+    if (!dj) { setStatus("Το πακέτο δεν περιέχει data.json."); return; }
+    const data = JSON.parse(await (await zipBlob(f, dj)).text());
+    await caches.delete("media-local"); const c = await caches.open("media-local"); let n = 0; const todo = list.filter(x => x !== dj && !x.name.endsWith("/"));
+    for (const en of todo) {
+      const b = await zipBlob(f, en), path = en.name.replace(/^.*?(?=(img|audio|video)\/)/, ""), ext = path.split(".").pop().toLowerCase();
+      await c.put(new URL(path, location.href).href, new Response(b, {headers: {"Content-Type": MIME[ext] || "application/octet-stream"}}));
+      setStatus("Αποθήκευση " + (++n) + "/" + todo.length + "…");
+    }
+    localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-local", "1"); location.reload();
+  } catch (e) { setStatus("Σφάλμα στο πακέτο: " + e.message); }
+}
 if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
 </script>
