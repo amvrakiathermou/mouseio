@@ -1,6 +1,6 @@
 /* Αποθηκάριος: σερβίρει αρχεία από τη μνήμη του tablet όταν δεν υπάρχει ίντερνετ */
-const SHELL = "shell-v3";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
-const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "exhibits.json"];
+const SHELL = "shell-v4";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
+const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "data.json"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(SHELL).then(c => c.addAll(FILES.map(f => new Request(f, {cache: "reload"})))).then(() => self.skipWaiting()));
@@ -32,7 +32,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin || new URL(req.url).searchParams.has("nc")) return;  // ?nc=... πάει κατευθείαν στο δίκτυο
   e.respondWith((async () => {
     const p = new URL(req.url).pathname;
-    const isData = p.endsWith("exhibits.json") || p.endsWith("index.html") || p.endsWith("/");
+    const isData = p.endsWith("data.json") || p.endsWith("index.html") || p.endsWith("/");
     if (isData) {                       // σελίδα και λίστα: πρώτα δίκτυο (για ενημερώσεις), αλλιώς μνήμη
       try {
         const net = await fetch(req, {cache: "no-store"});
