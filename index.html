@@ -332,6 +332,12 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 .dev-check{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:8px;background:rgba(210,168,76,.12);margin:0 0 12px;font:15px system-ui,sans-serif;cursor:pointer;user-select:none}
 .dev-check input{width:20px;height:20px;margin-top:2px;flex-shrink:0;accent-color:var(--brass)}
 #czip-slot{margin:8px 0 12px}
+.zip-bar-track{height:14px;border-radius:8px;background:#d8d2c4;overflow:hidden;border:1px solid #b8b0a0}
+.zip-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#c49a3c,#d2a84c,#f0d78a,#d2a84c);border-radius:8px;transition:width .2s ease}
+#zip-progress.ok .zip-bar-fill{background:linear-gradient(90deg,#2d6a4f,#40916c)}
+#zip-progress.err .zip-bar-fill{background:linear-gradient(90deg,#c45c4a,#a84838)}
+#zip-progress{margin-top:10px;padding:12px 14px;border-radius:10px;background:#e8e2d4;border:1px solid rgba(26,42,39,.15)}
+#czip:disabled{opacity:.45;cursor:not-allowed}
 
 .guide ol{margin:0;padding-inline-start:22px}.guide li{margin:0 0 10px}
 .guide code{background:#f0f0f0;padding:1px 6px;border-radius:5px;color:#111;font-size:14px}
@@ -508,8 +514,15 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
               <div id="czip-slot">
                 <button class="staff-btn" id="czip" disabled>
                   <span class="icon">⬇️</span>
-                  <span>Λήψη πακέτου για tablet</span>
+                  <span id="czip-label">Λήψη πακέτου για tablet</span>
                 </button>
+                <div id="zip-progress" hidden>
+                  <p id="zip-msg" style="margin:10px 0 6px;font:14px system-ui,sans-serif;color:#1a2a27"></p>
+                  <div class="zip-bar-track">
+                    <div class="zip-bar-fill" id="zip-bar"></div>
+                  </div>
+                  <p id="zip-pct" style="margin:6px 0 0;font:13px system-ui,sans-serif;color:#1a2a27;opacity:.85"></p>
+                </div>
               </div>
               <div id="slot-dev" hidden></div>
               <ol>
@@ -581,7 +594,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.1";
+const BUILD = "version 1.0";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1408,20 +1421,34 @@ async function buildData(sheets, files, trans) {
 /* --- δημιουργία .zip (χωρίς συμπίεση) για tablet --- */
 const CRCT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 async function crcOf(blob) { let c = 0xFFFFFFFF; const r = blob.stream().getReader(); for (;;) { const {done, value} = await r.read(); if (done) break; for (let i = 0; i < value.length; i++) c = CRCT[(c ^ value[i]) & 255] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
+const yieldUI = () => new Promise(r => setTimeout(r, 0));
 async function makeZip(entries, progress) {
   const parts = [], cd = [], enc = new TextEncoder(); let off = 0, n = 0;
   for (const e of entries) {
-    progress && progress(++n, entries.length); const nm = enc.encode(e.name), crc = await crcOf(e.blob), sz = e.blob.size;
+    n++;
+    if (progress) progress(n, entries.length, e.name || "");
+    await yieldUI();
+    const nm = enc.encode(e.name), crc = await crcOf(e.blob), sz = e.blob.size;
     const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, sz, true); h.setUint32(22, sz, true); h.setUint16(26, nm.length, true);
     parts.push(h.buffer, nm, e.blob);
     const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, sz, true); c.setUint32(24, sz, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
     cd.push(c.buffer, nm); off += 30 + nm.length + sz;
   }
+  if (progress) progress(entries.length, entries.length, "ολοκλήρωση…");
+  await yieldUI();
   const cds = cd.reduce((a, p) => a + p.byteLength, 0), end = new DataView(new ArrayBuffer(22));
   end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true); end.setUint32(12, cds, true); end.setUint32(16, off, true);
   return new Blob([...parts, ...cd, end.buffer], {type: "application/zip"});
 }
-function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }
+function saveBlob(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 8000);
+}
 
 /* --- κουμπιά και αναφορά --- */
 let CONV = null;
@@ -1469,7 +1496,14 @@ async function runConvert(list, outDir) {
     const r = await buildData(sheets, files, trans), esc2 = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
     const sum = Object.entries(r.counts).map(([k, v]) => v + " " + k).join(", ");
     say((r.err.length ? `<b>⚠ ${r.err.length} λάθη. Διόρθωσέ τα και ξαναπάτα «Μετατροπή Excel».</b>` : `<b>✔ Όλα εντάξει:</b> ${sum}.`) + (r.err.length ? `<ul>${r.err.map(x => "<li>⚠ " + esc2(x) + "</li>").join("")}</ul>` : "") + (r.note.length ? `<ul>${r.note.map(x => "<li>" + esc2(x) + "</li>").join("")}</ul>` : ""));
-    if (!r.err.length) { CONV = r; CONV.outDir = outDir; $("cjson").disabled = false; }
+    if (!r.err.length) {
+      CONV = r; CONV.outDir = outDir; $("cjson").disabled = false;
+      if ($("czip") && $("dev-ready") && $("dev-ready").checked) $("czip").disabled = false;
+      if ($("zip-progress")) {
+        const n = CONV.used ? CONV.used.size : 0;
+        setZipProgress(0, "✔ Μετατροπή έτοιμη · " + n + " αρχεία media. Μπορείς να πατήσεις «Λήψη πακέτου για tablet».", "ok");
+      }
+    }
   } catch (e) { say("⚠ Δεν μπόρεσα να διαβάσω το Excel: " + esc2x(e.message)); }
 }
 const esc2x = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
@@ -1538,21 +1572,59 @@ $("cjson").onclick = async () => {
   }
   saveBlob(new Blob([json], {type: "application/json"}), "data.json");
 };
+function setZipProgress(pct, msg, state) {
+  const box = $("zip-progress"), bar = $("zip-bar"), m = $("zip-msg"), p = $("zip-pct");
+  if (!box) return;
+  box.hidden = false;
+  box.classList.remove("ok", "err");
+  if (state) box.classList.add(state);
+  if (m) m.innerHTML = msg || "";
+  if (bar) bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+  if (p) p.textContent = state === "ok" ? "Ολοκληρώθηκε" : state === "err" ? "" : (Math.round(pct) + "%");
+}
 $("czip").onclick = async () => {
-  if (!CONV) return; const entries = [{name: "data.json", blob: new Blob([JSON.stringify(CONV.data)])}], total = [...CONV.used.values()].reduce((a, f) => a + f.size, 0);
-  if (total > 3.9 * 1073741824) { say("⚠ Τα αρχεία ξεπερνούν τα 3,9 GB. Σπάσε τα βίντεο σε δύο πακέτα."); return; }
-  for (const f of CONV.used.values()) entries.push({name: f.path, blob: f.file});
-  $("czip").disabled = true;
-  try {
-    saveBlob(await makeZip(entries, (a, b) => say(`Φτιάχνω το πακέτο… ${a}/${b}`)), "paketo-mouseiou.zip");
-    const msg = "✔ Έγινε λήψη του <code>paketo-mouseiou.zip</code>.<br>Τοποθεσία: φάκελος <b>Λήψεις</b> (Downloads) του υπολογιστή σου.<br>Μετά πέρασέ το στο tablet (USB ή κάρτα μνήμης) και φόρτωσέ το από το μενού προσωπικού → Φόρτωση από τη συσκευή.";
-    if ($("creport")) $("creport").insertAdjacentHTML("afterbegin", `<p style="margin:8px 0;padding:10px 12px;border-radius:8px;background:rgba(210,168,76,.15);border:1px solid rgba(210,168,76,.4)"><b>${msg}</b></p>`);
-    else say(msg);
-  } catch (e) {
-    const em = (typeof esc2x === "function" ? esc2x(e.message) : String(e.message || e));
-    say("⚠ Σφάλμα στο πακέτο: " + em);
+  const btn = $("czip"), lbl = $("czip-label");
+  if (!CONV || !CONV.data) {
+    setZipProgress(0, "⚠ Δεν υπάρχουν δεδομένα μετατροπής.<br>Πήγαινε πρώτα στο «Στείλε νέα δεδομένα στο GitHub», διάλεξε τον φάκελο <code>mouseio amvrakia</code>, πάτα μετατροπή μέχρι ✔, και μετά ξαναέλα εδώ.", "err");
+    return;
   }
-  $("czip").disabled = !$("dev-ready") || !$("dev-ready").checked;
+  const media = CONV.used ? [...CONV.used.values()] : [];
+  if (!media.length) {
+    setZipProgress(0, "⚠ Η μετατροπή έγινε χωρίς αρχεία media (img/audio/video).<br>Διάλεξε τον <b>φάκελο</b> που έχει μέσα το Excel <b>και</b> τον <code>github-mouseio</code> (όχι μόνο το Excel) και ξανατρέξε τη μετατροπή.", "err");
+    return;
+  }
+  const entries = [{ name: "data.json", blob: new Blob([JSON.stringify(CONV.data)], { type: "application/json" }) }];
+  let total = 0;
+  for (const f of media) {
+    total += f.size || 0;
+    entries.push({ name: f.path, blob: f.file });
+  }
+  if (total > 3.9 * 1073741824) {
+    setZipProgress(0, "⚠ Τα αρχεία ξεπερνούν τα 3,9 GB. Μείωσε τα βίντεο ή χώρισέ τα σε δύο πακέτα.", "err");
+    return;
+  }
+  btn.disabled = true;
+  if (lbl) lbl.textContent = "Δημιουργία πακέτου…";
+  setZipProgress(2, "Δημιουργείται το πακέτο για tablet…<br><small>" + media.length + " αρχεία media · παρακαλώ περίμενε, μην κλείσεις τη σελίδα.</small>", null);
+  try {
+    const blob = await makeZip(entries, (a, b, name) => {
+      const pct = Math.round((a / Math.max(b, 1)) * 92) + 4;
+      const short = name ? String(name).replace(/^.*\//, "") : "";
+      setZipProgress(pct, "Δημιουργείται το πακέτο… <b>" + a + "</b> / " + b + (short ? " · " + short : ""), null);
+    });
+    setZipProgress(96, "Ετοιμάζεται η λήψη…", null);
+    await yieldUI();
+    saveBlob(blob, "paketo-mouseiou.zip");
+    setZipProgress(100,
+      "✔ <b>Επιτυχής δημιουργία!</b><br>Το αρχείο <code>paketo-mouseiou.zip</code> κατέβηκε στον φάκελο <b>Λήψεις</b> (Downloads).<br>Πέρασέ το στο tablet (USB ή κάρτα) και φόρτωσέ το από το μενού προσωπικού → Φόρτωση από τη συσκευή.",
+      "ok");
+    if (lbl) lbl.textContent = "Λήψη πακέτου για tablet";
+  } catch (e) {
+    const em = String((e && e.message) || e || "άγνωστο σφάλμα").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    setZipProgress(0, "⚠ Σφάλμα στη δημιουργία πακέτου: " + em, "err");
+    if (lbl) lbl.textContent = "Λήψη πακέτου για tablet";
+  }
+  btn.disabled = !$("dev-ready") || !$("dev-ready").checked;
 };
 [["sgit", "g-git", "git"], ["sdev", "g-dev", "dev"]].forEach(([b, g, mode]) => { $(b).onclick = () => {
   const was = $(g).classList.contains("open"); ["g-git", "g-dev"].forEach(x => $(x).classList.remove("open")); ["sgit", "sdev"].forEach(x => $(x).setAttribute("aria-expanded", "false"));
