@@ -294,7 +294,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
           <span class="left"><span class="icon">🔄</span> Ενημερώσεις & Δεδομένα</span>
           <span class="chevron">▼</span>
         </button>
-                <div class="acc-body">
+        <div class="acc-body">
           <div class="mode-row">
             <div class="mode-opt" id="mode-net" role="button" tabindex="0">
               <span class="tick" id="tick-net"></span>
@@ -327,13 +327,11 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
             </div>
             <div class="guide-body">
               <p class="gnote">Φτιάχνουμε φάκελο στον υπολογιστή μας και τον ονομάζουμε <code>mouseio amvrakia</code>. Μέσα του έχει το Excel <code>mouseio amvrakia excel</code> και τον φάκελο <code>github-mouseio</code>, με τρεις υποφακέλους: <code>img</code> (φωτογραφίες), <code>audio</code> (mp3), <code>video</code> (mp4, έως 25 MB το καθένα).</p>
-
               <p><b>1. Ετοίμασε τα αρχεία στον υπολογιστή</b></p>
               <ul>
                 <li><b>Συμπλήρωσε σωστά το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
                 <li><b>Ονόμασε τα αρχεία</b> που θες να ανεβάσεις σύμφωνα με το Excel και βάλ’ τα στον φάκελο <code>Desktop\mouseio amvrakia\github-mouseio</code> (<code>img</code> οι φωτογραφίες, <code>audio</code> τα mp3, <code>video</code> τα βίντεο).</li>
               </ul>
-
               <p><b>2. Μετατροπή και προετοιμασία για upload</b></p>
               <ul>
                 <li>Πάτα <b>[Διάλεξε φάκελο: mouseio amvrakia]</b> — τον φάκελο που έχει μέσα το Excel και τον υποφάκελο <code>github-mouseio</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.</li>
@@ -347,6 +345,61 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
                   <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
                 </div>
               </div>
+              <ul>
+                <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
+              </ul>
+              <p><b>3. Ανέβασέ τα στο GitHub</b></p>
+              <ul>
+                <li>Άνοιξε το GitHub και συνδέσου αν σου ζητηθεί:<br>
+                  <a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a>
+                </li>
+                <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
+                <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
+                <li><b>Περίμενε 3–5 λεπτά</b> μέχρι να δημοσιευτούν οι αλλαγές.</li>
+              </ul>
+              <p><b>4. Ενημέρωση όλων των tablet</b></p>
+              <ul>
+                <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο.</li>
+                <li>Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο).</li>
+                <li>Τα κινητά (QR) τα βλέπουν αμέσως.</li>
+              </ul>
+            </div>
+          </div>
+
+          <button class="staff-btn" id="sdev" aria-expanded="false">
+            <span class="icon">💾</span>
+            <span>Στείλε νέα δεδομένα στην αποθήκη της συσκευής</span>
+          </button>
+          <div class="guide" id="g-dev">
+            <div class="guide-head">
+              <h3>Πώς στέλνω νέα δεδομένα στη συσκευή (tablet χωρίς ίντερνετ)</h3>
+              <button type="button" class="guide-close" data-close="g-dev">Κλείσιμο</button>
+            </div>
+            <div class="guide-body">
+              <label class="dev-check">
+                <input type="checkbox" id="dev-ready">
+                <span>Έχω ήδη κάνει τα βήματα 1–4 του οδηγού «GitHub» (Excel, αρχεία, Μετατροπή Excel)</span>
+              </label>
+              <div id="czip-slot">
+                <button class="staff-btn" id="czip" disabled>
+                  <span class="icon">⬇️</span>
+                  <span>Λήψη πακέτου για tablet</span>
+                </button>
+              </div>
+              <div id="slot-dev" hidden></div>
+              <ol>
+                <li><b>Περίμενε</b> να φτιαχτεί το αρχείο <code>paketo-mouseiou.zip</code>. Αν είναι μεγάλο, θέλει λίγη ώρα. Μην κλείσεις τη σελίδα. Θα κατέβει στον φάκελο <b>Λήψεις</b>.</li>
+                <li><b>Πέρασε το αρχείο στο tablet:</b> με καλώδιο USB (στο tablet διάλεξε «Μεταφορά αρχείων») στον φάκελο <b>Λήψεις</b>, ή με κάρτα μνήμης.</li>
+                <li><b>Στο tablet</b> άνοιξε το μενού προσωπικού → «Ενημερώσεις & Δεδομένα» → <b>Φόρτωση από τη συσκευή</b> → διάλεξε το <code>paketo-mouseiou.zip</code>.</li>
+                <li><b>Περίμενε</b> να γράψει «Αποθήκευση Χ/Υ». Όταν τελειώσει, η εφαρμογή ξαναφορτώνει μόνη της.</li>
+                <li><b>Έλεγχος:</b> στις «Πληροφορίες έκδοσης» πρέπει να γράφει «Λειτουργία: τοπική» και όλα τα αρχεία αποθηκευμένα (✔).</li>
+                <li><b>Σβήσε το .zip από το tablet</b>, για να ελευθερωθεί χώρος.</li>
+              </ol>
+              <div class="note"><b>Προσοχή:</b> ένα tablet σε τοπική λειτουργία <b>δεν παίρνει</b> ενημερώσεις από το GitHub. Για να γυρίσει στο ίντερνετ επίλεξε <b>Ενημέρωση από το ίντερνετ</b> παραπάνω.</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="acc" id="acc1">
         <button class="acc-btn" onclick="toggleAcc('acc1')">
@@ -384,6 +437,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
           </button>
         </div>
       </div>
+
       <div class="staff-bottom" data-staff-nav>
         <button type="button" class="nb" id="shome" aria-label="Αρχική"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span>Αρχική</span></button>
         <button type="button" class="nb" id="sexit" aria-label="Κλείσιμο εφαρμογής"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Κλείσιμο εφαρμογής</span></button>
@@ -402,7 +456,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.0";
+const BUILD = "a.01";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
