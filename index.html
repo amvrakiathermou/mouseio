@@ -594,7 +594,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.0";
+const BUILD = "version 1.01";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1001,17 +1001,7 @@ $("pinok").onclick = async () => {
     fails = 0; $("pinView").hidden = true; $("panelView").hidden = false;
     $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
     updateModeTicks();
-    try {
-      const switched = sessionStorage.getItem("mm-mode-msg");
-      if (switched) {
-        sessionStorage.removeItem("mm-mode-msg");
-        showModeMessage(switched);
-      } else {
-        $("mode-msg").textContent = LOCAL
-          ? "Τρέχουσα λειτουργία: τοπική (αρχεία συσκευής)."
-          : "Τρέχουσα λειτουργία: ίντερνετ (GitHub).";
-      }
-    } catch (_) {
+    if ($("mode-msg")) {
       $("mode-msg").textContent = LOCAL
         ? "Τρέχουσα λειτουργία: τοπική (αρχεία συσκευής)."
         : "Τρέχουσα λειτουργία: ίντερνετ (GitHub).";
@@ -1268,6 +1258,7 @@ async function forceUpdate() {
   updateModeTicks();
   setStatus("✔ Λειτουργία ίντερνετ (GitHub) — ενημερώθηκε.");
   if (mm) mm.textContent = "✔ Ενημέρωση από το GitHub ολοκληρώθηκε. Λειτουργία: ίντερνετ.";
+  alert("✔ Ενημέρωση από το GitHub ολοκληρώθηκε.\n\nΛειτουργία: ίντερνετ (από το διαδίκτυο).");
 }
 /* Ανάγνωση .zip χωρίς βιβλιοθήκη: διαβάζει ένα-ένα τα αρχεία, ώστε να μη γεμίζει η μνήμη */
 async function readZip(file) {
@@ -1702,41 +1693,43 @@ function updateModeTicks() {
 }
 function showModeMessage(kind) {
   const mm = $("mode-msg");
-  if (!mm) return;
   if (kind === "local") {
-    mm.textContent = "✔ Μετάβαση σε τοπική λειτουργία ολοκληρώθηκε. Τα δεδομένα είναι στη συσκευή (χωρίς ίντερνετ).";
+    if (mm) mm.textContent = "✔ Μετάβαση σε τοπική λειτουργία ολοκληρώθηκε. Τα δεδομένα είναι στη συσκευή (χωρίς ίντερνετ).";
     setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+    alert("✔ Μετάβαση σε ΤΟΠΙΚΗ λειτουργία ολοκληρώθηκε.\n\nΤα δεδομένα είναι αποθηκευμένα στη συσκευή.\nΗ εφαρμογή δουλεύει χωρίς ίντερνετ.");
   } else if (kind === "net") {
-    mm.textContent = "✔ Μετάβαση σε λειτουργία ίντερνετ (GitHub) ολοκληρώθηκε.";
+    if (mm) mm.textContent = "✔ Μετάβαση σε λειτουργία ίντερνετ (GitHub) ολοκληρώθηκε.";
     setStatus("✔ Λειτουργία ίντερνετ (από το GitHub)");
+    alert("✔ Μετάβαση σε λειτουργία ΙΝΤΕΡΝΕΤ (GitHub) ολοκληρώθηκε.\n\nΗ εφαρμογή παίρνει πλέον τα δεδομένα από το διαδίκτυο.");
   }
+  try { updateModeTicks(); } catch (_) {}
 }
-// Μήνυμα μετά από αλλαγή λειτουργίας (μετά το reload)
+// Μήνυμα μετά από αλλαγή λειτουργίας (μετά το reload) — alert ώστε να φαίνεται πάντα
 try {
   const switched = sessionStorage.getItem("mm-mode-msg");
   if (switched) {
     sessionStorage.removeItem("mm-mode-msg");
-    setTimeout(() => showModeMessage(switched), 500);
+    setTimeout(() => { try { showModeMessage(switched); } catch (e) { alert("Αλλαγή λειτουργίας: " + switched); } }, 700);
   }
 } catch (_) {}
 $("mode-net").onclick = () => {
   if (LOCAL) {
-    if (!confirm("Να γίνει μετάβαση σε λειτουργία ίντερνετ (GitHub);\n\nΘα διαγραφούν τα τοπικά δεδομένα της συσκευής και θα φορτωθούν από το διαδίκτυο.")) return;
-    $("mode-msg").textContent = "Μετάβαση σε λειτουργία ίντερνετ (GitHub)… Η σελίδα θα ανανεωθεί.";
+    if (!confirm("Να γίνει μετάβαση σε λειτουργία ΙΝΤΕΡΝΕΤ (GitHub);\n\nΘα διαγραφούν τα τοπικά δεδομένα της συσκευής και θα φορτωθούν από το διαδίκτυο.")) return;
+    if ($("mode-msg")) $("mode-msg").textContent = "Μετάβαση σε λειτουργία ίντερνετ (GitHub)… Η σελίδα θα ανανεωθεί.";
     setStatus("Μετάβαση σε ίντερνετ…");
     exitLocal();
     return;
   }
-  $("mode-msg").textContent = "Ενημέρωση από το GitHub σε εξέλιξη…";
+  if ($("mode-msg")) $("mode-msg").textContent = "Ενημέρωση από το GitHub σε εξέλιξη…";
   forceUpdate();
 };
 $("mode-local").onclick = () => {
   if (LOCAL) {
-    $("mode-msg").textContent = "Ήδη σε τοπική λειτουργία. Επίλεξε νέο αρχείο .zip αν θέλεις να αντικαταστήσεις τα δεδομένα.";
+    if ($("mode-msg")) $("mode-msg").textContent = "Ήδη σε τοπική λειτουργία. Επίλεξε νέο αρχείο .zip αν θέλεις να αντικαταστήσεις τα δεδομένα.";
     $("sfile").click();
     return;
   }
-  $("mode-msg").textContent = "Επίλεξε αρχείο paketo-mouseiou.zip για μετάβαση σε τοπική λειτουργία…";
+  if ($("mode-msg")) $("mode-msg").textContent = "Επίλεξε αρχείο paketo-mouseiou.zip για μετάβαση σε τοπική λειτουργία…";
   setStatus("Επιλογή πακέτου για τοπική λειτουργία…");
   $("sfile").click();
 };
