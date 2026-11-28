@@ -161,9 +161,15 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .vid{width:100%;max-height:68vh;object-fit:contain;border-radius:10px;background:#000;display:block}
 #q{width:100%;margin:0 0 12px;font:18px system-ui,sans-serif;padding:14px;border-radius:10px;border:1.5px solid var(--mu);background:var(--pn);color:var(--ink)}
 #np{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));background:var(--pn);border-top:1px solid #34605a;z-index:6;display:none;align-items:center;gap:12px;padding:8px 16px;font:15px system-ui,sans-serif}
-:root{--tb:62px}
-#topbar{position:fixed;top:0;left:0;right:0;z-index:12;height:calc(var(--tb) + env(safe-area-inset-top));padding:env(safe-area-inset-top) 14px 0;display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:2px solid var(--brass);font:700 clamp(16px,4.8vw,28px) Georgia,'Times New Roman',serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root{--tb:88px}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:12;min-height:calc(var(--tb) + env(safe-area-inset-top));height:auto;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:2px solid var(--brass);font:700 clamp(20px,5.5vw,34px) Georgia,'Times New Roman',serif;color:var(--ink);white-space:normal;overflow:visible;text-align:center;line-height:1.2}
+#topbar .tline{display:block}
+#topbar .title-anim{display:inline-block;transform:translateY(120%);opacity:0}
+#topbar.title-in .title-anim{animation:titleUp .9s cubic-bezier(.16,1,.3,1) forwards}
+#topbar.title-in .title-anim.t2{animation-delay:.12s}
+@keyframes titleUp{0%{transform:translateY(110%);opacity:0;filter:blur(4px)}60%{opacity:1;filter:blur(0)}100%{transform:translateY(0);opacity:1;filter:blur(0)}}
 #wtitle{display:none}
+:root{--tb:88px}
 #welcome{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
 #app{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
 #qr,#staff{top:calc(var(--tb) + env(safe-area-inset-top))}
@@ -283,21 +289,6 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
         <span class="staff-badge">Staff</span>
       </div>
 
-      <div class="acc" id="acc1">
-        <button class="acc-btn" onclick="toggleAcc('acc1')">
-          <span class="left"><span class="icon">ℹ️</span> Πληροφορίες έκδοσης</span>
-          <span class="chevron">▼</span>
-        </button>
-        <div class="acc-body">
-          <div id="sinfo"></div>
-          <p id="sstatus"></p>
-          <button class="staff-btn" id="sapp">
-            <span class="icon">⬆️</span>
-            <span>Έλεγχος νέας έκδοσης εφαρμογής</span>
-          </button>
-        </div>
-      </div>
-
       <div class="acc" id="acc2">
         <button class="acc-btn" onclick="toggleAcc('acc2')">
           <span class="left"><span class="icon">🔄</span> Ενημερώσεις & Δεδομένα</span>
@@ -357,68 +348,22 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
                 </div>
               </div>
 
-              <ul>
-                <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
-              </ul>
-
-              <p><b>3. Ανέβασέ τα στο GitHub</b></p>
-              <ul>
-                <li>Άνοιξε το GitHub και συνδέσου αν σου ζητηθεί:<br>
-                  <a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a>
-                </li>
-                <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
-                <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
-                <li><b>Περίμενε 3–5 λεπτά</b> μέχρι να δημοσιευτούν οι αλλαγές.</li>
-              </ul>
-
-              <p><b>4. Ενημέρωση όλων των tablet</b></p>
-              <ul>
-                <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο.</li>
-                <li>Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο).</li>
-                <li>Τα κινητά (QR) τα βλέπουν αμέσως.</li>
-              </ul>
-
-
-            </div>
-          </div>
-
-          <button class="staff-btn" id="sdev" aria-expanded="false">
-            <span class="icon">💾</span>
-            <span>Στείλε νέα δεδομένα στην αποθήκη της συσκευής</span>
+      <div class="acc" id="acc1">
+        <button class="acc-btn" onclick="toggleAcc('acc1')">
+          <span class="left"><span class="icon">ℹ️</span> Πληροφορίες έκδοσης</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="acc-body">
+          <div id="sinfo"></div>
+          <p id="sstatus"></p>
+          <button class="staff-btn" id="sapp">
+            <span class="icon">⬆️</span>
+            <span>Έλεγχος νέας έκδοσης εφαρμογής</span>
           </button>
-          <div class="guide" id="g-dev">
-            <div class="guide-head">
-              <h3>Πώς στέλνω νέα δεδομένα στη συσκευή (tablet χωρίς ίντερνετ)</h3>
-              <button type="button" class="guide-close" data-close="g-dev">Κλείσιμο</button>
-            </div>
-            <div class="guide-body">
-              <label class="dev-check">
-                <input type="checkbox" id="dev-ready">
-                <span>Έχω ήδη κάνει τα βήματα 1–4 του οδηγού «GitHub» (Excel, αρχεία, Μετατροπή Excel)</span>
-              </label>
-              <div id="czip-slot">
-                <button class="staff-btn" id="czip" disabled>
-                  <span class="icon">⬇️</span>
-                  <span>Λήψη πακέτου για tablet</span>
-                </button>
-              </div>
-              <div id="slot-dev" hidden></div>
-              <ol>
-              <li><b>Περίμενε</b> να φτιαχτεί το αρχείο <code>paketo-mouseiou.zip</code>. Αν είναι μεγάλο, θέλει λίγη ώρα. Μην κλείσεις τη σελίδα. Θα κατέβει στον φάκελο <b>Λήψεις</b>.</li>
-              <li><b>Πέρασε το αρχείο στο tablet:</b> με καλώδιο USB (στο tablet διάλεξε «Μεταφορά αρχείων») στον φάκελο <b>Λήψεις</b>, ή με κάρτα μνήμης.</li>
-              <li><b>Στο tablet</b> άνοιξε το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός) → «Ενημερώσεις & Δεδομένα» → <b>Φόρτωση από τη συσκευή</b> → διάλεξε το <code>paketo-mouseiou.zip</code>.</li>
-              <li><b>Περίμενε</b> να γράψει «Αποθήκευση Χ/Υ». Όταν τελειώσει, η εφαρμογή ξαναφορτώνει μόνη της.</li>
-              <li><b>Έλεγχος:</b> στις «Πληροφορίες έκδοσης» πρέπει να γράφει «Λειτουργία: τοπική» και όλα τα αρχεία αποθηκευμένα (✔). Κλείσε το wifi και δοκίμασε έναν μουσικό: φωτογραφία, ήχο και βίντεο.</li>
-              <li><b>Σβήσε το .zip από το tablet</b>, για να ελευθερωθεί χώρος.</li>
-            </ol>
-            <div class="note"><b>Προσοχή:</b> ένα tablet σε τοπική λειτουργία <b>δεν παίρνει</b> ενημερώσεις από το GitHub. Για να γυρίσει στο ίντερνετ επίλεξε <b>Ενημέρωση από το ίντερνετ</b> παραπάνω. Το tablet χρειάζεται ελεύθερο χώρο περίπου διπλάσιο από το μέγεθος του .zip μέχρι να τελειώσει η φόρτωση (εκτίμηση, θέλει δοκιμή).</div>
-            </div>
-          </div>
         </div>
       </div>
 
-      
-<div class="acc" id="acc3">
+      <div class="acc" id="acc3">
         <button class="acc-btn" onclick="toggleAcc('acc3')">
           <span class="left"><span class="icon">⚙️</span> Ρυθμίσεις</span>
           <span class="chevron">▼</span>
@@ -439,7 +384,6 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
           </button>
         </div>
       </div>
-
       <div class="staff-bottom" data-staff-nav>
         <button type="button" class="nb" id="shome" aria-label="Αρχική"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span>Αρχική</span></button>
         <button type="button" class="nb" id="sexit" aria-label="Κλείσιμο εφαρμογής"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Κλείσιμο εφαρμογής</span></button>
@@ -458,7 +402,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a.01";
+const BUILD = "version 1.0";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -665,7 +609,7 @@ function buildLangButtons() {
 }
 
 function welcomeText() {
-  $("wtitle").textContent = tr(DATA.title); setTitle();
+  $("wtitle").textContent = tr(DATA.title); setTitle(true);
   fillTour($("wstart"), TOUR[lang].tablet, "kw-t");
   $("wpick").textContent = ""; setQRButtons(); buildNav();
   document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -870,7 +814,7 @@ $("pinok").onclick = async () => {
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
     document.querySelectorAll(".acc").forEach(a => a.classList.remove("open"));
-    $("acc1").classList.add("open");
+    $("acc2").classList.add("open");
   } else {
     $("pin").value = ""; fails++;
     if (fails >= 3) { fails = 0; lockUntil = Date.now() + 30000; $("pinmsg").textContent = "Κλειδώθηκε για 30 δευτερόλεπτα."; }
@@ -1132,7 +1076,37 @@ async function importLocal(files) {
   } catch (e) { setStatus("Σφάλμα στο πακέτο: " + e.message); }
 }
 /* ===== a5: τίτλος σε γραμμή πάνω, κουμπιά πλοήγησης ανάλογα με την οθόνη ===== */
-function setTitle() { const el = $("topbar"); if (el && DATA && DATA.title) el.innerHTML = esc(tr(DATA.title)) + (VISITOR ? `<span class="webtag">${esc(WEBT[lang] || WEBT.el)}</span>` : ""); }
+function setTitle(animate) {
+  const el = $("topbar");
+  if (!el || !DATA || !DATA.title) return;
+  const full = tr(DATA.title);
+  // Δύο γραμμές: «Μουσείο» / υπόλοιπο (ελλ.) — αλλιώς σπάσιμο στη μέση φράσης
+  let l1 = full, l2 = "";
+  if (lang === "el" || !lang) {
+    const m = full.match(/^(Μουσείο)\s+(.+)$/i);
+    if (m) { l1 = m[1]; l2 = m[2]; }
+  } else {
+    const parts = full.split(/\s+/);
+    if (parts.length >= 3) {
+      const mid = Math.ceil(parts.length / 2);
+      l1 = parts.slice(0, mid).join(" ");
+      l2 = parts.slice(mid).join(" ");
+    }
+  }
+  const tag = VISITOR ? `<span class="webtag">${esc(WEBT[lang] || WEBT.el)}</span>` : "";
+  el.classList.remove("title-in");
+  if (l2) {
+    el.innerHTML = `<span class="title-anim t1"><span class="tline">${esc(l1)}</span></span><span class="title-anim t2"><span class="tline">${esc(l2)}</span></span>${tag}`;
+  } else {
+    el.innerHTML = `<span class="title-anim t1">${esc(l1)}</span>${tag}`;
+  }
+  if (animate !== false) {
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("title-in")));
+  } else {
+    el.classList.add("title-in");
+    el.querySelectorAll(".title-anim").forEach(n => { n.style.transform = "none"; n.style.opacity = "1"; n.style.animation = "none"; });
+  }
+}
 function buildNav() {
   const n = NAV_UI[lang] || NAV_UI.el, appOn = !$("app").hidden, qrOn = !$("qr").hidden, s = stack[stack.length - 1];
   const B = (act, svg, label, extra) => `<button class="nb" data-act="${act}" ${extra || ""} aria-label="${esc(label)}">${svg}<span>${esc(label)}</span></button>`;
