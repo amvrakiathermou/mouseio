@@ -734,25 +734,7 @@ function toggleAcc(id) {
   if (!wasOpen) el.classList.add("open");
 }
 
-async function load() {
-  try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("exhibits.json", {cache:"no-store"})).json(); }
-  catch (_) { $("wpick").textContent = t("nodata"); return; }
-  if (VISITOR) document.querySelector("footer").hidden = true;
-  if (VISITOR) { document.documentElement.classList.add("web"); const bl = (navigator.language || "").slice(0, 2); if (LANGS.some(l => l[0] === bl)) lang = bl; buildWebLangs(); } else buildLangButtons();
-  showWelcome();
-  if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
-  if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
-
-  try {
-    const justUpdated = sessionStorage.getItem("mm-just-updated");
-    if (justUpdated) {
-      sessionStorage.removeItem("mm-just-updated");
-      setTimeout(() => {
-        showToast("Ενημέρωση εφαρμογής", "Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".", "ok");
-      }, 600);
-    }
-  } catch(_) {}
-}
+/* load() ορίζεται μία φορά παρακάτω (data.json) */
 
 const NAV_UI = {
   el:{back:"Πίσω",home:"Αρχική"}, en:{back:"Back",home:"Home"}, fr:{back:"Retour",home:"Accueil"}, de:{back:"Zurück",home:"Start"},
@@ -760,18 +742,7 @@ const NAV_UI = {
 };
 const SVG_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
 const SVG_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>';
-function buildNav() {
-  const n = NAV_UI[lang] || NAV_UI.el;
-  document.querySelectorAll("[data-nav]").forEach(el => {
-    el.innerHTML = '<button class="nb" data-act="back" aria-label="' + n.back + '">' + SVG_BACK + '<span>' + n.back + '</span></button>' +
-                   '<button class="nb" data-act="home" aria-label="' + n.home + '">' + SVG_HOME + '<span>' + n.home + '</span></button>';
-  });
-}
-function goBack() {
-  if (!$("qr").hidden) closeQR();
-  else if (openItem) closeDetail();
-  else showWelcome();
-}
+/* buildNav + goBack: τελικοί ορισμοί παρακάτω */
 document.addEventListener("click", e => {
   const b = e.target.closest(".nb"); if (!b) return;
   if (b.id === "shome" || b.id === "sexit") return; // staff buttons have own handlers
@@ -877,40 +848,27 @@ function welcomeText() {
 }
 
 function showWelcome() {
-  audio.pause(); closeQR(true); closeDetail(true); lang = "el"; cat = "all"; setQRButtons();
+  audio.pause();
+  try { stopAudio(); } catch (_) {}
+  closeQR(true); closeDetail(true);
+  stack = [{v:"menu"}];
+  if (VISITOR) {
+    closeQR(true);
+    $("welcome").hidden = true;
+    $("app").hidden = false;
+    if (DATA) renderApp();
+    window.scrollTo(0, 0);
+    try { refreshData(); } catch (_) {}
+    return;
+  }
+  lang = "el"; cat = "all"; setQRButtons();
   $("app").hidden = true; $("welcome").hidden = false;
   $("exit-screen").hidden = true;
   closeStaff(); welcomeText(); checkUpdate(false);
   buildLangButtons(); window.scrollTo(0, 0);
+  try { refreshData(); } catch (_) {}
 }
-function enterApp() {
-  if (Date.now() - lpAt < 1000) return;
-  $("welcome").hidden = true; $("app").hidden = false; renderApp(); keepAwake();
-}
-
-function renderApp() {
-  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  $("title").textContent = tr(DATA.title); document.title = tr(DATA.title);
-  const cats = ["all", ...new Set(DATA.items.map(i => i.cat))];
-  $("menu").innerHTML = "";
-  cats.forEach(c => {
-    const b = document.createElement("button");
-    b.textContent = c === "all" ? t("all") : (tr(DATA.categories && DATA.categories[c]) || c);
-    b.setAttribute("aria-pressed", c === cat);
-    b.onclick = () => { cat = c; renderApp(); };
-    $("menu").appendChild(b);
-  });
-  $("grid").innerHTML = "";
-  DATA.items.filter(i => cat === "all" || i.cat === cat).forEach(it => {
-    const b = document.createElement("button"); b.className = "card";
-    b.innerHTML = '<img alt=""><h2></h2>';
-    b.querySelector("h2").textContent = tr(it.title);
-    const im = b.querySelector("img"); im.src = imgSrc(it.img); im.alt = tr(it.title);
-    b.onclick = () => openDetail(it);
-    $("grid").appendChild(b);
-  });
-  $("retry").textContent = t("retry"); setQRButtons(); buildNav();
-}
+/* enterApp + renderApp: μία ορισμός παρακάτω (δομή stack/view) */
 
 function setQRButtons() {
   $("wqr").hidden = VISITOR;
@@ -966,29 +924,7 @@ $("dplay").onclick = async () => {
 };
 audio.onended = () => setPlay(false);
 
-async function syncMedia() {
-  if (!("caches" in window)) return;
-  const name = "media-v" + DATA.version, cache = await caches.open(name);
-  const jobs = []; DATA.items.forEach(i => { jobs.push([i.img, IMG_EXT]); jobs.push([i.audio, AUD_EXT]); });
-  const before = JSON.stringify(RES); let done = 0, failed = 0;
-  $("retry").hidden = true;
-  for (const [base, exts] of jobs) {
-    const list = cands(base, exts); let found = null;
-    for (const u of list) if (await cache.match(u)) { found = u; break; }
-    if (!found && navigator.onLine) for (const u of list) {
-      try { const r = await fetch(u); if (r.ok) { await cache.put(u, r); found = u; break; } } catch (_) {}
-    }
-    if (found) { if (found !== base) RES[base] = found; } else failed++;
-    done++; setStatus(`${t("check")} ${done}/${jobs.length}…`);
-  }
-  try { localStorage.setItem("mm-res", JSON.stringify(RES)); } catch (_) {}
-  if (JSON.stringify(RES) !== before && !$("app").hidden) { renderApp(); refreshDetail(); }
-  if (failed) { setStatus(`${t("missing")}: ${failed}`); $("retry").hidden = false; return; }
-  (await caches.keys()).filter(k => k.startsWith("media-") && k !== name).forEach(k => caches.delete(k));
-  setStatus(t("ready"));
-  if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
-}
-$("retry").onclick = syncMedia;
+/* syncMedia: τελικός ορισμός παρακάτω (media-main + hashes) */
 window.addEventListener("online", () => DATA && !LOCAL && !VISITOR && syncMedia());
 
 function bump() {
@@ -1089,15 +1025,7 @@ $("pinok").onclick = async () => {
 $("pin").addEventListener("keydown", e => { if (e.key === "Enter") $("pinok").click(); });
 $("pinx").onclick = closeStaff;
 
-async function countFiles() {
-  const names = (await caches.keys()).filter(k => k.startsWith("media-")); let ok = 0, total = 0;
-  for (const it of DATA.items) for (const [b, ex] of [[it.img, IMG_EXT], [it.audio, AUD_EXT]]) {
-    total++; let f = false;
-    for (const n of names) { const c = await caches.open(n); for (const u of cands(b, ex)) if (await c.match(u)) { f = true; break; } if (f) break; }
-    if (f) ok++;
-  }
-  return {ok, total};
-}
+/* countFiles: τελικός ορισμός παρακάτω (με mediaUrls) */
 async function refreshInfo() {
   const {ok, total} = await countFiles(); let e = {};
   try { e = await navigator.storage.estimate(); } catch (_) {}
@@ -1115,46 +1043,18 @@ async function refreshInfo() {
     "Μέγεθος στο GitHub: ~9.2 MB"
   ].join("\n");
 }
-async function forceUpdate() {
-  if (!navigator.onLine) { setStatus("Χρειάζεται σύνδεση στο ίντερνετ."); return; }
-  try { DATA = await (await fetch("exhibits.json", {cache:"no-store"})).json(); } catch (_) { setStatus("Δεν ήταν δυνατή η λήψη της λίστας."); return; }
-  await Promise.all((await caches.keys()).filter(k => k.startsWith("media-")).map(k => caches.delete(k)));
-  RES = {}; try { localStorage.removeItem("mm-res"); } catch (_) {}
-  await syncMedia(); refreshInfo();
-}
 async function exitLocal() {
   try { sessionStorage.setItem("mm-mode-msg", "net"); } catch (_) {}
-  ["mm-local","mm-local-data","mm-res"].forEach(k => localStorage.removeItem(k));
+  ["mm-local","mm-local-data","mm-res","mm-hashes"].forEach(k => localStorage.removeItem(k));
   await caches.delete("media-local"); location.reload();
 }
-async function importLocal(files) {
-  files = [...files]; const j = files.find(f => /exhibits\.json$/i.test(f.name));
-  if (!j) { setStatus("Λείπει το αρχείο exhibits.json από την επιλογή."); return; }
-  let data; try { data = JSON.parse(await j.text()); } catch (_) { setStatus("Το exhibits.json έχει λάθος."); return; }
-  setStatus("Αποθήκευση αρχείων…");
-  await caches.delete("media-local"); const c = await caches.open("media-local"); const res = {};
-  for (const f of files) {
-    if (f === j) continue;
-    const isA = f.type.startsWith("audio") || /\.(mp3|m4a|aac|ogg|wav)$/i.test(f.name);
-    const path = (isA ? "audio/" : "img/") + f.name;
-    await c.put(new URL(path, location.href).href, new Response(f, {headers: {"Content-Type": f.type || (isA ? "audio/mpeg" : "image/jpeg")}}));
-    res[path.replace(/\.[^.\/]+$/, "")] = path;
-  }
-  localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-res", JSON.stringify(res)); localStorage.setItem("mm-local", "1");
-  try { sessionStorage.setItem("mm-mode-msg", "local"); } catch (_) {}
-  location.reload();
-}
-$("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
 $("sapp").onclick = async () => {
   setStatus("Έλεγχος για νέα έκδοση…");
   await checkUpdate(true);
 };
-$("sload").onclick = () => $("sfile").click();
-$("sfile").onchange = e => importLocal(e.target.files);
 $("sidle").onchange = e => { localStorage.setItem("mm-idle", e.target.value); bump(); setStatus("Αποθηκεύτηκε."); };
 $("shome").onclick = () => { closeStaff(); showWelcome(); };
 $("sexit").onclick = exitApplication;
-$("wstart").onclick = enterApp;
 $("swipe").onclick = async () => {
   if (!confirm("Να σβηστούν ΟΛΑ τα δεδομένα του tablet;") || !confirm("Σίγουρα; Θα χρειαστεί νέα λήψη με wifi.")) return;
   localStorage.clear(); await Promise.all((await caches.keys()).map(k => caches.delete(k)));
@@ -1261,8 +1161,6 @@ function play(id) {
 }
 $("npb").onclick = () => { stopAudio(); renderApp(); };
 audio.onended = () => { stopAudio(); renderApp(); };
-const _showWelcome = showWelcome;
-showWelcome = function () { stopAudio(); stack = [{v:"menu"}]; if (VISITOR) { closeQR(true); $("welcome").hidden = true; $("app").hidden = false; renderApp(); window.scrollTo(0, 0); } else _showWelcome(); };
 function buildWebLangs() {
   const h = $("vlangs"); h.innerHTML = "";
   LANGS.forEach(([c, n]) => { const b = document.createElement("button"); b.className = "flag"; b.style.backgroundImage = flagUrl(c); b.setAttribute("aria-label", n); b.title = n; b.setAttribute("aria-pressed", c === lang); b.onclick = () => { lang = c; buildWebLangs(); renderApp(); }; h.appendChild(b); });
@@ -1282,21 +1180,6 @@ async function load() {
   try {
     if (sessionStorage.getItem("mm-just-updated")) { sessionStorage.removeItem("mm-just-updated"); setTimeout(() => showToast("Ενημέρωση εφαρμογής", "Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".", "ok"), 600); }
   } catch (_) {}
-}
-async function syncMedia() {
-  if (!("caches" in window) || !DATA) return;
-  const name = "media-v" + DATA.version, cache = await caches.open(name), urls = mediaUrls();
-  let done = 0, failed = 0; $("retry").hidden = true;
-  for (const u of urls) {
-    if (!(await cache.match(u))) {
-      if (!navigator.onLine) failed++;
-      else { try { const r = await fetch(u); if (r.ok) await cache.put(u, r); else failed++; } catch (_) { failed++; } }
-    }
-    done++; setStatus(`${t("check")} ${done}/${urls.length}…`);
-  }
-  if (failed) { setStatus(`${t("missing")}: ${failed}`); $("retry").hidden = false; return; }
-  (await caches.keys()).filter(k => k.startsWith("media-") && k !== name && k !== "media-local").forEach(k => caches.delete(k));
-  setStatus(t("ready")); if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
 }
 async function countFiles() {
   const names = (await caches.keys()).filter(k => k.startsWith("media-")), urls = mediaUrls(); let ok = 0;
@@ -1350,24 +1233,31 @@ async function zipBlob(file, en) {
   return en.m === 0 ? b : await new Response(b.stream().pipeThrough(new DecompressionStream("deflate-raw"))).blob();
 }
 async function importLocal(files) {
-  const f = files && files[0]; if (!f) return; setStatus("Άνοιγμα πακέτου…");
+  const f = files && files[0]; if (!f) return;
+  setStatus("Άνοιγμα πακέτου…");
+  if ($("mode-msg")) $("mode-msg").textContent = "Φόρτωση πακέτου στη συσκευή…";
   try {
     const list = await readZip(f), dj = list.find(x => /(^|\/)data\.json$/.test(x.name));
-    if (!dj) { setStatus("Το πακέτο δεν περιέχει data.json."); return; }
+    if (!dj) {
+      setStatus("Το πακέτο δεν περιέχει data.json.");
+      showToast("Λάθος πακέτο", "Το αρχείο δεν περιέχει data.json. Επίλεξε το paketo-mouseiou.zip.", "err");
+      return;
+    }
     const data = JSON.parse(await (await zipBlob(f, dj)).text());
     await caches.delete("media-local"); const c = await caches.open("media-local"); let n = 0; const todo = list.filter(x => x !== dj && !x.name.endsWith("/"));
     for (const en of todo) {
       const b = await zipBlob(f, en), path = en.name.replace(/^.*?(?=(img|audio|video)\/)/, ""), ext = path.split(".").pop().toLowerCase();
       await c.put(new URL(path, location.href).href, new Response(b, {headers: {"Content-Type": MIME[ext] || "application/octet-stream"}}));
       setStatus("Αποθήκευση " + (++n) + "/" + todo.length + "…");
+      if ($("mode-msg")) $("mode-msg").textContent = "Αποθήκευση " + n + "/" + todo.length + "…";
     }
     localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-local", "1");
     try { sessionStorage.setItem("mm-mode-msg", "local"); } catch (_) {}
     location.reload();
   } catch (e) {
     setStatus("Σφάλμα στο πακέτο: " + e.message);
-    const mm = $("mode-msg");
-    if (mm) mm.textContent = "⚠ Αποτυχία μετάβασης σε τοπική λειτουργία: " + e.message;
+    if ($("mode-msg")) $("mode-msg").textContent = "⚠ Αποτυχία μετάβασης σε τοπική λειτουργία: " + e.message;
+    showToast("Σφάλμα πακέτου", "Αποτυχία φόρτωσης: " + (e.message || e), "err");
   }
 }
 /* ===== a5: τίτλος σε γραμμή πάνω, κουμπιά πλοήγησης ανάλογα με την οθόνη ===== */
@@ -1454,8 +1344,6 @@ async function refreshData() {
     if (d.meta && DATA.meta && d.meta.built && d.meta.built !== DATA.meta.built) { fetch("data.json", {cache: "no-store"}); DATA = d; applyMeta(); syncMedia(); if (!$("app").hidden) renderApp(); }
   } catch (_) {}
 }
-const _sw2 = showWelcome; showWelcome = function () { _sw2(); refreshData(); };
-
 /* --- ανάγνωση .xlsx (zip + XML), χωρίς εξωτερική βιβλιοθήκη --- */
 async function readXlsx(file) {
   const list = await readZip(file), get = async n => { const e = list.find(x => x.name === n); return e ? await (await zipBlob(file, e)).text() : null; };
@@ -1903,6 +1791,14 @@ if ($("czip")) $("czip").disabled = true;
   document.addEventListener("pointerdown", goFs, { once: true, passive: true });
   document.addEventListener("touchstart", goFs, { once: true, passive: true });
 })();
+
+/* Επανασύνδεση handlers ΜΕΤΑ τους τελικούς ορισμούς
+   (αλλιώς κουμπιά έμεναν δεμένα σε παλιές enterApp/syncMedia/importLocal) */
+$("wstart").onclick = enterApp;
+$("retry").onclick = () => { syncMedia(); };
+$("sfile").onchange = e => importLocal(e.target.files);
+$("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
+$("sload").onclick = () => $("sfile").click();
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 load(); bump();
