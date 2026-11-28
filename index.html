@@ -181,8 +181,23 @@ html.web #topbar{flex-direction:column;gap:2px}
 #vlangs[hidden]{display:none}
 #vlangs button.flag{width:30px;height:21px;border-width:2px;border-radius:4px;flex:none}
 html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
-.guide{display:none;background:#12231f;border:1px solid rgba(210,168,76,.35);border-radius:12px;padding:14px 16px;font:15px/1.6 system-ui,sans-serif;color:var(--ink);text-align:start}
-.guide.open{display:block}.guide h3{margin:0 0 10px;font-size:1.05rem;color:var(--brass)}
+.guide{display:none;background:#12231f;border:1px solid rgba(210,168,76,.35);border-radius:12px;padding:0;font:15px/1.6 system-ui,sans-serif;color:var(--ink);text-align:start;max-height:min(62vh,520px);overflow:hidden;flex-direction:column}
+.guide.open{display:flex}
+.guide-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(210,168,76,.25);flex-shrink:0}
+.guide-head h3{margin:0;font-size:1.05rem;color:var(--brass)}
+.guide-close{font:600 14px system-ui,sans-serif;padding:6px 12px;border-radius:8px;border:1px solid var(--mute);background:transparent;color:var(--ink);min-height:36px}
+.guide-close:active{background:var(--brass);color:#2a2110}
+.guide-body{padding:14px 16px;overflow-y:auto;flex:1;min-height:0}
+.mode-row{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.mode-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#e8e2d4;color:#1a2a27;font:600 15px system-ui,sans-serif;cursor:pointer;border:2px solid transparent;user-select:none}
+.mode-opt .tick{width:22px;height:22px;border-radius:6px;border:2px solid #1a2a27;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:#fff}
+.mode-opt.active{border-color:var(--brass);background:#d2a84c}
+.mode-opt.active .tick{background:#1a2a27;color:#d2a84c;border-color:#1a2a27}
+.mode-msg{margin:0;min-height:1.3em;font:14px system-ui,sans-serif;color:var(--brass)}
+.dev-check{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:8px;background:rgba(210,168,76,.12);margin:0 0 12px;font:15px system-ui,sans-serif;cursor:pointer;user-select:none}
+.dev-check input{width:20px;height:20px;margin-top:2px;flex-shrink:0;accent-color:var(--brass)}
+#czip-slot{margin:8px 0 12px}
+
 .guide ol{margin:0;padding-inline-start:22px}.guide li{margin:0 0 10px}
 .guide code{background:#0d1b18;padding:1px 6px;border-radius:5px;color:var(--brass);font-size:14px}
 .guide a{color:var(--brass);word-break:break-all;font-weight:600}
@@ -276,29 +291,53 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
           <span class="left"><span class="icon">🔄</span> Ενημερώσεις & Δεδομένα</span>
           <span class="chevron">▼</span>
         </button>
-        <div class="acc-body">
-          <button class="staff-btn" id="supd">
+                <div class="acc-body">
+          <div class="mode-row">
+            <div class="mode-opt" id="mode-net" role="button" tabindex="0">
+              <span class="tick" id="tick-net"></span>
+              <span>Ενημέρωση από το ίντερνετ</span>
+            </div>
+            <div class="mode-opt" id="mode-local" role="button" tabindex="0">
+              <span class="tick" id="tick-local"></span>
+              <span>Τοπική λειτουργία (από συσκευή)</span>
+            </div>
+            <p class="mode-msg" id="mode-msg"></p>
+          </div>
+
+          <button class="staff-btn" id="supd" hidden>
             <span class="icon">🔄</span>
             <span id="supd-text">Ενημέρωση από το ίντερνετ</span>
           </button>
+          <button class="staff-btn" id="sload" hidden>
+            <span class="icon">📂</span>
+            <span>Φόρτωση από τη συσκευή</span>
+          </button>
+
           <button class="staff-btn" id="sgit" aria-expanded="false">
             <span class="icon">☁️</span>
             <span>Στείλε νέα δεδομένα στο GitHub</span>
           </button>
           <div class="guide" id="g-git">
-            <h3>Πώς στέλνω νέα δεδομένα στο GitHub</h3>
-            <p class="gnote">Ο φάκελος στον υπολογιστή (Desktop) λέγεται <code>mouseio amvrakia</code>. Μέσα του έχει το Excel και τον φάκελο <code>github-mouseio</code>, με τρεις υποφακέλους: <code>img</code> (φωτογραφίες), <code>audio</code> (mp3), <code>video</code> (mp4, έως 25 MB το καθένα).</p>
-            <ol>
-              <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
-              <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
-              <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
-              <li>Πάτα <b>[Μετατροπή Excel]</b> και διάλεξε τον φάκελο <code>mouseio amvrakia</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.<div id="slot-git"><div class="conv" id="convbox" data-mode="git">
-                <button class="staff-btn" id="cbtn"><span class="icon">📊</span><span>Μετατροπή Excel</span></button>
-                <div class="creport" id="creport"></div>
-                <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
-                <button class="staff-btn only-dev" id="czip" disabled><span class="icon">⬇️</span><span>Λήψη πακέτου για tablet</span></button>
-              </div></div></li>
-              <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο <b>αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code></b> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
+            <div class="guide-head">
+              <h3>Πώς στέλνω νέα δεδομένα στο GitHub</h3>
+              <button type="button" class="guide-close" data-close="g-git">Κλείσιμο</button>
+            </div>
+            <div class="guide-body">
+              <p class="gnote">Ο φάκελος στον υπολογιστή (Desktop) λέγεται <code>mouseio amvrakia</code>. Μέσα του έχει το Excel και τον φάκελο <code>github-mouseio</code>, με τρεις υποφακέλους: <code>img</code> (φωτογραφίες), <code>audio</code> (mp3), <code>video</code> (mp4, έως 25 MB το καθένα).</p>
+              <ol>
+                <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
+                <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
+                <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
+                <li>Πάτα <b>[Μετατροπή Excel]</b> και διάλεξε τον φάκελο <code>mouseio amvrakia</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
+                  <div id="slot-git">
+                    <div class="conv" id="convbox" data-mode="git">
+                      <button class="staff-btn" id="cbtn"><span class="icon">📊</span><span>Μετατροπή Excel</span></button>
+                      <div class="creport" id="creport"></div>
+                      <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
+                    </div>
+                  </div>
+                </li>
+                <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο <b>αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code></b> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
               <li><b>Άνοιξε το GitHub</b> και συνδέσου αν σου ζητηθεί:<br><a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a></li>
               <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
               <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): γύρνα στην πρώτη σελίδα του repository (όχι μέσα σε φάκελο) → <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
@@ -306,20 +345,31 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
               <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο. Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο). Τα κινητά (QR) τα βλέπουν αμέσως.</li>
             </ol>
             <div class="note"><b>Προσοχή:</b> κάθε βίντεο πρέπει να είναι <b>έως 25 MB</b>, αλλιώς δεν ανεβαίνει. Μην ανεβάζεις το Excel ή προσωπικά έγγραφα, γιατί το GitHub είναι δημόσιο. Αν κάτι πάει στραβά: στο GitHub πάτα <b>Commits</b>, διάλεξε την προηγούμενη αλλαγή και πάτα <b>Revert</b>.</div>
+            </div>
           </div>
-          <button class="staff-btn" id="sload">
-            <span class="icon">📂</span>
-            <span>Φόρτωση από τη συσκευή</span>
-          </button>
+
           <button class="staff-btn" id="sdev" aria-expanded="false">
             <span class="icon">💾</span>
             <span>Στείλε νέα δεδομένα στην αποθήκη της συσκευής</span>
           </button>
           <div class="guide" id="g-dev">
-            <h3>Πώς στέλνω νέα δεδομένα στη συσκευή (tablet χωρίς ίντερνετ)</h3>
-            <p class="gnote"><b>Έχεις ήδη κάνει τα βήματα 1–4 του οδηγού «GitHub» (Excel, αρχεία, Μετατροπή Excel); Πάτα [Λήψη πακέτου για tablet]. Αν όχι, κάνε πρώτα εκείνα.</b></p>
-            <div id="slot-dev"></div>
-            <ol>
+            <div class="guide-head">
+              <h3>Πώς στέλνω νέα δεδομένα στη συσκευή (tablet χωρίς ίντερνετ)</h3>
+              <button type="button" class="guide-close" data-close="g-dev">Κλείσιμο</button>
+            </div>
+            <div class="guide-body">
+              <label class="dev-check">
+                <input type="checkbox" id="dev-ready">
+                <span>Έχω ήδη κάνει τα βήματα 1–4 του οδηγού «GitHub» (Excel, αρχεία, Μετατροπή Excel)</span>
+              </label>
+              <div id="czip-slot">
+                <button class="staff-btn" id="czip" disabled>
+                  <span class="icon">⬇️</span>
+                  <span>Λήψη πακέτου για tablet</span>
+                </button>
+              </div>
+              <div id="slot-dev" hidden></div>
+              <ol>
               <li><b>Περίμενε</b> να φτιαχτεί το αρχείο <code>paketo-mouseiou.zip</code>. Αν είναι μεγάλο, θέλει λίγη ώρα. Μην κλείσεις τη σελίδα. Θα κατέβει στον φάκελο <b>Λήψεις</b>.</li>
               <li><b>Πέρασε το αρχείο στο tablet:</b> με καλώδιο USB (στο tablet διάλεξε «Μεταφορά αρχείων») στον φάκελο <b>Λήψεις</b>, ή με κάρτα μνήμης.</li>
               <li><b>Στο tablet</b> άνοιξε το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός) → «Ενημερώσεις & Δεδομένα» → <b>Φόρτωση από τη συσκευή</b> → διάλεξε το <code>paketo-mouseiou.zip</code>.</li>
@@ -327,12 +377,14 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
               <li><b>Έλεγχος:</b> στις «Πληροφορίες έκδοσης» πρέπει να γράφει «Λειτουργία: τοπική» και όλα τα αρχεία αποθηκευμένα (✔). Κλείσε το wifi και δοκίμασε έναν μουσικό: φωτογραφία, ήχο και βίντεο.</li>
               <li><b>Σβήσε το .zip από το tablet</b>, για να ελευθερωθεί χώρος.</li>
             </ol>
-            <div class="note"><b>Προσοχή:</b> ένα tablet σε τοπική λειτουργία <b>δεν παίρνει</b> ενημερώσεις από το GitHub. Για να γυρίσει στο ίντερνετ πάτα <b>Επιστροφή σε λειτουργία ίντερνετ</b>. Το tablet χρειάζεται ελεύθερο χώρο περίπου διπλάσιο από το μέγεθος του .zip μέχρι να τελειώσει η φόρτωση (εκτίμηση, θέλει δοκιμή).</div>
+            <div class="note"><b>Προσοχή:</b> ένα tablet σε τοπική λειτουργία <b>δεν παίρνει</b> ενημερώσεις από το GitHub. Για να γυρίσει στο ίντερνετ επίλεξε <b>Ενημέρωση από το ίντερνετ</b> παραπάνω. Το tablet χρειάζεται ελεύθερο χώρο περίπου διπλάσιο από το μέγεθος του .zip μέχρι να τελειώσει η φόρτωση (εκτίμηση, θέλει δοκιμή).</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="acc" id="acc3">
+      
+<div class="acc" id="acc3">
         <button class="acc-btn" onclick="toggleAcc('acc3')">
           <span class="left"><span class="icon">⚙️</span> Ρυθμίσεις</span>
           <span class="chevron">▼</span>
@@ -435,7 +487,7 @@ function fillTour(btn, parts, cls) {
   btn.appendChild(line2);
 }
 let lpAt = 0, LOCAL = false; try { LOCAL = localStorage.getItem("mm-local") === "1"; } catch (_) {}
-const PIN_HASH = "9b231bf67a4a983d44ffb949b792c45185227bc96697cd08d4660952f7d8b8e4";
+const PIN_HASH = "545770f4a3a5c0896f5e0fc21a1dfc56fd1eb724b053832a5990fe14c33181fa";
 const IMG_EXT = ["jpg","jpeg","png","webp","JPG","JPEG","PNG","WEBP"];
 const AUD_EXT = ["mp3","m4a","aac","ogg","wav","MP3","M4A","AAC","OGG","WAV"];
 let DATA = null, lang = "el", cat = "all", openItem = null, playing = false, idleTimer = null, wake = null;
@@ -785,6 +837,9 @@ $("pinok").onclick = async () => {
   if (await sha($("pin").value.trim()) === PIN_HASH) {
     fails = 0; $("pinView").hidden = true; $("panelView").hidden = false;
     $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
+    updateModeTicks();
+    $("mode-msg").textContent = "";
+    if ($("dev-ready")) { $("dev-ready").checked = false; $("czip").disabled = true; }
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
     document.querySelectorAll(".acc").forEach(a => a.classList.remove("open"));
@@ -1182,7 +1237,7 @@ function saveBlob(blob, name) { const a = document.createElement("a"); a.href = 
 let CONV = null;
 const say = (html) => { $("creport").innerHTML = html; };
 async function runConvert(list, outDir) {
-  CONV = null; $("cjson").disabled = $("czip").disabled = true;
+  CONV = null; $("cjson").disabled = true;
   const xl = list.find(x => /\.xlsx$/i.test(x.f.name) && !x.f.name.startsWith("~$")), tf = list.find(x => x.f.name === "translations.json"), files = new Map();
   for (const x of list) { const m = /(?:^|\/)(img|audio|video)\/([^\/]+)$/i.exec(x.rel); if (m) files.set(`${m[1]}/${m[2]}`.toLowerCase(), {path: `${m[1].toLowerCase()}/${m[2]}`, file: x.f, size: x.f.size}); }
   if (!xl) { say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx) στον φάκελο που διάλεξες.</b><br>Διάλεξε τον φάκελο <code>mouseio amvrakia</code> που έχει μέσα το Excel."); return; }
@@ -1193,7 +1248,7 @@ async function runConvert(list, outDir) {
     const r = await buildData(sheets, files, trans), esc2 = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
     const sum = Object.entries(r.counts).map(([k, v]) => v + " " + k).join(", ");
     say((r.err.length ? `<b>⚠ ${r.err.length} λάθη. Διόρθωσέ τα και ξαναπάτα «Μετατροπή Excel».</b>` : `<b>✔ Όλα εντάξει:</b> ${sum}.`) + (r.err.length ? `<ul>${r.err.map(x => "<li>⚠ " + esc2(x) + "</li>").join("")}</ul>` : "") + (r.note.length ? `<ul>${r.note.map(x => "<li>" + esc2(x) + "</li>").join("")}</ul>` : ""));
-    if (!r.err.length) { CONV = r; CONV.outDir = outDir; $("cjson").disabled = $("czip").disabled = false; }
+    if (!r.err.length) { CONV = r; CONV.outDir = outDir; $("cjson").disabled = false; }
   } catch (e) { say("⚠ Δεν μπόρεσα να διαβάσω το Excel: " + esc2x(e.message)); }
 }
 const esc2x = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
@@ -1225,8 +1280,60 @@ $("czip").onclick = async () => {
 };
 [["sgit", "g-git", "git"], ["sdev", "g-dev", "dev"]].forEach(([b, g, mode]) => { $(b).onclick = () => {
   const was = $(g).classList.contains("open"); ["g-git", "g-dev"].forEach(x => $(x).classList.remove("open")); ["sgit", "sdev"].forEach(x => $(x).setAttribute("aria-expanded", "false"));
-  if (!was) { $(g).classList.add("open"); $(b).setAttribute("aria-expanded", "true"); $("slot-" + mode).appendChild($("convbox")); $("convbox").dataset.mode = mode; }
+  if (!was) {
+    $(g).classList.add("open");
+    $(b).setAttribute("aria-expanded", "true");
+    if (mode === "git") {
+      $("slot-git").appendChild($("convbox"));
+      $("convbox").dataset.mode = "git";
+    }
+  }
 }; });
+document.querySelectorAll(".guide-close").forEach(btn => {
+  btn.onclick = () => {
+    const gid = btn.getAttribute("data-close");
+    const g = $(gid);
+    if (g) g.classList.remove("open");
+    const map = {"g-git":"sgit","g-dev":"sdev"};
+    const b = $(map[gid]);
+    if (b) b.setAttribute("aria-expanded", "false");
+  };
+});
+function updateModeTicks() {
+  const net = $("mode-net"), loc = $("mode-local");
+  const tn = $("tick-net"), tl = $("tick-local");
+  if (!net) return;
+  if (LOCAL) {
+    net.classList.remove("active"); loc.classList.add("active");
+    tn.textContent = ""; tl.textContent = "✓";
+  } else {
+    net.classList.add("active"); loc.classList.remove("active");
+    tn.textContent = "✓"; tl.textContent = "";
+  }
+}
+$("mode-net").onclick = () => {
+  if (LOCAL) {
+    $("mode-msg").textContent = "Επιστροφή σε λειτουργία ίντερνετ…";
+    exitLocal();
+    return;
+  }
+  $("mode-msg").textContent = "Ενημέρωση από το ίντερνετ…";
+  forceUpdate();
+};
+$("mode-local").onclick = () => {
+  if (LOCAL) {
+    $("mode-msg").textContent = "Ήδη σε τοπική λειτουργία. Επίλεξε νέο αρχείο .zip αν θέλεις.";
+    $("sfile").click();
+    return;
+  }
+  $("mode-msg").textContent = "Επίλεξε αρχείο .zip για φόρτωση σε τοπική λειτουργία…";
+  $("sfile").click();
+};
+$("dev-ready").onchange = () => {
+  $("czip").disabled = !$("dev-ready").checked;
+};
+// enable czip only after checkbox
+if ($("czip")) $("czip").disabled = true;
 if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
 </script>
