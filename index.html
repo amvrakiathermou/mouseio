@@ -438,7 +438,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a.02";
+const BUILD = "version 1.0";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1332,16 +1332,40 @@ if ($("cbtn")) $("cbtn").onclick = pickFolder;
 if ($("cbtn-file")) $("cbtn-file").onclick = pickExcelFile;
 $("cfolder").onchange = e => { const l = [...e.target.files].map(f => ({f, rel: f.webkitRelativePath || f.name})); e.target.value = ""; runConvert(l); };
 $("cjson").onclick = async () => {
-  if (!CONV) return; const json = JSON.stringify(CONV.data), note = h => $("creport").insertAdjacentHTML("afterbegin", `<p><b>${h}</b></p>`);
-  if (CONV.outDir) { try { const w = await (await CONV.outDir.getFileHandle("data.json", {create: true})).createWritable(); await w.write(json); await w.close(); note(`✔ Το data.json αποθηκεύτηκε στον φάκελο <code>${esc2x(CONV.outDir.name)}</code>, στη θέση του παλιού.`); return; } catch (e) { note("⚠ Δεν μπόρεσα να γράψω στον φάκελο (" + esc2x(e.message) + "). Κατεβαίνει στις Λήψεις: βάλ' το εσύ στον φάκελο github-mouseio."); } }
-  else note("ℹ Ο browser δεν επιτρέπει εγγραφή στον φάκελο (π.χ. Firefox ή tablet). Το data.json κατεβαίνει στις Λήψεις: βάλ' το εσύ στον φάκελο github-mouseio.");
+  if (!CONV) return;
+  const json = JSON.stringify(CONV.data);
+  const note = h => { $("creport").insertAdjacentHTML("afterbegin", `<p style="margin:8px 0;padding:10px 12px;border-radius:8px;background:rgba(210,168,76,.15);border:1px solid rgba(210,168,76,.4)"><b>${h}</b></p>`); };
+  const esc2x = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  if (CONV.outDir) {
+    try {
+      const w = await (await CONV.outDir.getFileHandle("data.json", {create: true})).createWritable();
+      await w.write(json);
+      await w.close();
+      note("✔ Έγινε λήψη / αποθήκευση του <code>data.json</code>.<br>Τοποθεσία: φάκελος <code>" + esc2x(CONV.outDir.name) + "</code> (αντικατέστησε το παλιό, μέσα στο github-mouseio).");
+      return;
+    } catch (e) {
+      note("⚠ Δεν μπόρεσα να γράψω απευθείας στον φάκελο (" + esc2x(e.message) + "). Κατεβαίνει στις <b>Λήψεις</b> — μετά βάλ’ το εσύ μέσα στο <code>github-mouseio</code>.");
+    }
+  } else {
+    note("✔ Έγινε λήψη του <code>data.json</code>.<br>Τοποθεσία: φάκελος <b>Λήψεις</b> (Downloads) του υπολογιστή σου.<br>Μετά αντιγράψ’ το μέσα στον φάκελο <code>github-mouseio</code>.");
+  }
   saveBlob(new Blob([json], {type: "application/json"}), "data.json");
 };
 $("czip").onclick = async () => {
   if (!CONV) return; const entries = [{name: "data.json", blob: new Blob([JSON.stringify(CONV.data)])}], total = [...CONV.used.values()].reduce((a, f) => a + f.size, 0);
   if (total > 3.9 * 1073741824) { say("⚠ Τα αρχεία ξεπερνούν τα 3,9 GB. Σπάσε τα βίντεο σε δύο πακέτα."); return; }
   for (const f of CONV.used.values()) entries.push({name: f.path, blob: f.file});
-  $("czip").disabled = true; try { saveBlob(await makeZip(entries, (a, b) => say(`Φτιάχνω το πακέτο… ${a}/${b}`)), "paketo-mouseiou.zip"); say("✔ Το πακέτο <code>paketo-mouseiou.zip</code> κατέβηκε (στον φάκελο Λήψεις)."); } catch (e) { say("⚠ Σφάλμα στο πακέτο: " + esc2x(e.message)); } $("czip").disabled = false;
+  $("czip").disabled = true;
+  try {
+    saveBlob(await makeZip(entries, (a, b) => say(`Φτιάχνω το πακέτο… ${a}/${b}`)), "paketo-mouseiou.zip");
+    const msg = "✔ Έγινε λήψη του <code>paketo-mouseiou.zip</code>.<br>Τοποθεσία: φάκελος <b>Λήψεις</b> (Downloads) του υπολογιστή σου.<br>Μετά πέρασέ το στο tablet (USB ή κάρτα μνήμης) και φόρτωσέ το από το μενού προσωπικού → Φόρτωση από τη συσκευή.";
+    if ($("creport")) $("creport").insertAdjacentHTML("afterbegin", `<p style="margin:8px 0;padding:10px 12px;border-radius:8px;background:rgba(210,168,76,.15);border:1px solid rgba(210,168,76,.4)"><b>${msg}</b></p>`);
+    else say(msg);
+  } catch (e) {
+    const em = (typeof esc2x === "function" ? esc2x(e.message) : String(e.message || e));
+    say("⚠ Σφάλμα στο πακέτο: " + em);
+  }
+  $("czip").disabled = !$("dev-ready") || !$("dev-ready").checked;
 };
 [["sgit", "g-git", "git"], ["sdev", "g-dev", "dev"]].forEach(([b, g, mode]) => { $(b).onclick = () => {
   const was = $(g).classList.contains("open"); ["g-git", "g-dev"].forEach(x => $(x).classList.remove("open")); ["sgit", "sdev"].forEach(x => $(x).setAttribute("aria-expanded", "false"));
