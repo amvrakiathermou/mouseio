@@ -162,15 +162,69 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 #q{width:100%;margin:0 0 12px;font:18px system-ui,sans-serif;padding:14px;border-radius:10px;border:1.5px solid var(--mu);background:var(--pn);color:var(--ink)}
 #np{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));background:var(--pn);border-top:1px solid #34605a;z-index:6;display:none;align-items:center;gap:12px;padding:8px 16px;font:15px system-ui,sans-serif}
 :root{--tb:88px}
-#topbar{position:fixed;top:0;left:0;right:0;z-index:12;min-height:calc(var(--tb) + env(safe-area-inset-top));height:auto;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:2px solid var(--brass);font:700 clamp(20px,5.5vw,34px) Georgia,'Times New Roman',serif;color:var(--ink);white-space:normal;overflow:visible;text-align:center;line-height:1.2}
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:12;
+  min-height:calc(var(--tb) + env(safe-area-inset-top));height:auto;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:var(--bg);border-bottom:2px solid var(--brass);
+  font-family:"Palatino Linotype",Palatino,"Book Antiqua","URW Palladio L",Georgia,"Times New Roman",serif;
+  font-weight:700;font-size:clamp(20px,5.5vw,34px);color:var(--ink);
+  white-space:normal;overflow:visible;text-align:center;line-height:1.15;
+  letter-spacing:.04em;
+}
 #topbar .tline{display:block}
 #topbar .title-anim{display:inline-block;transform:translateY(120%);opacity:0}
 #topbar.title-in .title-anim{animation:titleUp .9s cubic-bezier(.16,1,.3,1) forwards}
-#topbar.title-in .title-anim.t2{animation-delay:.12s}
+#topbar.title-in .title-anim.t2{animation-delay:.14s}
+#topbar:not(.welcome-title) .t2 .tline{
+  font-size:.78em;font-weight:600;color:var(--brass);
+  letter-spacing:.1em;margin-top:1px;
+}
 @keyframes titleUp{0%{transform:translateY(110%);opacity:0;filter:blur(4px)}60%{opacity:1;filter:blur(0)}100%{transform:translateY(0);opacity:1;filter:blur(0)}}
+
+/* Welcome: larger elegant title + rise from flags */
+#topbar.welcome-title{
+  font-size:clamp(1.85rem,7.2vw,3.15rem);
+  min-height:calc(var(--tb) + 12px + env(safe-area-inset-top));
+  letter-spacing:.06em;
+  text-shadow:0 1px 0 rgba(210,168,76,.35),0 8px 28px rgba(0,0,0,.25);
+  border-bottom-color:transparent;
+  background:transparent;
+  pointer-events:none;
+}
+#topbar.welcome-title .title-anim{transform:none;opacity:0}
+#topbar.welcome-title.title-in .title-anim{animation:titleFromFlags 1.35s cubic-bezier(.22,1,.36,1) forwards}
+#topbar.welcome-title.title-in .title-anim.t2{animation-delay:.18s}
+#topbar.welcome-title .tline{line-height:1.12}
+#topbar.welcome-title .t1 .tline{
+  font-size:1.08em;font-weight:700;color:var(--ink);
+  letter-spacing:.08em;
+}
+#topbar.welcome-title .t2 .tline{
+  font-size:.72em;font-weight:600;color:var(--brass);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-top:4px;
+}
+@keyframes titleFromFlags{
+  0%{
+    transform:translateY(min(58vh,420px)) scale(.88);
+    opacity:0;filter:blur(6px);
+  }
+  35%{
+    opacity:1;filter:blur(0);
+  }
+  70%{
+    transform:translateY(-6px) scale(1.02);
+  }
+  100%{
+    transform:translateY(0) scale(1);
+    opacity:1;filter:blur(0);
+  }
+}
 #wtitle{display:none}
 :root{--tb:88px}
-#welcome{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
+#welcome{padding-top:calc(var(--tb) + 28px + env(safe-area-inset-top))}
 #app{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
 #qr,#staff{top:calc(var(--tb) + env(safe-area-inset-top))}
 footer{display:none!important}
@@ -1133,12 +1187,17 @@ async function importLocal(files) {
 function setTitle(animate) {
   const el = $("topbar");
   if (!el || !DATA || !DATA.title) return;
-  const full = tr(DATA.title);
-  // Δύο γραμμές: «Μουσείο» / υπόλοιπο (ελλ.) — αλλιώς σπάσιμο στη μέση φράσης
+  // Καθαρισμός HTML tags από τον τίτλο (π.χ. <br>)
+  let full = String(tr(DATA.title) || "").replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  // Δύο γραμμές: «Μουσείο» / «Μουσικών Αμβρακιάς» (ελλ.) — αλλιώς σπάσιμο στη μέση
   let l1 = full, l2 = "";
   if (lang === "el" || !lang) {
     const m = full.match(/^(Μουσείο)\s+(.+)$/i);
     if (m) { l1 = m[1]; l2 = m[2]; }
+    else if (/μουσείων?\s+μουσικ/i.test(full) === false && full.indexOf("Μουσείο") === 0) {
+      const rest = full.replace(/^Μουσείο\s*/i, "").trim();
+      if (rest) { l1 = "Μουσείο"; l2 = rest; }
+    }
   } else {
     const parts = full.split(/\s+/);
     if (parts.length >= 3) {
@@ -1147,14 +1206,19 @@ function setTitle(animate) {
       l2 = parts.slice(mid).join(" ");
     }
   }
+  const onWelcome = !$("welcome").hidden;
   const tag = VISITOR ? `<span class="webtag">${esc(WEBT[lang] || WEBT.el)}</span>` : "";
-  el.classList.remove("title-in");
+  el.classList.remove("title-in", "welcome-title");
+  if (onWelcome && !VISITOR) el.classList.add("welcome-title");
   if (l2) {
     el.innerHTML = `<span class="title-anim t1"><span class="tline">${esc(l1)}</span></span><span class="title-anim t2"><span class="tline">${esc(l2)}</span></span>${tag}`;
   } else {
-    el.innerHTML = `<span class="title-anim t1">${esc(l1)}</span>${tag}`;
+    el.innerHTML = `<span class="title-anim t1"><span class="tline">${esc(l1)}</span></span>${tag}`;
   }
-  if (animate !== false) {
+  // Η κίνηση από τις σημαίες μόνο στην αρχική οθόνη
+  if (animate !== false && onWelcome && !VISITOR) {
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("title-in")));
+  } else if (animate !== false) {
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("title-in")));
   } else {
     el.classList.add("title-in");
@@ -1262,7 +1326,7 @@ async function buildData(sheets, files, trans) {
   const fams = R.F.map(d => ({id: d.id, name: d._n, text: d["Περιγραφή"], members: musicians.filter(m => m.fam === d.id).map(m => m.id), cover: cover("Εξώφυλλο οικογένειας", d._n)}));
   const insts = R.O.map(d => ({id: d.id, name: d._n, cat: d["Κατηγορία"], text: d["Περιγραφή"], players: musicians.filter(m => m.inst.includes(d.id)).map(m => m.id), cover: cover("Φωτογραφία οργάνου", d._n)}));
   for (const f of files.values()) if (!used.has(f.path)) note.push(`ℹ Το αρχείο ${f.path} δεν χρησιμοποιείται από το Excel.`);
-  const TITLE = {el:"Μουσείο <br> Μουσικών Αμβρακιάς",en:"Amvrakia Music Museum",fr:"Musée de la musique d’Amvrakia",de:"Musikmuseum Amvrakia",it:"Museo della musica di Amvrakia",es:"Museo de la música de Amvrakia",ru:"Музей музыки Амвракии",zh:"安姆夫拉基亚音乐博物馆",ar:"متحف موسيقى أمفراكيا",ja:"アンブラキア音楽博物館"};
+  const TITLE = {el:"Μουσείο Μουσικών Αμβρακιάς",en:"Amvrakia Music Museum",fr:"Musée de la musique d’Amvrakia",de:"Musikmuseum Amvrakia",it:"Museo della musica di Amvrakia",es:"Museo de la música de Amvrakia",ru:"Музей музыки Амвракии",zh:"安姆夫ρα基亚音乐博物馆",ar:"متحف موسيقى أمفراكيا",ja:"アンブラキア音楽博物館"};
   const data = {meta: {version: 1, built: new Date().toISOString(), idleSeconds: 180, title: TITLE}, tr: trans || {}, musicians, families: fams, instruments: insts, recordings: recs, videos: vids, photos, events, history: hist, testimonies: tes, newgen: newg};
   const need = [...photos, ...recs, ...vids].filter(x => x.f_);
   for (const x of need) { x.h = await hash12(x.f_.file); }
