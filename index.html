@@ -435,7 +435,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a9";
+const BUILD = "a10";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1238,10 +1238,19 @@ let CONV = null;
 const say = (html) => { $("creport").innerHTML = html; };
 async function runConvert(list, outDir) {
   CONV = null; $("cjson").disabled = true;
-  const xl = list.find(x => /\.xlsx$/i.test(x.f.name) && !x.f.name.startsWith("~$")), tf = list.find(x => x.f.name === "translations.json"), files = new Map();
+  const xl = list.find(x => /\.(xlsx|xls)$/i.test(x.f.name) && !x.f.name.startsWith("~$") && !x.f.name.startsWith(".")), tf = list.find(x => /translations\.json$/i.test(x.f.name)), files = new Map();
   for (const x of list) { const m = /(?:^|\/)(img|audio|video)\/([^\/]+)$/i.exec(x.rel); if (m) files.set(`${m[1]}/${m[2]}`.toLowerCase(), {path: `${m[1].toLowerCase()}/${m[2]}`, file: x.f, size: x.f.size}); }
-  if (!xl) { say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx) στον φάκελο που διάλεξες.</b><br>Διάλεξε τον φάκελο <code>mouseio amvrakia</code> που έχει μέσα το Excel."); return; }
-  say("Διαβάζω το Excel…");
+  if (!xl) {
+    const names = [...new Set(list.map(x => x.f.name))].slice(0, 30).map(n => "<li>" + String(n).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + "</li>").join("");
+    const more = list.length > 30 ? "<li>… και άλλα</li>" : "";
+    say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx / .xls) στον φάκελο που διάλεξες.</b><br>Διάλεξε τον φάκελο <code>mouseio amvrakia</code> (αυτόν που έχει μέσα το Excel και τον φάκελο github-mouseio).<br><br><b>Αρχεία που είδα (" + list.length + "):</b><ul style=\"margin:6px 0;padding-left:20px;max-height:160px;overflow:auto\">" + (names || "<li>(κενό)</li>") + more + "</ul>");
+    return;
+  }
+  if (/\.xls$/i.test(xl.f.name) && !/\.xlsx$/i.test(xl.f.name)) {
+    say("<b>⚠ Βρήκα παλιό Excel (.xls).</b> Αποθήκευσέ το ως <b>.xlsx</b> (Excel → Αποθήκευση ως → Βιβλίο Excel) και ξαναδοκίμασε.");
+    return;
+  }
+  say("Διαβάζω το Excel («" + xl.f.name.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + "»)…");
   try {
     const sheets = await readXlsx(xl.f); let trans = {}; if (tf) { try { trans = JSON.parse(await tf.f.text()); } catch (_) { say("⚠ Το translations.json έχει λάθος."); return; } }
     say("Ελέγχω τα αρχεία και υπολογίζω αποτυπώματα… (μπορεί να πάρει λίγο)");
@@ -1339,3 +1348,4 @@ load(); bump();
 </script>
 </body>
 </html>
+
