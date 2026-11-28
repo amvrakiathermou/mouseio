@@ -328,10 +328,12 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
                 <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
                 <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
                 <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
-                <li>Πάτα <b>[Επίλεξε Excel]</b> και διάλεξε το αρχείο <code>mouseio-excel.xlsx</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
+                <li>Πάτα <b>[Διάλεξε φάκελο: mouseio amvrakia]</b> — τον φάκελο που έχει μέσα το Excel και τον υποφάκελο <code>github-mouseio</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
                   <div id="slot-git">
                     <div class="conv" id="convbox" data-mode="git">
-                      <button class="staff-btn" id="cbtn-file"><span class="icon">📊</span><span>Επίλεξε Excel (mouseio amvrakia >>> mouseio-excel)</span></button>
+                      <button class="staff-btn" id="cbtn"><span class="icon">📁</span><span>Διάλεξε φάκελο: mouseio amvrakia</span></button>
+                      <button class="staff-btn" id="cbtn-file" style="margin-top:6px"><span class="icon">📊</span><span>Ή μόνο το Excel (demo-excel)</span></button>
+                      <p style="margin:6px 0 0;font:13px system-ui,sans-serif;color:var(--mute)">Φάκελος = Excel + github-mouseio μαζί. «Μόνο Excel» = φτιάχνει data.json χωρίς έλεγχο φωτογραφιών/ήχων.</p>
                       <div class="creport" id="creport"></div>
                       <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
                     </div>
@@ -436,7 +438,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a.01";
+const BUILD = "a.02";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1186,14 +1188,14 @@ async function buildData(sheets, files, trans) {
   }
   const ids = (d, pre, c) => { const res = []; for (const k in d) if (pre.some(p => k.startsWith(p))) { const i = N2I[c] && N2I[c][d[k]]; if (i) res.push(i); else err.push(`${d.id}: άγνωστο όνομα «${d[k]}»`); } return res; };
   const mus = d => ids(d, ["Μουσικός", "Σχετικός μουσικός", "Αφορά μουσικό"], "M"), one = (d, k, c) => d[k] ? (N2I[c] || {})[d[k]] : undefined;
-  const find = (folder, pid, exts, need = true) => { for (const e of exts) { const f = files.get(`${folder}/${pid}.${e}`.toLowerCase()); if (f) { used.set(f.path, f); return f; } } if (need) err.push(`Λείπει το αρχείο ${folder}/${pid}.${exts[0]}`); return null; };
+  const find = (folder, pid, exts, need = true) => { for (const e of exts) { const f = files.get(`${folder}/${pid}.${e}`.toLowerCase()); if (f) { used.set(f.path, f); return f; } } if (need) { const msg = `Λείπει το αρχείο ${folder}/${pid}.${exts[0]}`; if (files.size === 0) note.push(msg + " (δεν φορτώθηκαν φάκελοι media — το data.json θα φτιαχτεί χωρίς έλεγχο αρχείων)"); else err.push(msg); } return null; };
   const cover = (col, name) => (R.P.find(d => d[col] === name) || {}).id;
   const IMG = ["jpg", "jpeg", "png", "webp"], AUD = ["mp3", "m4a", "aac", "ogg", "wav"];
   const ent = (f) => f ? {file: f.path, f_: f} : {file: ""};
   const photos = R.P.map(d => ({id: d.id, name: d._n, year: d["Έτος"], place: d["Τόπος"], src: d["Φωτογράφος / πηγή"], ...ent(find("img", d.id, IMG)), musicians: mus(d), evt: one(d, "Εκδήλωση", "E")}));
   const recs = R.A.map(d => ({id: d.id, title: d._n, year: d["Έτος"], place: d["Τόπος"], musicians: mus(d), inst: ids(d, ["Όργανο"], "O"), evt: one(d, "Εκδήλωση", "E"), ...ent(find("audio", d.id, AUD))}));
   const YT = "Σύνδεσμος YouTube (για ίντερνετ και κινητά)";
-  const vids = R.V.map(d => { const f = find("video", d.id, ["mp4"], false); if (!f && !d[YT]) err.push(`${d.id}: το βίντεο «${d._n}» δεν έχει ούτε αρχείο mp4 ούτε σύνδεσμο YouTube.`); if (f && f.size > 25 * 1048576) note.push(`ℹ Το βίντεο ${d.id} έχει ${(f.size / 1048576).toFixed(0)} MB: δεν ανεβαίνει στο GitHub (όριο 25 MB), μόνο στο πακέτο για tablet.`); return {id: d.id, title: d._n, link: d[YT], musicians: mus(d), cover: cover("Εξώφυλλο βίντεο", d._n), ...ent(f)}; });
+  const vids = R.V.map(d => { const f = find("video", d.id, ["mp4"], false); if (!f && !d[YT]) { const vm = `${d.id}: το βίντεο «${d._n}» δεν έχει ούτε αρχείο mp4 ούτε σύνδεσμο YouTube.`; if (files.size === 0) note.push(vm); else err.push(vm); } if (f && f.size > 25 * 1048576) note.push(`ℹ Το βίντεο ${d.id} έχει ${(f.size / 1048576).toFixed(0)} MB: δεν ανεβαίνει στο GitHub (όριο 25 MB), μόνο στο πακέτο για tablet.`); return {id: d.id, title: d._n, link: d[YT], musicians: mus(d), cover: cover("Εξώφυλλο βίντεο", d._n), ...ent(f)}; });
   const events = R.E.map(d => ({id: d.id, title: d._n, date: d["Ημερομηνία / περίοδος"], place: d["Τόπος"], text: d["Περιγραφή"], musicians: mus(d), cover: cover("Φωτογραφία εκδήλωσης", d._n)}));
   const hist = R.H.map(d => ({id: d.id, title: d._n, period: d["Περίοδος (π.χ. 1900–1930)"], text: d["Κείμενο"], musicians: mus(d)}));
   const tes = R.T.map(d => ({id: d.id, title: d._n, narrator: one(d, "Αφηγητής", "M"), when: d["Ημερομηνία καταγραφής"], text: d["Κείμενο της μαρτυρίας"], musicians: mus(d)}));
@@ -1239,19 +1241,41 @@ let CONV = null;
 const say = (html) => { $("creport").innerHTML = html; };
 async function runConvert(list, outDir) {
   CONV = null; $("cjson").disabled = true;
-  const xl = list.find(x => /\.(xlsx|xls)$/i.test(x.f.name) && !x.f.name.startsWith("~$") && !x.f.name.startsWith(".")), tf = list.find(x => /translations\.json$/i.test(x.f.name)), files = new Map();
-  for (const x of list) { const m = /(?:^|\/)(img|audio|video)\/([^\/]+)$/i.exec(x.rel); if (m) files.set(`${m[1]}/${m[2]}`.toLowerCase(), {path: `${m[1].toLowerCase()}/${m[2]}`, file: x.f, size: x.f.size}); }
+  const escN = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  // Excel: any .xlsx/.xls anywhere in tree (not temp ~$)
+  let xl = list.find(x => /\.(xlsx|xls)$/i.test(x.f.name) && !x.f.name.startsWith("~$") && !x.f.name.startsWith("."));
   if (!xl) {
-    const names = [...new Set(list.map(x => x.f.name))].slice(0, 30).map(n => "<li>" + String(n).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + "</li>").join("");
-    const more = list.length > 30 ? "<li>… και άλλα</li>" : "";
-    say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx / .xls) στον φάκελο που διάλεξες.</b><br>Διάλεξε τον φάκελο <code>mouseio amvrakia</code> (αυτόν που έχει μέσα το Excel και τον φάκελο github-mouseio).<br><br><b>Αρχεία που είδα (" + list.length + "):</b><ul style=\"margin:6px 0;padding-left:20px;max-height:160px;overflow:auto\">" + (names || "<li>(κενό)</li>") + more + "</ul>");
+    // names like demo-excel (3), mouseio-excel, etc.
+    xl = list.find(x => /excel/i.test(x.f.name) && !x.f.name.startsWith("~$") && !x.f.name.startsWith(".") && !/\.(jpg|jpeg|png|mp3|mp4|json|txt|zip|csv)$/i.test(x.f.name));
+  }
+  const tf = list.find(x => /translations\.json$/i.test(x.f.name));
+  const files = new Map();
+  for (const x of list) {
+    const m = /(?:^|\/)(img|audio|video)\/([^\/]+)$/i.exec(x.rel.replace(/\\/g, "/"));
+    if (m) files.set((m[1] + "/" + m[2]).toLowerCase(), {path: m[1].toLowerCase() + "/" + m[2], file: x.f, size: x.f.size});
+  }
+  if (!xl) {
+    const byExt = {};
+    for (const x of list) {
+      const n = x.f.name || "";
+      const d = n.includes(".") ? n.split(".").pop().toLowerCase() : "(χωρίς επέκταση)";
+      byExt[d] = (byExt[d] || 0) + 1;
+    }
+    const extLine = Object.entries(byExt).sort((a,b)=>b[1]-a[1]).map(([e,c]) => e + ": " + c).join(", ") || "(τίποτα)";
+    const names = list.map(x => x.rel || x.f.name).slice(0, 40).map(n => "<li>" + escN(n) + "</li>").join("");
+    const more = list.length > 40 ? "<li>… και άλλα</li>" : "";
+    say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx) στον φάκελο.</b><br>" +
+      "Διάλεξε τον φάκελο <code>mouseio amvrakia</code> που έχει <b>μέσα του</b> το .xlsx (όχι μόνο το github-mouseio).<br><br>" +
+      "<b>Αρχεία που είδα: " + list.length + "</b><br>Επεκτάσεις: " + escN(extLine) +
+      "<ul style=\"margin:6px 0;padding-left:20px;max-height:180px;overflow:auto\">" + (names || "<li>(κενός φάκελος)</li>") + more + "</ul>" +
+      "<br>Αν το Excel είναι ανοιχτό στο Office, κλείστο και ξαναδοκίμασε. Αν είναι στο OneDrive/iCloud, κάνε το «Διαθέσιμο εκτός σύνδεσης».");
     return;
   }
   if (/\.xls$/i.test(xl.f.name) && !/\.xlsx$/i.test(xl.f.name)) {
-    say("<b>⚠ Βρήκα παλιό Excel (.xls).</b> Αποθήκευσέ το ως <b>.xlsx</b> (Excel → Αποθήκευση ως → Βιβλίο Excel) και ξαναδοκίμασε.");
+    say("<b>⚠ Βρήκα παλιό Excel (.xls):</b> " + escN(xl.f.name) + "<br>Αποθήκευσέ το ως <b>.xlsx</b> και ξαναδοκίμασε.");
     return;
   }
-  say("Διαβάζω το Excel («" + xl.f.name.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + "»)…");
+  say("Βρήκα Excel: <b>" + escN(xl.f.name) + "</b> · διαδρομή: " + escN(xl.rel || xl.f.name) + "<br>Media αρχεία που είδα: " + files.size + "<br>Διαβάζω το Excel…");
   try {
     const sheets = await readXlsx(xl.f); let trans = {}; if (tf) { try { trans = JSON.parse(await tf.f.text()); } catch (_) { say("⚠ Το translations.json έχει λάθος."); return; } }
     say("Ελέγχω τα αρχεία και υπολογίζω αποτυπώματα… (μπορεί να πάρει λίγο)");
