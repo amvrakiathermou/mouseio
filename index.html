@@ -594,7 +594,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.1";
+const BUILD = "version 1.0";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1001,7 +1001,21 @@ $("pinok").onclick = async () => {
     fails = 0; $("pinView").hidden = true; $("panelView").hidden = false;
     $("supd-text").textContent = LOCAL ? "Επιστροφή σε λειτουργία ίντερνετ" : "Ενημέρωση από το ίντερνετ";
     updateModeTicks();
-    $("mode-msg").textContent = "";
+    try {
+      const switched = sessionStorage.getItem("mm-mode-msg");
+      if (switched) {
+        sessionStorage.removeItem("mm-mode-msg");
+        showModeMessage(switched);
+      } else {
+        $("mode-msg").textContent = LOCAL
+          ? "Τρέχουσα λειτουργία: τοπική (αρχεία συσκευής)."
+          : "Τρέχουσα λειτουργία: ίντερνετ (GitHub).";
+      }
+    } catch (_) {
+      $("mode-msg").textContent = LOCAL
+        ? "Τρέχουσα λειτουργία: τοπική (αρχεία συσκευής)."
+        : "Τρέχουσα λειτουργία: ίντερνετ (GitHub).";
+    }
     if ($("dev-ready")) { $("dev-ready").checked = false; $("czip").disabled = true; }
     $("sidle").value = String(Number(localStorage.getItem("mm-idle")) || DATA.idleSeconds || 180);
     setStatus(""); refreshInfo();
@@ -1050,6 +1064,7 @@ async function forceUpdate() {
   await syncMedia(); refreshInfo();
 }
 async function exitLocal() {
+  try { sessionStorage.setItem("mm-mode-msg", "net"); } catch (_) {}
   ["mm-local","mm-local-data","mm-res"].forEach(k => localStorage.removeItem(k));
   await caches.delete("media-local"); location.reload();
 }
@@ -1067,6 +1082,7 @@ async function importLocal(files) {
     res[path.replace(/\.[^.\/]+$/, "")] = path;
   }
   localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-res", JSON.stringify(res)); localStorage.setItem("mm-local", "1");
+  try { sessionStorage.setItem("mm-mode-msg", "local"); } catch (_) {}
   location.reload();
 }
 $("supd").onclick = () => LOCAL ? exitLocal() : forceUpdate();
@@ -1229,10 +1245,29 @@ async function countFiles() {
   return {ok, total: urls.length};
 }
 async function forceUpdate() {
-  if (!navigator.onLine) { setStatus("Χρειάζεται σύνδεση στο ίντερνετ."); return; }
-  try { DATA = await (await fetch("data.json", {cache:"no-store"})).json(); applyMeta(); } catch (_) { setStatus("Δεν ήταν δυνατή η λήψη των δεδομένων."); return; }
+  const mm = $("mode-msg");
+  if (!navigator.onLine) {
+    setStatus("Χρειάζεται σύνδεση στο ίντερνετ.");
+    if (mm) mm.textContent = "⚠ Χρειάζεται σύνδεση στο ίντερνετ για ενημέρωση από το GitHub.";
+    return;
+  }
+  if (mm) mm.textContent = "Ενημέρωση από το GitHub σε εξέλιξη…";
+  setStatus("Ενημέρωση από το ίντερνετ…");
+  try {
+    DATA = await (await fetch("data.json", {cache:"no-store"})).json();
+    applyMeta();
+  } catch (_) {
+    setStatus("Δεν ήταν δυνατή η λήψη των δεδομένων.");
+    if (mm) mm.textContent = "⚠ Αποτυχία ενημέρωσης από το GitHub.";
+    return;
+  }
   await Promise.all((await caches.keys()).filter(k => k.startsWith("media-") && k !== "media-local").map(k => caches.delete(k)));
-  await syncMedia(); refreshInfo(); if (!$("app").hidden) renderApp();
+  await syncMedia();
+  refreshInfo();
+  if (!$("app").hidden) renderApp();
+  updateModeTicks();
+  setStatus("✔ Λειτουργία ίντερνετ (GitHub) — ενημερώθηκε.");
+  if (mm) mm.textContent = "✔ Ενημέρωση από το GitHub ολοκληρώθηκε. Λειτουργία: ίντερνετ.";
 }
 /* Ανάγνωση .zip χωρίς βιβλιοθήκη: διαβάζει ένα-ένα τα αρχεία, ώστε να μη γεμίζει η μνήμη */
 async function readZip(file) {
@@ -1264,8 +1299,14 @@ async function importLocal(files) {
       await c.put(new URL(path, location.href).href, new Response(b, {headers: {"Content-Type": MIME[ext] || "application/octet-stream"}}));
       setStatus("Αποθήκευση " + (++n) + "/" + todo.length + "…");
     }
-    localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-local", "1"); location.reload();
-  } catch (e) { setStatus("Σφάλμα στο πακέτο: " + e.message); }
+    localStorage.setItem("mm-local-data", JSON.stringify(data)); localStorage.setItem("mm-local", "1");
+    try { sessionStorage.setItem("mm-mode-msg", "local"); } catch (_) {}
+    location.reload();
+  } catch (e) {
+    setStatus("Σφάλμα στο πακέτο: " + e.message);
+    const mm = $("mode-msg");
+    if (mm) mm.textContent = "⚠ Αποτυχία μετάβασης σε τοπική λειτουργία: " + e.message;
+  }
 }
 /* ===== a5: τίτλος σε γραμμή πάνω, κουμπιά πλοήγησης ανάλογα με την οθόνη ===== */
 function setTitle(animate) {
@@ -1659,22 +1700,44 @@ function updateModeTicks() {
     tn.textContent = "✓"; tl.textContent = "";
   }
 }
+function showModeMessage(kind) {
+  const mm = $("mode-msg");
+  if (!mm) return;
+  if (kind === "local") {
+    mm.textContent = "✔ Μετάβαση σε τοπική λειτουργία ολοκληρώθηκε. Τα δεδομένα είναι στη συσκευή (χωρίς ίντερνετ).";
+    setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
+  } else if (kind === "net") {
+    mm.textContent = "✔ Μετάβαση σε λειτουργία ίντερνετ (GitHub) ολοκληρώθηκε.";
+    setStatus("✔ Λειτουργία ίντερνετ (από το GitHub)");
+  }
+}
+// Μήνυμα μετά από αλλαγή λειτουργίας (μετά το reload)
+try {
+  const switched = sessionStorage.getItem("mm-mode-msg");
+  if (switched) {
+    sessionStorage.removeItem("mm-mode-msg");
+    setTimeout(() => showModeMessage(switched), 500);
+  }
+} catch (_) {}
 $("mode-net").onclick = () => {
   if (LOCAL) {
-    $("mode-msg").textContent = "Επιστροφή σε λειτουργία ίντερνετ…";
+    if (!confirm("Να γίνει μετάβαση σε λειτουργία ίντερνετ (GitHub);\n\nΘα διαγραφούν τα τοπικά δεδομένα της συσκευής και θα φορτωθούν από το διαδίκτυο.")) return;
+    $("mode-msg").textContent = "Μετάβαση σε λειτουργία ίντερνετ (GitHub)… Η σελίδα θα ανανεωθεί.";
+    setStatus("Μετάβαση σε ίντερνετ…");
     exitLocal();
     return;
   }
-  $("mode-msg").textContent = "Ενημέρωση από το ίντερνετ…";
+  $("mode-msg").textContent = "Ενημέρωση από το GitHub σε εξέλιξη…";
   forceUpdate();
 };
 $("mode-local").onclick = () => {
   if (LOCAL) {
-    $("mode-msg").textContent = "Ήδη σε τοπική λειτουργία. Επίλεξε νέο αρχείο .zip αν θέλεις.";
+    $("mode-msg").textContent = "Ήδη σε τοπική λειτουργία. Επίλεξε νέο αρχείο .zip αν θέλεις να αντικαταστήσεις τα δεδομένα.";
     $("sfile").click();
     return;
   }
-  $("mode-msg").textContent = "Επίλεξε αρχείο .zip για φόρτωση σε τοπική λειτουργία…";
+  $("mode-msg").textContent = "Επίλεξε αρχείο paketo-mouseiou.zip για μετάβαση σε τοπική λειτουργία…";
+  setStatus("Επιλογή πακέτου για τοπική λειτουργία…");
   $("sfile").click();
 };
 $("dev-ready").onchange = () => {
