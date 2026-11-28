@@ -183,18 +183,24 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
   transition:transform .32s cubic-bezier(.22,1,.36,1);
 }
 #toast.show .toast-card{transform:translateY(0) scale(1)}
-#toast .toast-icon{font-size:2.2rem;line-height:1;margin-bottom:10px}
+#toast .toast-icon{
+  width:52px;height:52px;border-radius:50%;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;line-height:1;color:#fff;
+}
 #toast .toast-title{margin:0 0 8px;font:700 1.25rem Georgia,"Times New Roman",serif;color:var(--ink)}
-#toast .toast-body{margin:0 0 18px;font:16px/1.55 system-ui,sans-serif;color:var(--mute)}
+#toast .toast-body{margin:0 0 18px;font:16px/1.55 system-ui,sans-serif;color:var(--mute);white-space:pre-line}
 #toast .toast-ok{
   min-height:48px;min-width:140px;padding:10px 28px;border-radius:10px;
   border:0;background:var(--brass);color:#2a2110;
   font:600 16px system-ui,sans-serif;cursor:pointer;
 }
-#toast.ok .toast-card{border-color:#6bbf8a}
-#toast.ok .toast-icon{color:#6bbf8a}
+#toast.ok .toast-card{border-color:#3d9b6a}
+#toast.ok .toast-icon{background:#2f9e60;box-shadow:0 4px 14px rgba(47,158,96,.4)}
 #toast.err .toast-card{border-color:var(--danger)}
-#toast.err .toast-icon{color:var(--danger)}
+#toast.err .toast-icon{background:var(--danger);box-shadow:0 4px 14px rgba(196,92,74,.4)}
+#toast.info .toast-card{border-color:var(--brass)}
+#toast.info .toast-icon{background:var(--brass);color:#2a2110}
 :root{--pn:var(--panel);--br:var(--brass);--mu:var(--mute);--paper:#f7f2e6;--tx:#2b2418}
 #view{max-width:1100px;margin:0 auto;padding:18px}
 #view h1{font-size:2rem;margin:.2em 0}#view h2{margin:.2em 0 .6em}
@@ -632,7 +638,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.0";
+const BUILD = "version 1.01";
 const $ = id => document.getElementById(id);
 let toastTimer = null;
 function hideToast() {
@@ -742,7 +748,7 @@ async function load() {
     if (justUpdated) {
       sessionStorage.removeItem("mm-just-updated");
       setTimeout(() => {
-        alert("Το σύστημά σας έχει ενημερωθεί.\n\nΗ νέα έκδοση είναι η " + BUILD + ".");
+        showToast("Ενημέρωση εφαρμογής", "Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".", "ok");
       }, 600);
     }
   } catch(_) {}
@@ -998,7 +1004,7 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 let lastCheck = 0;
 async function checkUpdate(manual = false) {
   if (VISITOR || !navigator.onLine) {
-    if (manual) alert("Χρειάζεται σύνδεση στο ίντερνετ.");
+    if (manual) showToast("Χωρίς σύνδεση", "Χρειάζεται σύνδεση στο ίντερνετ για έλεγχο έκδοσης.", "err");
     return;
   }
   if (!manual && Date.now() - lastCheck < 300000) return;
@@ -1008,13 +1014,13 @@ async function checkUpdate(manual = false) {
     const txt = await (await fetch("index.html?nc=" + Date.now(), {cache: "no-store"})).text();
     const m = /BUILD\s*=\s*"([^"]+)"/.exec(txt);
     if (!m) {
-      if (manual) alert("Δεν ήταν δυνατός ο έλεγχος έκδοσης.");
+      if (manual) showToast("Έλεγχος έκδοσης", "Δεν ήταν δυνατός ο έλεγχος έκδοσης.", "err");
       return;
     }
     const remoteBuild = m[1];
 
     if (remoteBuild === BUILD) {
-      if (manual) alert("Το σύστημά σας είναι ενημερωμένο.\n\nΔεν υπάρχει νεότερη έκδοση από την " + BUILD + ".");
+      if (manual) showToast("Ενημερωμένο", "Το σύστημά σας είναι ενημερωμένο.\nΔεν υπάρχει νεότερη έκδοση από την " + BUILD + ".", "ok");
       return;
     }
 
@@ -1030,7 +1036,7 @@ async function checkUpdate(manual = false) {
     await Promise.all(regs.map(r => r.unregister()));
     location.reload();
   } catch (err) {
-    if (manual) alert("Σφάλμα κατά τον έλεγχο έκδοσης.");
+    if (manual) showToast("Σφάλμα", "Σφάλμα κατά τον έλεγχο έκδοσης.", "err");
   }
 }
 
@@ -1274,7 +1280,7 @@ async function load() {
   if (!VISITOR) longPress($("wstart"), 3000, () => { lpAt = Date.now(); openPin(); });
   if (!VISITOR && !LOCAL) syncMedia(); else if (LOCAL) setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
   try {
-    if (sessionStorage.getItem("mm-just-updated")) { sessionStorage.removeItem("mm-just-updated"); setTimeout(() => alert("Το σύστημά σας έχει ενημερωθεί.\n\nΗ νέα έκδοση είναι η " + BUILD + "."), 600); }
+    if (sessionStorage.getItem("mm-just-updated")) { sessionStorage.removeItem("mm-just-updated"); setTimeout(() => showToast("Ενημέρωση εφαρμογής", "Το σύστημά σας έχει ενημερωθεί.\nΗ νέα έκδοση είναι η " + BUILD + ".", "ok"), 600); }
   } catch (_) {}
 }
 async function syncMedia() {
@@ -1302,6 +1308,7 @@ async function forceUpdate() {
   if (!navigator.onLine) {
     setStatus("Χρειάζεται σύνδεση στο ίντερνετ.");
     if (mm) mm.textContent = "⚠ Χρειάζεται σύνδεση στο ίντερνετ για ενημέρωση από το GitHub.";
+    showToast("Χωρίς σύνδεση", "Χρειάζεται σύνδεση στο ίντερνετ για ενημέρωση από το GitHub.", "err");
     return;
   }
   if (mm) mm.textContent = "Ενημέρωση από το GitHub σε εξέλιξη…";
@@ -1312,6 +1319,7 @@ async function forceUpdate() {
   } catch (_) {
     setStatus("Δεν ήταν δυνατή η λήψη των δεδομένων.");
     if (mm) mm.textContent = "⚠ Αποτυχία ενημέρωσης από το GitHub.";
+    showToast("Αποτυχία ενημέρωσης", "Δεν ήταν δυνατή η λήψη των δεδομένων από το GitHub.", "err");
     return;
   }
   await Promise.all((await caches.keys()).filter(k => k.startsWith("media-") && k !== "media-local").map(k => caches.delete(k)));
@@ -1321,7 +1329,7 @@ async function forceUpdate() {
   updateModeTicks();
   setStatus("✔ Λειτουργία ίντερνετ (GitHub) — ενημερώθηκε.");
   if (mm) mm.textContent = "✔ Ενημέρωση από το GitHub ολοκληρώθηκε. Λειτουργία: ίντερνετ.";
-  showToast("Ενημέρωση GitHub", "Η ενημέρωση ολοκληρώθηκε. Λειτουργία: ίντερνετ (από το διαδίκτυο).", "ok");
+  showToast("Ενημέρωση GitHub", "Η ενημέρωση ολοκληρώθηκε.\nΛειτουργία: ίντερνετ (από το διαδίκτυο).", "ok");
 }
 /* Ανάγνωση .zip χωρίς βιβλιοθήκη: διαβάζει ένα-ένα τα αρχεία, ώστε να μη γεμίζει η μνήμη */
 async function readZip(file) {
