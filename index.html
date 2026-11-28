@@ -323,33 +323,50 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
               <button type="button" class="guide-close" data-close="g-git">Κλείσιμο</button>
             </div>
             <div class="guide-body">
-              <p class="gnote">   Φτιάχνουμε φάκελο στον  υπολογιστή  μας  και τον ονομάζουμε  <code>mouseio amvrakia</code>.
+              <p class="gnote">Φτιάχνουμε φάκελο στον υπολογιστή μας και τον ονομάζουμε <code>mouseio amvrakia</code>. Μέσα του έχει το Excel <code>mouseio amvrakia excel</code> και τον φάκελο <code>github-mouseio</code>, με τρεις υποφακέλους: <code>img</code> (φωτογραφίες), <code>audio</code> (mp3), <code>video</code> (mp4, έως 25 MB το καθένα).</p>
 
-                φδσγσδφγσδφγσδφγσδφσ σδφ γ σδφγ σδφγ σδφγ σδφ γσδφ γσδφ γσδφ γερτ  υεργυρτη γδφ ηδφγ η ρτηρτ
-</p>
-              <ol>
-                <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
-                <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
-                <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
-                <li>Πάτα <b>[Διάλεξε φάκελο: mouseio amvrakia]</b> — τον φάκελο που έχει μέσα το Excel και τον υποφάκελο <code>github-mouseio</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
-                  <div id="slot-git">
-                    <div class="conv" id="convbox" data-mode="git">
-                      <button class="staff-btn" id="cbtn"><span class="icon">📁</span><span>Διάλεξε φάκελο: mouseio amvrakia</span></button>
-                      <button class="staff-btn" id="cbtn-file" style="margin-top:6px"><span class="icon">📊</span><span>Ή μόνο το Excel (demo-excel)</span></button>
-                      <p style="margin:6px 0 0;font:13px system-ui,sans-serif;color:var(--mute)">Φάκελος = Excel + github-mouseio μαζί. «Μόνο Excel» = φτιάχνει data.json χωρίς έλεγχο φωτογραφιών/ήχων.</p>
-                      <div class="creport" id="creport"></div>
-                      <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
-                    </div>
-                  </div>
+              <p><b>1. Ετοίμασε τα αρχεία στον υπολογιστή</b></p>
+              <ul>
+                <li><b>Συμπλήρωσε σωστά το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
+                <li><b>Ονόμασε τα αρχεία</b> που θες να ανεβάσεις σύμφωνα με το Excel και βάλ’ τα στον φάκελο <code>Desktop\mouseio amvrakia\github-mouseio</code> (<code>img</code> οι φωτογραφίες, <code>audio</code> τα mp3, <code>video</code> τα βίντεο).</li>
+              </ul>
+
+              <p><b>2. Μετατροπή και προετοιμασία για upload</b></p>
+              <ul>
+                <li>Πάτα <b>[Διάλεξε φάκελο: mouseio amvrakia]</b> — τον φάκελο που έχει μέσα το Excel και τον υποφάκελο <code>github-mouseio</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.</li>
+              </ul>
+              <div id="slot-git">
+                <div class="conv" id="convbox" data-mode="git">
+                  <button class="staff-btn" id="cbtn"><span class="icon">📁</span><span>Διάλεξε φάκελο: mouseio amvrakia</span></button>
+                  <button class="staff-btn" id="cbtn-file" style="margin-top:6px"><span class="icon">📊</span><span>Ή μόνο το Excel (demo-excel)</span></button>
+                  <p style="margin:6px 0 0;font:13px system-ui,sans-serif;color:var(--mute)">Φάκελος = Excel + github-mouseio μαζί. «Μόνο Excel» = φτιάχνει data.json χωρίς έλεγχο φωτογραφιών/ήχων.</p>
+                  <div class="creport" id="creport"></div>
+                  <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
+                </div>
+              </div>
+
+              <ul>
+                <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
+              </ul>
+
+              <p><b>3. Ανέβασέ τα στο GitHub</b></p>
+              <ul>
+                <li>Άνοιξε το GitHub και συνδέσου αν σου ζητηθεί:<br>
+                  <a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a>
                 </li>
-                <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο <b>αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code></b> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
-              <li><b>Άνοιξε το GitHub</b> και συνδέσου αν σου ζητηθεί:<br><a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a></li>
-              <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
-              <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): γύρνα στην πρώτη σελίδα του repository (όχι μέσα σε φάκελο) → <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
-              <li><b>Περίμενε 3–5 λεπτά</b> μέχρι να δημοσιευτούν οι αλλαγές.</li>
-              <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο. Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο). Τα κινητά (QR) τα βλέπουν αμέσως.</li>
-            </ol>
-            <div class="note"><b>Προσοχή:</b> κάθε βίντεο πρέπει να είναι <b>έως 25 MB</b>, αλλιώς δεν ανεβαίνει. Μην ανεβάζεις το Excel ή προσωπικά έγγραφα, γιατί το GitHub είναι δημόσιο. Αν κάτι πάει στραβά: στο GitHub πάτα <b>Commits</b>, διάλεξε την προηγούμενη αλλαγή και πάτα <b>Revert</b>.</div>
+                <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
+                <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
+                <li><b>Περίμενε 3–5 λεπτά</b> μέχρι να δημοσιευτούν οι αλλαγές.</li>
+              </ul>
+
+              <p><b>4. Ενημέρωση όλων των tablet</b></p>
+              <ul>
+                <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο.</li>
+                <li>Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο).</li>
+                <li>Τα κινητά (QR) τα βλέπουν αμέσως.</li>
+              </ul>
+
+              <div class="note"><b>Προσοχή:</b> κάθε βίντεο πρέπει να είναι <b>έως 25 MB</b>, αλλιώς δεν ανεβαίνει. Μην ανεβάζεις το Excel ή προσωπικά έγγραφα, γιατί το GitHub είναι δημόσιο. Αν κάτι πάει στραβά: στο GitHub πάτα <b>Commits</b>, διάλεξε την προηγούμενη αλλαγή και πάτα <b>Revert</b>.</div>
             </div>
           </div>
 
@@ -441,7 +458,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "version 1.0";
+const BUILD = "a.01";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
