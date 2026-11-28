@@ -328,10 +328,11 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
                 <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
                 <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
                 <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
-                <li>Πάτα <b>[Μετατροπή Excel]</b> και διάλεξε τον φάκελο <code>mouseio amvrakia</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
+                <li>Πάτα <b>[Διάλεξε φάκελο]</b> και διάλεξε τον <b>φάκελο</b> <code>mouseio amvrakia</code> (όχι το αρχείο Excel — τον φάκελο που το περιέχει). Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.
                   <div id="slot-git">
                     <div class="conv" id="convbox" data-mode="git">
-                      <button class="staff-btn" id="cbtn"><span class="icon">📊</span><span>Μετατροπή Excel</span></button>
+                      <button class="staff-btn" id="cbtn"><span class="icon">📁</span><span>Διάλεξε φάκελο (mouseio amvrakia)</span></button>
+                      <button class="staff-btn" id="cbtn-file" style="margin-top:6px"><span class="icon">📊</span><span>Ή διάλεξε μόνο το αρχείο Excel (.xlsx)</span></button>
                       <div class="creport" id="creport"></div>
                       <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
                     </div>
@@ -424,6 +425,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
       </div>
 
       <input type="file" id="cfolder" webkitdirectory multiple hidden>
+<input type="file" id="cxlsx" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
       <input type="file" id="sfile" hidden accept=".zip,application/zip,application/x-zip-compressed">
     </div>
   </div>
@@ -435,7 +437,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a10";
+const BUILD = "a9";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -1267,13 +1269,44 @@ async function walkDir(dir, rel, out, dirs) {
   for await (const [name, h] of dir.entries()) { if (h.kind === "file") out.push({f: await h.getFile(), rel: rel + "/" + name}); else await walkDir(h, rel + "/" + name, out, dirs); }
 }
 async function pickFolder() {
-  if (!window.showDirectoryPicker) { $("cfolder").click(); return; }
-  let root; try { root = await showDirectoryPicker({mode: "readwrite"}); } catch (e) { if (e && e.name === "AbortError") return; $("cfolder").click(); return; }
-  say("Διαβάζω τον φάκελο…"); const out = [], dirs = []; await walkDir(root, root.name, out, dirs);
-  const par = new Set(dirs.filter(d => /^(img|audio|video)$/i.test(d.h.name)).map(d => d.rel.replace(/\/[^\/]+$/, ""))), cand = dirs.filter(d => par.has(d.rel));
-  runConvert(out, (cand.find(d => d.h.name === "github-mouseio") || cand[0] || {}).h);
+  if (!window.showDirectoryPicker) {
+    say("Ο browser δεν υποστηρίζει επιλογή φακέλου. Διάλεξε τον φάκελο από το παράθυρο που ανοίγει (πρέπει να φαίνονται υποφάκελοι).");
+    $("cfolder").click();
+    return;
+  }
+  let root = null;
+  try { root = await showDirectoryPicker({mode: "readwrite"}); }
+  catch (e1) {
+    if (e1 && e1.name === "AbortError") return;
+    try { root = await showDirectoryPicker({mode: "read"}); }
+    catch (e2) {
+      if (e2 && e2.name === "AbortError") return;
+      say("Δεν μπόρεσα να ανοίξω επιλογή φακέλου. Δοκιμάζω εναλλακτικό τρόπο…");
+      $("cfolder").click();
+      return;
+    }
+  }
+  say("Διαβάζω τον φάκελο «" + (root.name || "") + "»…");
+  const out = [], dirs = [];
+  try { await walkDir(root, root.name, out, dirs); }
+  catch (e) { say("⚠ Σφάλμα ανάγνωσης φακέλου: " + String(e && e.message || e)); return; }
+  say("Βρήκα " + out.length + " αρχεία. Ψάχνω Excel…");
+  const par = new Set(dirs.filter(d => /^(img|audio|video)$/i.test(d.h.name)).map(d => d.rel.replace(/\/[^\/]+$/, "")));
+  const cand = dirs.filter(d => par.has(d.rel));
+  runConvert(out, (cand.find(d => /github-mouseio/i.test(d.h.name)) || cand[0] || {}).h);
 }
+async function pickExcelFile() {
+  $("cxlsx").click();
+}
+$("cxlsx").onchange = async (e) => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  say("Διάβασα το αρχείο «" + f.name + "». (Χωρίς φάκελο media — μόνο έλεγχος Excel / data.json)");
+  runConvert([{f, rel: f.name}], null);
+};
 $("cbtn").onclick = pickFolder;
+$("cbtn-file").onclick = pickExcelFile;
 $("cfolder").onchange = e => { const l = [...e.target.files].map(f => ({f, rel: f.webkitRelativePath || f.name})); e.target.value = ""; runConvert(l); };
 $("cjson").onclick = async () => {
   if (!CONV) return; const json = JSON.stringify(CONV.data), note = h => $("creport").insertAdjacentHTML("afterbegin", `<p><b>${h}</b></p>`);
@@ -1348,4 +1381,3 @@ load(); bump();
 </script>
 </body>
 </html>
-
