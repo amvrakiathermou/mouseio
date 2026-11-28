@@ -211,12 +211,46 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 /* Welcome: larger elegant title + rise from flags */
 #topbar.welcome-title{
   font-size:clamp(1.85rem,7.2vw,3.15rem);
-  min-height:calc(var(--tb) + 12px + env(safe-area-inset-top));
+  min-height:calc(var(--tb) + 28px + env(safe-area-inset-top));
+  padding-bottom:22px;
   letter-spacing:.06em;
   text-shadow:0 1px 0 rgba(210,168,76,.35),0 8px 28px rgba(0,0,0,.25);
-  border-bottom-color:transparent;
-  background:transparent;
+  border-bottom:none;
+  background:linear-gradient(180deg, var(--bg) 72%, transparent 100%);
   pointer-events:none;
+  overflow:visible;
+}
+/* Εντυπωσιακή διαχωριστική κάτω από τον τίτλο (μόνο αρχική) */
+#topbar.welcome-title::after{
+  content:"";
+  position:absolute;
+  left:50%;bottom:4px;
+  width:min(78vw,420px);height:20px;
+  transform:translateX(-50%) scaleX(.35);
+  opacity:0;
+  background:
+    linear-gradient(135deg, transparent 42%, var(--brass) 42%, var(--brass) 58%, transparent 58%) center / 12px 12px no-repeat,
+    linear-gradient(45deg, transparent 42%, #f0d78a 42%, #f0d78a 58%, transparent 58%) center / 12px 12px no-repeat,
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(210,168,76,.12) 6%,
+      var(--brass) 26%,
+      #f0d78a 50%,
+      var(--brass) 74%,
+      rgba(210,168,76,.12) 94%,
+      transparent 100%) center / 100% 1.5px no-repeat,
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(210,168,76,.25) 20%,
+      rgba(243,239,228,.5) 50%,
+      rgba(210,168,76,.25) 80%,
+      transparent 100%) center 72% / 58% 1px no-repeat;
+  animation:dividerIn 1.05s cubic-bezier(.22,1,.36,1) .55s forwards;
+  pointer-events:none;
+}
+@keyframes dividerIn{
+  0%{opacity:0;transform:translateX(-50%) scaleX(.3)}
+  100%{opacity:1;transform:translateX(-50%) scaleX(1)}
 }
 #topbar.welcome-title .title-anim{transform:none;opacity:0}
 #topbar.welcome-title.title-in .title-anim{animation:titleFromFlags 1.35s cubic-bezier(.22,1,.36,1) forwards}
@@ -249,7 +283,7 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 }
 #wtitle{display:none}
 :root{--tb:88px}
-#welcome{padding-top:calc(var(--tb) + 28px + env(safe-area-inset-top))}
+#welcome{padding-top:calc(var(--tb) + 40px + env(safe-area-inset-top))}
 #app{padding-top:calc(var(--tb) + env(safe-area-inset-top))}
 #qr,#staff{top:calc(var(--tb) + env(safe-area-inset-top))}
 footer{display:none!important}
