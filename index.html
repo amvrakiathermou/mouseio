@@ -366,7 +366,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
                 <li>Τα κινητά (QR) τα βλέπουν αμέσως.</li>
               </ul>
 
-              <div class="note"><b>Προσοχή:</b> κάθε βίντεο πρέπει να είναι <b>έως 25 MB</b>, αλλιώς δεν ανεβαίνει. Μην ανεβάζεις το Excel ή προσωπικά έγγραφα, γιατί το GitHub είναι δημόσιο. Αν κάτι πάει στραβά: στο GitHub πάτα <b>Commits</b>, διάλεξε την προηγούμενη αλλαγή και πάτα <b>Revert</b>.</div>
+
             </div>
           </div>
 
@@ -421,28 +421,16 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
               <option value="600">10 λεπτά</option>
             </select>
           </div>
-        </div>
-      </div>
-
-      <div class="acc" id="acc4">
-        <button class="acc-btn" onclick="toggleAcc('acc4')">
-          <span class="left"><span class="icon">⚡</span> Ενέργειες</span>
-          <span class="chevron">▼</span>
-        </button>
-        <div class="acc-body">
-          <button class="staff-btn" id="shome">
-            <span class="icon">🏠</span>
-            <span>Επιστροφή στην αρχική οθόνη</span>
-          </button>
           <button class="staff-btn danger" id="swipe">
             <span class="icon">🗑️</span>
             <span>Σβήσιμο όλων των δεδομένων</span>
           </button>
-          <button class="staff-btn danger" id="sexit">
-            <span class="icon">⏻</span>
-            <span>Κλείσιμο εφαρμογής</span>
-          </button>
         </div>
+      </div>
+
+      <div class="row" style="margin-top:14px;gap:10px">
+        <button class="btn close" id="shome" style="flex:1">Αρχική</button>
+        <button class="btn close" id="sexit" style="flex:1">Κλείσιμο εφαρμογής</button>
       </div>
 
       <input type="file" id="cfolder" webkitdirectory multiple hidden>
