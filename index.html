@@ -181,6 +181,19 @@ html.web #topbar{flex-direction:column;gap:2px}
 #vlangs[hidden]{display:none}
 #vlangs button.flag{width:30px;height:21px;border-width:2px;border-radius:4px;flex:none}
 html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
+.guide{display:none;background:#12231f;border:1px solid rgba(210,168,76,.35);border-radius:12px;padding:14px 16px;font:15px/1.6 system-ui,sans-serif;color:var(--ink);text-align:start}
+.guide.open{display:block}.guide h3{margin:0 0 10px;font-size:1.05rem;color:var(--brass)}
+.guide ol{margin:0;padding-inline-start:22px}.guide li{margin:0 0 10px}
+.guide code{background:#0d1b18;padding:1px 6px;border-radius:5px;color:var(--brass);font-size:14px}
+.guide a{color:var(--brass);word-break:break-all;font-weight:600}
+.guide .note{margin-top:8px;padding:10px 12px;border-radius:8px;background:rgba(210,168,76,.12)}
+.staff-btn[aria-expanded="true"]{border-color:var(--brass)}
+.conv{display:flex;flex-direction:column;gap:10px;margin:10px 0 4px}
+.creport{font:14px/1.5 system-ui,sans-serif;color:var(--ink);background:#0d1b18;border-radius:10px;padding:10px 12px;min-height:1.5em}
+.creport:empty{display:none}.creport ul{margin:6px 0 0;padding-inline-start:18px}.creport li{margin:0 0 4px}
+.conv[data-mode=git] .only-dev,.conv[data-mode=dev] .only-git{display:none}
+.staff-btn:disabled{opacity:.45;cursor:not-allowed}
+.guide .gnote{margin:0 0 12px;padding:10px 12px;border-radius:8px;background:rgba(210,168,76,.12)}
 </style>
 </head>
 <body>
@@ -268,10 +281,54 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
             <span class="icon">🔄</span>
             <span id="supd-text">Ενημέρωση από το ίντερνετ</span>
           </button>
+          <button class="staff-btn" id="sgit" aria-expanded="false">
+            <span class="icon">☁️</span>
+            <span>Στείλε νέα δεδομένα στο GitHub</span>
+          </button>
+          <div class="guide" id="g-git">
+            <h3>Πώς στέλνω νέα δεδομένα στο GitHub</h3>
+            <p class="gnote">Ο φάκελος στον υπολογιστή (Desktop) λέγεται <code>mouseio amvrakia</code>. Μέσα του έχει το Excel και τον φάκελο <code>github-mouseio</code>, με τρεις υποφακέλους: <code>img</code> (φωτογραφίες), <code>audio</code> (mp3), <code>video</code> (mp4, έως 25 MB το καθένα).</p>
+            <ol>
+              <li><b>Συμπλήρωσε το Excel.</b> Το ID κάθε εγγραφής είναι και το όνομα του αρχείου: P012 → <code>P012.jpg</code>, A007 → <code>A007.mp3</code>, V004 → <code>V004.mp4</code>.</li>
+              <li><b>Βάλε τα αρχεία</b> στους φακέλους <code>img</code>, <code>audio</code>, <code>video</code> με αυτά τα ονόματα.</li>
+              <li><b>Σε υπολογιστή</b> (Chrome ή Edge) άνοιξε αυτό το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός).</li>
+              <li>Πάτα <b>[Μετατροπή Excel]</b> και διάλεξε τον φάκελο <code>mouseio amvrakia</code>. Ο browser θα ρωτήσει αν επιτρέπεις την επεξεργασία αρχείων στον φάκελο: πάτα «Επιτρέπω». Διάβασε την αναφορά, διόρθωσε ό,τι έχει ⚠ και ξαναπάτα, μέχρι να γράψει ✔.<div id="slot-git"><div class="conv" id="convbox" data-mode="git">
+                <button class="staff-btn" id="cbtn"><span class="icon">📊</span><span>Μετατροπή Excel</span></button>
+                <div class="creport" id="creport"></div>
+                <button class="staff-btn only-git" id="cjson" disabled><span class="icon">⬇️</span><span>Λήψη data.json</span></button>
+                <button class="staff-btn only-dev" id="czip" disabled><span class="icon">⬇️</span><span>Λήψη πακέτου για tablet</span></button>
+              </div></div></li>
+              <li>Πάτα <b>[Λήψη data.json]</b>. Το αρχείο <b>αποθηκεύεται αμέσως μέσα στον φάκελο <code>github-mouseio</code></b> (στη θέση του παλιού), όχι στις Λήψεις. Αν ο browser δεν το υποστηρίζει (π.χ. Firefox), κατεβαίνει στις Λήψεις και σου το λέει: τότε βάλε το εσύ στον φάκελο <code>github-mouseio</code>.</li>
+              <li><b>Άνοιξε το GitHub</b> και συνδέσου αν σου ζητηθεί:<br><a href="https://github.com/amvrakiathermou/mouseio" target="_blank" rel="noopener">https://github.com/amvrakiathermou/mouseio</a></li>
+              <li><b>Ανέβασε τα νέα αρχεία.</b> Για καθέναν από τους φακέλους <code>img</code>, <code>audio</code>, <code>video</code>: μπες στον φάκελο → <b>Add file → Upload files</b> → σύρε μόνο τα νέα ή αλλαγμένα αρχεία → κάτω πάτα το πράσινο <b>Commit changes</b>. (Έως περίπου 100 αρχεία τη φορά.)</li>
+              <li><b>Ανέβασε το data.json</b> (από τον φάκελο <code>github-mouseio</code>): γύρνα στην πρώτη σελίδα του repository (όχι μέσα σε φάκελο) → <b>Add file → Upload files</b> → σύρε το <code>data.json</code> (αντικαθιστά το παλιό) → <b>Commit changes</b>.</li>
+              <li><b>Περίμενε 3–5 λεπτά</b> μέχρι να δημοσιευτούν οι αλλαγές.</li>
+              <li><b>Έλεγχος:</b> άνοιξε <a href="https://amvrakiathermou.github.io/mouseio/data.json" target="_blank" rel="noopener">https://amvrakiathermou.github.io/mouseio/data.json</a> και δες ότι έχει το νέο περιεχόμενο. Σε tablet με wifi πάτα <b>Ενημέρωση από το ίντερνετ</b>: κατεβάζει μόνο ό,τι άλλαξε (και τα βίντεο). Τα κινητά (QR) τα βλέπουν αμέσως.</li>
+            </ol>
+            <div class="note"><b>Προσοχή:</b> κάθε βίντεο πρέπει να είναι <b>έως 25 MB</b>, αλλιώς δεν ανεβαίνει. Μην ανεβάζεις το Excel ή προσωπικά έγγραφα, γιατί το GitHub είναι δημόσιο. Αν κάτι πάει στραβά: στο GitHub πάτα <b>Commits</b>, διάλεξε την προηγούμενη αλλαγή και πάτα <b>Revert</b>.</div>
+          </div>
           <button class="staff-btn" id="sload">
             <span class="icon">📂</span>
             <span>Φόρτωση από τη συσκευή</span>
           </button>
+          <button class="staff-btn" id="sdev" aria-expanded="false">
+            <span class="icon">💾</span>
+            <span>Στείλε νέα δεδομένα στην αποθήκη της συσκευής</span>
+          </button>
+          <div class="guide" id="g-dev">
+            <h3>Πώς στέλνω νέα δεδομένα στη συσκευή (tablet χωρίς ίντερνετ)</h3>
+            <p class="gnote"><b>Έχεις ήδη κάνει τα βήματα 1–4 του οδηγού «GitHub» (Excel, αρχεία, Μετατροπή Excel); Πάτα [Λήψη πακέτου για tablet]. Αν όχι, κάνε πρώτα εκείνα.</b></p>
+            <div id="slot-dev"></div>
+            <ol>
+              <li><b>Περίμενε</b> να φτιαχτεί το αρχείο <code>paketo-mouseiou.zip</code>. Αν είναι μεγάλο, θέλει λίγη ώρα. Μην κλείσεις τη σελίδα. Θα κατέβει στον φάκελο <b>Λήψεις</b>.</li>
+              <li><b>Πέρασε το αρχείο στο tablet:</b> με καλώδιο USB (στο tablet διάλεξε «Μεταφορά αρχείων») στον φάκελο <b>Λήψεις</b>, ή με κάρτα μνήμης.</li>
+              <li><b>Στο tablet</b> άνοιξε το μενού προσωπικού (ελληνική σημαία 3 δευτερόλεπτα και κωδικός) → «Ενημερώσεις & Δεδομένα» → <b>Φόρτωση από τη συσκευή</b> → διάλεξε το <code>paketo-mouseiou.zip</code>.</li>
+              <li><b>Περίμενε</b> να γράψει «Αποθήκευση Χ/Υ». Όταν τελειώσει, η εφαρμογή ξαναφορτώνει μόνη της.</li>
+              <li><b>Έλεγχος:</b> στις «Πληροφορίες έκδοσης» πρέπει να γράφει «Λειτουργία: τοπική» και όλα τα αρχεία αποθηκευμένα (✔). Κλείσε το wifi και δοκίμασε έναν μουσικό: φωτογραφία, ήχο και βίντεο.</li>
+              <li><b>Σβήσε το .zip από το tablet</b>, για να ελευθερωθεί χώρος.</li>
+            </ol>
+            <div class="note"><b>Προσοχή:</b> ένα tablet σε τοπική λειτουργία <b>δεν παίρνει</b> ενημερώσεις από το GitHub. Για να γυρίσει στο ίντερνετ πάτα <b>Επιστροφή σε λειτουργία ίντερνετ</b>. Το tablet χρειάζεται ελεύθερο χώρο περίπου διπλάσιο από το μέγεθος του .zip μέχρι να τελειώσει η φόρτωση (εκτίμηση, θέλει δοκιμή).</div>
+          </div>
         </div>
       </div>
 
@@ -314,6 +371,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
         </div>
       </div>
 
+      <input type="file" id="cfolder" webkitdirectory multiple hidden>
       <input type="file" id="sfile" hidden accept=".zip,application/zip,application/x-zip-compressed">
     </div>
   </div>
@@ -325,7 +383,7 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
 </div>
 
 <script>
-const BUILD = "a6";
+const BUILD = "a9";
 const $ = id => document.getElementById(id);
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
@@ -875,7 +933,7 @@ function itemV(k, id) {
   return h;
 }
 function videoBox(x) {
-  if (LOCAL && x.file) return `<video class="vid" controls src="${x.file}"></video>`;
+  if (x.file) return `<video class="vid" controls src="${x.file}"></video>`;
   const y = ytId(x.link);
   if (y && navigator.onLine !== false) return `<iframe class="vid" style="aspect-ratio:16/9;border:0" src="https://www.youtube.com/embed/${y}" allowfullscreen></iframe>`;
   return `<p class="sub">${LB(16)}</p>`;
@@ -918,7 +976,7 @@ function buildWebLangs() {
   h.hidden = false;
 }
 /* ===== a4: δεδομένα, λήψη αρχείων, πακέτο .zip ===== */
-const mediaUrls = () => [...DATA.photos.map(p => p.file), ...DATA.recordings.map(r => r.file), ...(LOCAL ? DATA.videos.map(v => v.file) : [])].filter(Boolean);
+const mediaUrls = () => [...DATA.photos, ...DATA.recordings, ...DATA.videos].map(x => x.file).filter(Boolean);
 function applyMeta() { const M = DATA.meta || {}; DATA.title = M.title; DATA.version = M.version || 1; DATA.idleSeconds = M.idleSeconds; }
 async function load() {
   try { DATA = LOCAL ? JSON.parse(localStorage.getItem("mm-local-data")) : await (await fetch("data.json", {cache:"no-store"})).json(); applyMeta(); }
@@ -1006,6 +1064,169 @@ function buildNav() {
   }
   document.querySelectorAll("[data-nav]").forEach(el => el.innerHTML = b.join(""));
 }
+/* ===== a8: Μετατροπή Excel μέσα στο μενού προσωπικού ===== */
+const mediaItems = () => [...DATA.photos, ...DATA.recordings, ...DATA.videos].filter(x => x.file);
+async function syncMedia() {
+  if (!("caches" in window) || !DATA) return;
+  const cache = await caches.open("media-main"), items = mediaItems(); let H = {}; try { H = JSON.parse(localStorage.getItem("mm-hashes") || "{}"); } catch (_) {}
+  let done = 0, failed = 0; $("retry").hidden = true;
+  for (const x of items) {
+    const have = await cache.match(x.file);
+    if (!have || (x.h && H[x.file] !== x.h)) {
+      if (!navigator.onLine) { if (!have) failed++; }
+      else { try { const r = await fetch(x.file + (x.h ? "?h=" + x.h : ""), {cache: "reload"}); if (r.ok) { await cache.put(x.file, r); if (x.h) H[x.file] = x.h; } else if (!have) failed++; } catch (_) { if (!have) failed++; } }
+    }
+    done++; setStatus(`${t("check")} ${done}/${items.length}…`);
+  }
+  try { localStorage.setItem("mm-hashes", JSON.stringify(H)); } catch (_) {}
+  if (failed) { setStatus(`${t("missing")}: ${failed}`); $("retry").hidden = false; return; }
+  const keep = new Set(items.map(x => new URL(x.file, location.href).href));
+  for (const k of await cache.keys()) if (!keep.has(k.url)) await cache.delete(k);
+  (await caches.keys()).filter(k => k.startsWith("media-") && k !== "media-main" && k !== "media-local").forEach(k => caches.delete(k));
+  setStatus(t("ready")); if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+}
+let lastData = 0;
+async function refreshData() {
+  if (VISITOR || LOCAL || !navigator.onLine || !DATA || Date.now() - lastData < 300000) return; lastData = Date.now();
+  try {
+    const d = await (await fetch("data.json?nc=" + Date.now(), {cache: "no-store"})).json();
+    if (d.meta && DATA.meta && d.meta.built && d.meta.built !== DATA.meta.built) { fetch("data.json", {cache: "no-store"}); DATA = d; applyMeta(); syncMedia(); if (!$("app").hidden) renderApp(); }
+  } catch (_) {}
+}
+const _sw2 = showWelcome; showWelcome = function () { _sw2(); refreshData(); };
+
+/* --- ανάγνωση .xlsx (zip + XML), χωρίς εξωτερική βιβλιοθήκη --- */
+async function readXlsx(file) {
+  const list = await readZip(file), get = async n => { const e = list.find(x => x.name === n); return e ? await (await zipBlob(file, e)).text() : null; };
+  const P = new DOMParser(), xml = s => P.parseFromString(s, "application/xml"), ss = [], sst = await get("xl/sharedStrings.xml");
+  if (sst) xml(sst).querySelectorAll("si").forEach(si => ss.push([...si.querySelectorAll("t")].map(x => x.textContent).join("")));
+  const wb = xml(await get("xl/workbook.xml")), rels = xml(await get("xl/_rels/workbook.xml.rels")), rm = {}, sheets = {};
+  rels.querySelectorAll("Relationship").forEach(r => rm[r.getAttribute("Id")] = r.getAttribute("Target"));
+  for (const s of wb.querySelectorAll("sheet")) {
+    const tg = rm[s.getAttribute("r:id")]; if (!tg) continue; const doc = xml(await get(tg.replace(/^\/?(xl\/)?/, "xl/"))), rows = [];
+    doc.querySelectorAll("c").forEach(c => {
+      const m = /^([A-Z]+)(\d+)$/.exec(c.getAttribute("r") || ""); if (!m) return; let col = 0; for (const ch of m[1]) col = col * 26 + ch.charCodeAt(0) - 64;
+      const ty = c.getAttribute("t"), v = c.querySelector("v"); let val = null;
+      if (ty === "s" && v) val = ss[+v.textContent]; else if (ty === "inlineStr") val = [...c.querySelectorAll("t")].map(x => x.textContent).join(""); else if (ty === "str" && v) val = v.textContent; else if ((!ty || ty === "n") && v) val = Number(v.textContent);
+      if (val !== null && val !== "") (rows[+m[2]] = rows[+m[2]] || [])[col] = val;
+    });
+    sheets[s.getAttribute("name")] = rows;
+  }
+  return sheets;
+}
+const hash12 = async f => [...new Uint8Array(await crypto.subtle.digest("SHA-256", await f.arrayBuffer()))].slice(0, 6).map(b => b.toString(16).padStart(2, "0")).join("");
+
+/* --- μετατροπή: ίδια λογική με το converter.py --- */
+async function buildData(sheets, files, trans) {
+  const S = {M:"01 Μουσικοί",F:"02 Οικογένειες",O:"03 Όργανα",A:"04 Ηχογραφήσεις",V:"05 Βίντεο",P:"06 Φωτογραφίες",E:"07 Εκδηλώσεις",H:"08 Ιστορική διαδρομή",T:"09 Μαρτυρίες",N:"10 Νέα γενιά"};
+  const err = [], note = [], R = {}, N2I = {}, used = new Map();
+  for (const c in S) {
+    const rows = sheets[S[c]]; R[c] = [];
+    if (!rows) { err.push(`Λείπει το φύλλο «${S[c]}» από το Excel.`); continue; }
+    const hs = (rows[1] || []).map(h => /^🔒/.test(h) ? null : String(h || "").replace(/^[★✎\s]+/, "").replace(" (απαραίτητο)", "").trim());
+    rows.forEach((row, r) => { if (r < 2 || !row || row[2] == null || row[2] === "") return; const d = {id: c + String(r - 1).padStart(3, "0")}; hs.forEach((h, i) => { if (h && row[i] != null && row[i] !== "") d[h] = row[i]; }); if (d["Δημοσίευση (κενό = Ναι)"] !== "Όχι") R[c].push(d); });
+    N2I[c] = {};
+    for (const d of R[c]) { d._n = d["Ονοματεπώνυμο"] || d["Όνομα οικογένειας"] || d["Όνομα οργάνου"] || d["Τίτλος"] || d["Λεζάντα"]; if (N2I[c][d._n]) err.push(`Διπλό όνομα στο φύλλο «${S[c]}»: ${d._n}`); N2I[c][d._n] = d.id; }
+  }
+  const ids = (d, pre, c) => { const res = []; for (const k in d) if (pre.some(p => k.startsWith(p))) { const i = N2I[c] && N2I[c][d[k]]; if (i) res.push(i); else err.push(`${d.id}: άγνωστο όνομα «${d[k]}»`); } return res; };
+  const mus = d => ids(d, ["Μουσικός", "Σχετικός μουσικός", "Αφορά μουσικό"], "M"), one = (d, k, c) => d[k] ? (N2I[c] || {})[d[k]] : undefined;
+  const find = (folder, pid, exts, need = true) => { for (const e of exts) { const f = files.get(`${folder}/${pid}.${e}`.toLowerCase()); if (f) { used.set(f.path, f); return f; } } if (need) err.push(`Λείπει το αρχείο ${folder}/${pid}.${exts[0]}`); return null; };
+  const cover = (col, name) => (R.P.find(d => d[col] === name) || {}).id;
+  const IMG = ["jpg", "jpeg", "png", "webp"], AUD = ["mp3", "m4a", "aac", "ogg", "wav"];
+  const ent = (f) => f ? {file: f.path, f_: f} : {file: ""};
+  const photos = R.P.map(d => ({id: d.id, name: d._n, year: d["Έτος"], place: d["Τόπος"], src: d["Φωτογράφος / πηγή"], ...ent(find("img", d.id, IMG)), musicians: mus(d), evt: one(d, "Εκδήλωση", "E")}));
+  const recs = R.A.map(d => ({id: d.id, title: d._n, year: d["Έτος"], place: d["Τόπος"], musicians: mus(d), inst: ids(d, ["Όργανο"], "O"), evt: one(d, "Εκδήλωση", "E"), ...ent(find("audio", d.id, AUD))}));
+  const YT = "Σύνδεσμος YouTube (για ίντερνετ και κινητά)";
+  const vids = R.V.map(d => { const f = find("video", d.id, ["mp4"], false); if (!f && !d[YT]) err.push(`${d.id}: το βίντεο «${d._n}» δεν έχει ούτε αρχείο mp4 ούτε σύνδεσμο YouTube.`); if (f && f.size > 25 * 1048576) note.push(`ℹ Το βίντεο ${d.id} έχει ${(f.size / 1048576).toFixed(0)} MB: δεν ανεβαίνει στο GitHub (όριο 25 MB), μόνο στο πακέτο για tablet.`); return {id: d.id, title: d._n, link: d[YT], musicians: mus(d), cover: cover("Εξώφυλλο βίντεο", d._n), ...ent(f)}; });
+  const events = R.E.map(d => ({id: d.id, title: d._n, date: d["Ημερομηνία / περίοδος"], place: d["Τόπος"], text: d["Περιγραφή"], musicians: mus(d), cover: cover("Φωτογραφία εκδήλωσης", d._n)}));
+  const hist = R.H.map(d => ({id: d.id, title: d._n, period: d["Περίοδος (π.χ. 1900–1930)"], text: d["Κείμενο"], musicians: mus(d)}));
+  const tes = R.T.map(d => ({id: d.id, title: d._n, narrator: one(d, "Αφηγητής", "M"), when: d["Ημερομηνία καταγραφής"], text: d["Κείμενο της μαρτυρίας"], musicians: mus(d)}));
+  const newg = R.N.map(d => ({id: d.id, title: d._n, text: d["Περιγραφή"], musicians: mus(d)}));
+  const musicians = R.M.map(d => {
+    const i = d.id, ph = photos.filter(p => p.musicians.includes(i)).map(p => p.id), prof = cover("Φωτογραφία προφίλ του μουσικού", d._n);
+    if (!prof) note.push(`ℹ ${d._n}: δεν έχει οριστεί φωτογραφία προφίλ (θα παίρνει την πρώτη του).`);
+    return {id: i, name: d._n, born: d["Έτος γέννησης"], died: d["Έτος θανάτου (κενό αν ζει)"], period: d["Περίοδος δραστηριότητας"], origin: d["Τόπος καταγωγής"], groups: d["Μουσικά σχήματα (π.χ. Κομπανία Παπά)"], tag: d["Σύντομη φράση «σε μια ματιά»"], quote: d["Φράση του μουσικού (προαιρετική)"], bio: d["Βιογραφικό"] || "",
+      inst: ids(d, ["Όργανο"], "O"), fam: one(d, "Οικογένεια", "F"), collab: ids(d, ["Συνεργάτης"], "M"), photo: prof || ph[0] || "", photos: ph, recs: recs.filter(r => r.musicians.includes(i)).map(r => r.id), vids: vids.filter(v => v.musicians.includes(i)).map(v => v.id), events: events.filter(e => e.musicians.includes(i)).map(e => e.id), tes: tes.filter(x => x.narrator === i || x.musicians.includes(i)).map(x => x.id)};
+  });
+  musicians.forEach(m => musicians.forEach(o => { if (o.collab.includes(m.id) && !m.collab.includes(o.id)) m.collab.push(o.id); }));
+  const fams = R.F.map(d => ({id: d.id, name: d._n, text: d["Περιγραφή"], members: musicians.filter(m => m.fam === d.id).map(m => m.id), cover: cover("Εξώφυλλο οικογένειας", d._n)}));
+  const insts = R.O.map(d => ({id: d.id, name: d._n, cat: d["Κατηγορία"], text: d["Περιγραφή"], players: musicians.filter(m => m.inst.includes(d.id)).map(m => m.id), cover: cover("Φωτογραφία οργάνου", d._n)}));
+  for (const f of files.values()) if (!used.has(f.path)) note.push(`ℹ Το αρχείο ${f.path} δεν χρησιμοποιείται από το Excel.`);
+  const TITLE = {el:"Μουσείο Μουσικών Αμβρακιάς",en:"Amvrakia Music Museum",fr:"Musée de la musique d’Amvrakia",de:"Musikmuseum Amvrakia",it:"Museo della musica di Amvrakia",es:"Museo de la música de Amvrakia",ru:"Музей музыки Амвракии",zh:"安姆夫拉基亚音乐博物馆",ar:"متحف موسيقى أمفراكيا",ja:"アンブラキア音楽博物館"};
+  const data = {meta: {version: 1, built: new Date().toISOString(), idleSeconds: 180, title: TITLE}, tr: trans || {}, musicians, families: fams, instruments: insts, recordings: recs, videos: vids, photos, events, history: hist, testimonies: tes, newgen: newg};
+  const need = [...photos, ...recs, ...vids].filter(x => x.f_);
+  for (const x of need) { x.h = await hash12(x.f_.file); }
+  [...photos, ...recs, ...vids].forEach(x => delete x.f_);
+  return {data, err, note, used, counts: {"μουσικοί": musicians.length, "φωτογραφίες": photos.length, "ηχογραφήσεις": recs.length, "βίντεο": vids.length, "εκδηλώσεις": events.length, "όργανα": insts.length}};
+}
+
+/* --- δημιουργία .zip (χωρίς συμπίεση) για tablet --- */
+const CRCT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+async function crcOf(blob) { let c = 0xFFFFFFFF; const r = blob.stream().getReader(); for (;;) { const {done, value} = await r.read(); if (done) break; for (let i = 0; i < value.length; i++) c = CRCT[(c ^ value[i]) & 255] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
+async function makeZip(entries, progress) {
+  const parts = [], cd = [], enc = new TextEncoder(); let off = 0, n = 0;
+  for (const e of entries) {
+    progress && progress(++n, entries.length); const nm = enc.encode(e.name), crc = await crcOf(e.blob), sz = e.blob.size;
+    const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, sz, true); h.setUint32(22, sz, true); h.setUint16(26, nm.length, true);
+    parts.push(h.buffer, nm, e.blob);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, sz, true); c.setUint32(24, sz, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cd.push(c.buffer, nm); off += 30 + nm.length + sz;
+  }
+  const cds = cd.reduce((a, p) => a + p.byteLength, 0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true); end.setUint32(12, cds, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...cd, end.buffer], {type: "application/zip"});
+}
+function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }
+
+/* --- κουμπιά και αναφορά --- */
+let CONV = null;
+const say = (html) => { $("creport").innerHTML = html; };
+async function runConvert(list, outDir) {
+  CONV = null; $("cjson").disabled = $("czip").disabled = true;
+  const xl = list.find(x => /\.xlsx$/i.test(x.f.name) && !x.f.name.startsWith("~$")), tf = list.find(x => x.f.name === "translations.json"), files = new Map();
+  for (const x of list) { const m = /(?:^|\/)(img|audio|video)\/([^\/]+)$/i.exec(x.rel); if (m) files.set(`${m[1]}/${m[2]}`.toLowerCase(), {path: `${m[1].toLowerCase()}/${m[2]}`, file: x.f, size: x.f.size}); }
+  if (!xl) { say("<b>⚠ Δεν βρέθηκε αρχείο Excel (.xlsx) στον φάκελο που διάλεξες.</b><br>Διάλεξε τον φάκελο <code>mouseio amvrakia</code> που έχει μέσα το Excel."); return; }
+  say("Διαβάζω το Excel…");
+  try {
+    const sheets = await readXlsx(xl.f); let trans = {}; if (tf) { try { trans = JSON.parse(await tf.f.text()); } catch (_) { say("⚠ Το translations.json έχει λάθος."); return; } }
+    say("Ελέγχω τα αρχεία και υπολογίζω αποτυπώματα… (μπορεί να πάρει λίγο)");
+    const r = await buildData(sheets, files, trans), esc2 = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
+    const sum = Object.entries(r.counts).map(([k, v]) => v + " " + k).join(", ");
+    say((r.err.length ? `<b>⚠ ${r.err.length} λάθη. Διόρθωσέ τα και ξαναπάτα «Μετατροπή Excel».</b>` : `<b>✔ Όλα εντάξει:</b> ${sum}.`) + (r.err.length ? `<ul>${r.err.map(x => "<li>⚠ " + esc2(x) + "</li>").join("")}</ul>` : "") + (r.note.length ? `<ul>${r.note.map(x => "<li>" + esc2(x) + "</li>").join("")}</ul>` : ""));
+    if (!r.err.length) { CONV = r; CONV.outDir = outDir; $("cjson").disabled = $("czip").disabled = false; }
+  } catch (e) { say("⚠ Δεν μπόρεσα να διαβάσω το Excel: " + esc2x(e.message)); }
+}
+const esc2x = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
+/* Επιλογή φακέλου: όπου υποστηρίζεται (Chrome/Edge σε υπολογιστή) δίνει άδεια εγγραφής, ώστε το data.json να αποθηκεύεται κατευθείαν στον φάκελο github-mouseio */
+async function walkDir(dir, rel, out, dirs) {
+  dirs.push({h: dir, rel});
+  for await (const [name, h] of dir.entries()) { if (h.kind === "file") out.push({f: await h.getFile(), rel: rel + "/" + name}); else await walkDir(h, rel + "/" + name, out, dirs); }
+}
+async function pickFolder() {
+  if (!window.showDirectoryPicker) { $("cfolder").click(); return; }
+  let root; try { root = await showDirectoryPicker({mode: "readwrite"}); } catch (e) { if (e && e.name === "AbortError") return; $("cfolder").click(); return; }
+  say("Διαβάζω τον φάκελο…"); const out = [], dirs = []; await walkDir(root, root.name, out, dirs);
+  const par = new Set(dirs.filter(d => /^(img|audio|video)$/i.test(d.h.name)).map(d => d.rel.replace(/\/[^\/]+$/, ""))), cand = dirs.filter(d => par.has(d.rel));
+  runConvert(out, (cand.find(d => d.h.name === "github-mouseio") || cand[0] || {}).h);
+}
+$("cbtn").onclick = pickFolder;
+$("cfolder").onchange = e => { const l = [...e.target.files].map(f => ({f, rel: f.webkitRelativePath || f.name})); e.target.value = ""; runConvert(l); };
+$("cjson").onclick = async () => {
+  if (!CONV) return; const json = JSON.stringify(CONV.data), note = h => $("creport").insertAdjacentHTML("afterbegin", `<p><b>${h}</b></p>`);
+  if (CONV.outDir) { try { const w = await (await CONV.outDir.getFileHandle("data.json", {create: true})).createWritable(); await w.write(json); await w.close(); note(`✔ Το data.json αποθηκεύτηκε στον φάκελο <code>${esc2x(CONV.outDir.name)}</code>, στη θέση του παλιού.`); return; } catch (e) { note("⚠ Δεν μπόρεσα να γράψω στον φάκελο (" + esc2x(e.message) + "). Κατεβαίνει στις Λήψεις: βάλ' το εσύ στον φάκελο github-mouseio."); } }
+  else note("ℹ Ο browser δεν επιτρέπει εγγραφή στον φάκελο (π.χ. Firefox ή tablet). Το data.json κατεβαίνει στις Λήψεις: βάλ' το εσύ στον φάκελο github-mouseio.");
+  saveBlob(new Blob([json], {type: "application/json"}), "data.json");
+};
+$("czip").onclick = async () => {
+  if (!CONV) return; const entries = [{name: "data.json", blob: new Blob([JSON.stringify(CONV.data)])}], total = [...CONV.used.values()].reduce((a, f) => a + f.size, 0);
+  if (total > 3.9 * 1073741824) { say("⚠ Τα αρχεία ξεπερνούν τα 3,9 GB. Σπάσε τα βίντεο σε δύο πακέτα."); return; }
+  for (const f of CONV.used.values()) entries.push({name: f.path, blob: f.file});
+  $("czip").disabled = true; try { saveBlob(await makeZip(entries, (a, b) => say(`Φτιάχνω το πακέτο… ${a}/${b}`)), "paketo-mouseiou.zip"); say("✔ Το πακέτο <code>paketo-mouseiou.zip</code> κατέβηκε (στον φάκελο Λήψεις)."); } catch (e) { say("⚠ Σφάλμα στο πακέτο: " + esc2x(e.message)); } $("czip").disabled = false;
+};
+[["sgit", "g-git", "git"], ["sdev", "g-dev", "dev"]].forEach(([b, g, mode]) => { $(b).onclick = () => {
+  const was = $(g).classList.contains("open"); ["g-git", "g-dev"].forEach(x => $(x).classList.remove("open")); ["sgit", "sdev"].forEach(x => $(x).setAttribute("aria-expanded", "false"));
+  if (!was) { $(g).classList.add("open"); $(b).setAttribute("aria-expanded", "true"); $("slot-" + mode).appendChild($("convbox")); $("convbox").dataset.mode = mode; }
+}; });
 if (!VISITOR && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 load(); bump();
 </script>

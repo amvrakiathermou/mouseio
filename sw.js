@@ -1,5 +1,5 @@
 /* Αποθηκάριος: σερβίρει αρχεία από τη μνήμη του tablet όταν δεν υπάρχει ίντερνετ */
-const SHELL = "shell-v4";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
+const SHELL = "shell-v5";   // άλλαξε v2, v3… όταν αλλάζεις index.html / sw.js
 const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "data.json"];
 
 self.addEventListener("install", e => {
@@ -29,7 +29,7 @@ async function rangeFrom(resp, req) {
 
 self.addEventListener("fetch", e => {
   const req = e.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin || new URL(req.url).searchParams.has("nc")) return;  // ?nc=... πάει κατευθείαν στο δίκτυο
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin || new URL(req.url).searchParams.has("nc") || new URL(req.url).searchParams.has("h")) return;  // ?nc=... πάει κατευθείαν στο δίκτυο
   e.respondWith((async () => {
     const p = new URL(req.url).pathname;
     const isData = p.endsWith("data.json") || p.endsWith("index.html") || p.endsWith("/");
