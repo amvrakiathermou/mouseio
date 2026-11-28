@@ -166,6 +166,35 @@ footer{padding:10px 20px 20px;font:14px system-ui,sans-serif;color:var(--mute)}
 .idle-row select{font:16px system-ui,sans-serif;padding:11px 12px;border-radius:9px;border:1.5px solid var(--mute);background:rgba(0,0,0,.25);color:var(--ink);width:100%}
 #exit-screen{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#666;font:22px system-ui,sans-serif;text-align:center;padding:30px;gap:12px}
 #exit-screen small{opacity:.45;font-size:15px;line-height:1.5}
+#toast{
+  position:fixed;inset:0;z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;background:rgba(8,18,16,.55);
+  opacity:0;pointer-events:none;transition:opacity .28s ease;
+}
+#toast.show{opacity:1;pointer-events:auto}
+#toast .toast-card{
+  width:min(92vw,400px);
+  background:linear-gradient(165deg,#243f3a 0%,#1a302c 100%);
+  border:1.5px solid var(--brass);
+  border-radius:18px;padding:28px 26px 22px;text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px rgba(210,168,76,.15);
+  transform:translateY(12px) scale(.96);
+  transition:transform .32s cubic-bezier(.22,1,.36,1);
+}
+#toast.show .toast-card{transform:translateY(0) scale(1)}
+#toast .toast-icon{font-size:2.2rem;line-height:1;margin-bottom:10px}
+#toast .toast-title{margin:0 0 8px;font:700 1.25rem Georgia,"Times New Roman",serif;color:var(--ink)}
+#toast .toast-body{margin:0 0 18px;font:16px/1.55 system-ui,sans-serif;color:var(--mute)}
+#toast .toast-ok{
+  min-height:48px;min-width:140px;padding:10px 28px;border-radius:10px;
+  border:0;background:var(--brass);color:#2a2110;
+  font:600 16px system-ui,sans-serif;cursor:pointer;
+}
+#toast.ok .toast-card{border-color:#6bbf8a}
+#toast.ok .toast-icon{color:#6bbf8a}
+#toast.err .toast-card{border-color:var(--danger)}
+#toast.err .toast-icon{color:var(--danger)}
 :root{--pn:var(--panel);--br:var(--brass);--mu:var(--mute);--paper:#f7f2e6;--tx:#2b2418}
 #view{max-width:1100px;margin:0 auto;padding:18px}
 #view h1{font-size:2rem;margin:.2em 0}#view h2{margin:.2em 0 .6em}
@@ -593,9 +622,43 @@ html.web #app{padding-top:calc(var(--tb) + 44px + env(safe-area-inset-top))}
   <small>Το tablet είναι πλέον ξεκλείδωτο.</small>
 </div>
 
+<div id="toast" hidden aria-live="polite">
+  <div class="toast-card" role="dialog" aria-modal="true">
+    <div class="toast-icon" id="toast-icon">✔</div>
+    <h3 class="toast-title" id="toast-title"></h3>
+    <p class="toast-body" id="toast-body"></p>
+    <button type="button" class="toast-ok" id="toast-ok">Εντάξει</button>
+  </div>
+</div>
+
 <script>
-const BUILD = "version 1.01";
+const BUILD = "version 1.0";
 const $ = id => document.getElementById(id);
+let toastTimer = null;
+function hideToast() {
+  const t = $("toast");
+  if (!t) return;
+  t.classList.remove("show");
+  clearTimeout(toastTimer);
+  setTimeout(() => { t.hidden = true; }, 300);
+}
+function showToast(title, body, type) {
+  const t = $("toast");
+  if (!t) return;
+  t.classList.remove("ok", "err", "info");
+  t.classList.add(type === "err" ? "err" : type === "info" ? "info" : "ok");
+  $("toast-icon").textContent = type === "err" ? "⚠" : type === "info" ? "ℹ" : "✔";
+  $("toast-title").textContent = title || "";
+  $("toast-body").textContent = body || "";
+  t.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 5200);
+}
+document.addEventListener("click", e => {
+  if (!e.target) return;
+  if (e.target.id === "toast-ok" || e.target.id === "toast") hideToast();
+});
 const LANGS = [["el","Ελληνικά"],["en","English"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["es","Español"],["ru","Русский"],["zh","中文"],["ar","العربية"],["ja","日本語"]];
 const FIRST_ROW = 4;
 const UI = {
@@ -1258,7 +1321,7 @@ async function forceUpdate() {
   updateModeTicks();
   setStatus("✔ Λειτουργία ίντερνετ (GitHub) — ενημερώθηκε.");
   if (mm) mm.textContent = "✔ Ενημέρωση από το GitHub ολοκληρώθηκε. Λειτουργία: ίντερνετ.";
-  alert("✔ Ενημέρωση από το GitHub ολοκληρώθηκε.\n\nΛειτουργία: ίντερνετ (από το διαδίκτυο).");
+  showToast("Ενημέρωση GitHub", "Η ενημέρωση ολοκληρώθηκε. Λειτουργία: ίντερνετ (από το διαδίκτυο).", "ok");
 }
 /* Ανάγνωση .zip χωρίς βιβλιοθήκη: διαβάζει ένα-ένα τα αρχεία, ώστε να μη γεμίζει η μνήμη */
 async function readZip(file) {
@@ -1694,22 +1757,22 @@ function updateModeTicks() {
 function showModeMessage(kind) {
   const mm = $("mode-msg");
   if (kind === "local") {
-    if (mm) mm.textContent = "✔ Μετάβαση σε τοπική λειτουργία ολοκληρώθηκε. Τα δεδομένα είναι στη συσκευή (χωρίς ίντερνετ).";
+    if (mm) mm.textContent = "✔ Μετάβαση σε τοπική λειτουργία ολοκληρώθηκε.";
     setStatus("✔ Τοπική λειτουργία (αρχεία της συσκευής)");
-    alert("✔ Μετάβαση σε ΤΟΠΙΚΗ λειτουργία ολοκληρώθηκε.\n\nΤα δεδομένα είναι αποθηκευμένα στη συσκευή.\nΗ εφαρμογή δουλεύει χωρίς ίντερνετ.");
+    showToast("Τοπική λειτουργία", "Η μετάβαση ολοκληρώθηκε. Τα δεδομένα είναι στη συσκευή και η εφαρμογή δουλεύει χωρίς ίντερνετ.", "ok");
   } else if (kind === "net") {
     if (mm) mm.textContent = "✔ Μετάβαση σε λειτουργία ίντερνετ (GitHub) ολοκληρώθηκε.";
     setStatus("✔ Λειτουργία ίντερνετ (από το GitHub)");
-    alert("✔ Μετάβαση σε λειτουργία ΙΝΤΕΡΝΕΤ (GitHub) ολοκληρώθηκε.\n\nΗ εφαρμογή παίρνει πλέον τα δεδομένα από το διαδίκτυο.");
+    showToast("Λειτουργία ίντερνετ", "Η μετάβαση στο GitHub ολοκληρώθηκε. Η εφαρμογή παίρνει πλέον τα δεδομένα από το διαδίκτυο.", "ok");
   }
   try { updateModeTicks(); } catch (_) {}
 }
-// Μήνυμα μετά από αλλαγή λειτουργίας (μετά το reload) — alert ώστε να φαίνεται πάντα
+// Μήνυμα μετά από αλλαγή λειτουργίας (μετά το reload) — κεντρικό στην οθόνη
 try {
   const switched = sessionStorage.getItem("mm-mode-msg");
   if (switched) {
     sessionStorage.removeItem("mm-mode-msg");
-    setTimeout(() => { try { showModeMessage(switched); } catch (e) { alert("Αλλαγή λειτουργίας: " + switched); } }, 700);
+    setTimeout(() => { try { showModeMessage(switched); } catch (_) {} }, 700);
   }
 } catch (_) {}
 $("mode-net").onclick = () => {
